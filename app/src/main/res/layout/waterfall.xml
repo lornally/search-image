@@ -7,68 +7,68 @@
 
 
     <RelativeLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/linearLayout"
-    android:orientation="vertical"
-    >
-    <Button
-        android:layout_width="180dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/linearLayout"
+        android:orientation="vertical"
+        >
+        <Button
+            android:layout_width="180dp"
 
-        android:layout_height="180dp"
-        android:id="@+id/button2"
-        android:layout_below="@+id/linearLayout"
-        android:layout_alignParentStart="true"
-        android:background="@drawable/a1080"
+            android:layout_height="180dp"
+            android:id="@+id/button2"
+            android:layout_below="@+id/linearLayout"
+            android:layout_alignParentStart="true"
+            android:background="@drawable/a1080"
 
-        android:text="1" />
-    <Button
-        android:layout_width="180dp"
-        android:layout_height="140dp"
-        android:id="@+id/button3"
-        android:layout_alignParentTop="true"
-        android:background="#114422"
-        android:layout_toRightOf="@id/button2"
-        android:text="2" />
+            android:text="1" />
+        <Button
+            android:layout_width="180dp"
+            android:layout_height="140dp"
+            android:id="@+id/button3"
+            android:layout_alignParentTop="true"
+            android:background="@drawable/a1080"
+            android:layout_toRightOf="@id/button2"
+            android:text="2" />
 
-    <Button
-        android:layout_width="180dp"
-        android:layout_height="130dp"
-        android:id="@+id/button4"
-        android:layout_below="@id/button2"
-        android:background="#88aa77"
-        android:text="11" />
-    <Button
-        android:layout_width="180dp"
-        android:layout_height="200dp"
-        android:id="@+id/button5"
-        android:layout_below="@id/button3"
-        android:layout_toRightOf="@id/button2"
-        android:background="#9911aa"
-        android:text="21" />
-    <Button
-        android:layout_width="180dp"
-        android:layout_height="180dp"
-        android:id="@+id/button6"
-        android:layout_below="@id/button4"
-        android:background="#119977"
-        android:text="12" />
-    <Button
-        android:layout_width="180dp"
-        android:layout_height="140dp"
-        android:id="@+id/button7"
-        android:layout_below="@id/button5"
-        android:layout_toRightOf="@id/button2"
+        <Button
+            android:layout_width="180dp"
+            android:layout_height="130dp"
+            android:id="@+id/button4"
+            android:layout_below="@id/button2"
+            android:background="#88aa77"
+            android:text="11" />
+        <Button
+            android:layout_width="180dp"
+            android:layout_height="200dp"
+            android:id="@+id/button5"
+            android:layout_below="@id/button3"
+            android:layout_toRightOf="@id/button2"
+            android:background="#9911aa"
+            android:text="21" />
+        <Button
+            android:layout_width="180dp"
+            android:layout_height="180dp"
+            android:id="@+id/button6"
+            android:layout_below="@id/button4"
+            android:background="@drawable/a1080"
+            android:text="12" />
+        <Button
+            android:layout_width="180dp"
+            android:layout_height="140dp"
+            android:id="@+id/button7"
+            android:layout_below="@id/button5"
+            android:layout_toRightOf="@id/button2"
 
-        android:background="#114422"
-        android:text="22"
-        />
+            android:background="@drawable/a1080"
+            android:text="22"
+            />
         <Button
             android:layout_width="180dp"
             android:layout_height="180dp"
             android:id="@+id/button8"
             android:layout_below="@id/button6"
-            android:background="#119977"
+            android:background="@drawable/a1080"
             android:text="a"
 
             />
@@ -79,7 +79,7 @@
             android:layout_below="@id/button7"
             android:layout_toRightOf="@id/button2"
 
-            android:background="#114422"
+            android:background="@drawable/a1080"
             android:text="ab"
 
             />
@@ -88,7 +88,7 @@
             android:layout_height="180dp"
             android:id="@+id/button10"
             android:layout_below="@id/button8"
-            android:background="#119977"
+            android:background="@drawable/a1080"
             android:text="abc"
 
             />
@@ -99,7 +99,7 @@
             android:layout_below="@id/button9"
             android:layout_toRightOf="@id/button2"
 
-            android:background="#114422"
+            android:background="@drawable/a1080"
             android:text="abcd"
 
             />
@@ -109,7 +109,7 @@
             android:layout_height="180dp"
             android:id="@+id/button12"
             android:layout_below="@id/button10"
-            android:background="#119977"
+            android:background="@drawable/a1080"
             android:text="a"
 
             />
@@ -120,7 +120,7 @@
             android:layout_below="@id/button11"
             android:layout_toRightOf="@id/button2"
 
-            android:background="#114422"
+            android:background="@drawable/a1080"
             android:text="ab"
 
             />
@@ -129,7 +129,7 @@
             android:layout_height="180dp"
             android:id="@+id/button14"
             android:layout_below="@id/button12"
-            android:background="#119977"
+            android:background="@drawable/a1080"
             android:text="abc"
 
             />
@@ -140,11 +140,11 @@
             android:layout_below="@id/button13"
             android:layout_toRightOf="@id/button2"
 
-            android:background="#114422"
+            android:background="@drawable/a1080"
             android:text="abcd"
 
             />
-</RelativeLayout>
+    </RelativeLayout>
 
 
 
