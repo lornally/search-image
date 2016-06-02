@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.takungae.dagong30.mckScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -9,15 +9,14 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/linearLayout"
+        android:id="@+id/rlwaterfall"
         android:orientation="vertical"
         >
-        <Button
+        <!--Button
             android:layout_width="180dp"
 
             android:layout_height="180dp"
-            android:id="@+id/button2"
-            android:layout_below="@+id/linearLayout"
+            android:id="@+id/button_searchresult"
             android:layout_alignParentStart="true"
             android:background="@drawable/house"
 
@@ -26,33 +25,33 @@
         <Button
             android:layout_width="180dp"
             android:layout_height="140dp"
-            android:id="@+id/button3"
+            android:id="@+id/button_favor"
             android:layout_alignParentTop="true"
             android:background="@drawable/house"
 
-            android:layout_toRightOf="@id/button2"
+            android:layout_toRightOf="@id/button_searchresult"
             android:text="2" />
 
         <Button
             android:layout_width="180dp"
             android:layout_height="130dp"
-            android:id="@+id/button4"
-            android:layout_below="@id/button2"
+            android:id="@+id/button_byphoto"
+            android:layout_below="@id/button_searchresult"
             android:background="#88aa77"
             android:text="11" />
         <Button
             android:layout_width="180dp"
             android:layout_height="200dp"
-            android:id="@+id/button5"
-            android:layout_below="@id/button3"
-            android:layout_toRightOf="@id/button2"
+            android:id="@+id/button_bycamera"
+            android:layout_below="@id/button_favor"
+            android:layout_toRightOf="@id/button_searchresult"
             android:background="#9911aa"
             android:text="21" />
         <Button
             android:layout_width="180dp"
             android:layout_height="180dp"
-            android:id="@+id/button6"
-            android:layout_below="@id/button4"
+            android:id="@+id/button_happyregister"
+            android:layout_below="@id/button_byphoto"
             android:background="@drawable/house"
 
             android:text="12" />
@@ -60,8 +59,8 @@
             android:layout_width="180dp"
             android:layout_height="140dp"
             android:id="@+id/button7"
-            android:layout_below="@id/button5"
-            android:layout_toRightOf="@id/button2"
+            android:layout_below="@id/button_bycamera"
+            android:layout_toRightOf="@id/button_searchresult"
 
             android:background="@drawable/house"
 
@@ -71,7 +70,7 @@
             android:layout_width="180dp"
             android:layout_height="180dp"
             android:id="@+id/button8"
-            android:layout_below="@id/button6"
+            android:layout_below="@id/button_happyregister"
             android:background="@drawable/house"
 
             android:text="a"
@@ -82,7 +81,7 @@
             android:layout_height="140dp"
             android:id="@+id/button9"
             android:layout_below="@id/button7"
-            android:layout_toRightOf="@id/button2"
+            android:layout_toRightOf="@id/button_searchresult"
 
             android:background="@drawable/house"
 
@@ -104,7 +103,7 @@
             android:layout_height="140dp"
             android:id="@+id/button11"
             android:layout_below="@id/button9"
-            android:layout_toRightOf="@id/button2"
+            android:layout_toRightOf="@id/button_searchresult"
 
             android:background="@drawable/house"
 
@@ -127,7 +126,7 @@
             android:layout_height="140dp"
             android:id="@+id/button13"
             android:layout_below="@id/button11"
-            android:layout_toRightOf="@id/button2"
+            android:layout_toRightOf="@id/button_searchresult"
 
             android:background="@drawable/house"
 
@@ -149,16 +148,19 @@
             android:layout_height="140dp"
             android:id="@+id/button15"
             android:layout_below="@id/button13"
-            android:layout_toRightOf="@id/button2"
+            android:layout_toRightOf="@id/button_searchresult"
 
             android:background="@drawable/house"
 
             android:text="abcd"
 
-            />
+            /-->
+
+
+
     </RelativeLayout>
 
 
 
 
-</android.support.v4.widget.NestedScrollView>
+</com.takungae.dagong30.mckScrollView>
