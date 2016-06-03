@@ -59,7 +59,15 @@ public class dgruning {
 
     public ArrayList<art> mArts=new ArrayList<>();
 
-    public static boolean unprepare=true;
+    /**
+     * 确定是否使用备用的艺术品数据.
+     */
+    public static boolean usedefaultunprepare =true;
+
+    /**
+     * 确定搜索结果是否加载为艺术品数据.
+     */
+    public static boolean isprepare =false;
 
     /*singleton*/
 
@@ -159,7 +167,7 @@ public class dgruning {
 
             try (
                     DataOutputStream dos = new DataOutputStream(lHttpURLConnection
-                            .getOutputStream());
+                            .getOutputStream());//// TODO: 6/3/16 报错在这里. 
                     InputStream is =sContext.getContentResolver().openInputStream(fileuri);
             ) {
 
@@ -279,6 +287,19 @@ public class dgruning {
     public void init(Context c) {
         sContext = c.getApplicationContext();
         //拿到application的context最靠谱了.
+
+        /**
+         * 初始化两个关键参数
+         */
+        /**
+         * 默认使用使用备用的艺术品数据.
+         */
+         usedefaultunprepare =true;
+
+        /**
+         * 默认搜索结果的艺术品数据尚未加载..
+         */
+         isprepare =false;
 
 
         init_token_deviceid(c);

@@ -2,7 +2,6 @@ package com.takungae.dagong30;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.net.Uri;
 
 import android.os.Bundle;
@@ -10,11 +9,8 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.View;
 import android.view.LayoutInflater;
-import android.widget.RelativeLayout;
-import android.widget.Button;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -153,9 +149,10 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == 4) {
             Thread thread = new Thread(new search());
             thread.start();
-//            View v = findViewById(R.id.button_searchresult);
-//            dgruning.unprepare = false;
-//            v.performClick();
+            View v = findViewById(R.id.button_searchresult);
+            dgruning.usedefaultunprepare = false;
+            dgruning.isprepare =false;
+            v.performClick();
         }
     }
 
@@ -169,26 +166,29 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(mck, "uploadUrl::::::" + uploadUrl);
 
                     String result=dgruning.r().posturlstring(lUri, uploadUrl, p, p2);
-
+                    //todo 报错在这里, 没有返回结果.
                 Log.d(mck, "result:::::::::"+result);
 
-
+//                if(result.is)
                 ////解析result.
                 dgruning.r().prepareArts(result);
+
+                /**
+                 * 确定加载了正确的艺术品搜索结果数据.
+                 */
+            dgruning.isprepare =true;
 
                 ////建立更多的线程, 下载这些图片. 并且把图片保存在本机. 用之前的uuid建立一个目录. 这些图片都顺序放在目录里面.
                 ///然后使用缓存机制. 建立对象, 然后, 显示对象.
                 ////这个地方还有线程池的问题.
 
-
                 //// TODO: 5/30/16 呼唤主线程, 刷界面, 貌似不该在这里.
-               runOnUiThread(new flash_ui_searchresult());
-
+//               runOnUiThread(new flash_ui_searchresult());
 
             } catch (Exception e) {
                 Log.d(mck, e + "");
             }
-            //在ui线程, 作动作, 更新瀑布流//// TODO: 5/30/16
+            //在ui线程, 作动作, 更新瀑布流//// : 5/30/16
 //            runOnUiThread(Runnable);
         }
     }
@@ -197,13 +197,13 @@ public class MainActivity extends AppCompatActivity {
      * 这个地方用搜索结果, 然后, 互换搜索结果页面.
      *
      */
-    class flash_ui_searchresult implements Runnable {
+   /* class flash_ui_searchresult implements Runnable {
         public void run() {
             View v = findViewById(R.id.button_searchresult);
-            dgruning.unprepare = false;
+            dgruning.usedefaultunprepare = false;
             v.performClick();
         }
-    }
+    }*/
 
 
 
@@ -284,7 +284,7 @@ public class MainActivity extends AppCompatActivity {
 
         //替换布局为waterfall.
 
-        Log.i(mck, "layoutwaterfall before" + layoutwaterfall);
+        Log.i(mck, "layoutwaterfall before: " + layoutwaterfall);
 
         /**
          * 如果waterfall没有搞过, 那么就搞一下.
@@ -293,7 +293,7 @@ public class MainActivity extends AppCompatActivity {
         if (null == layoutwaterfall)
             layoutwaterfall = getLayoutInflater().inflate(R.layout.waterfall, null);
 
-        Log.i(mck, "layoutwaterfall after" + layoutwaterfall);
+        Log.i(mck, "layoutwaterfall after: " + layoutwaterfall);
 
         /**
          * 如果还没有准备好, 那么就来准备好默认的显示素材.
@@ -303,9 +303,10 @@ public class MainActivity extends AppCompatActivity {
          * 搜索结果最复杂, 要上传图片. 因此最后写.
          */
 
-        if(dgruning.unprepare){
+        if(dgruning.usedefaultunprepare){
             dgruning.r().prepareDefaultArts();
-            dgruning.unprepare=false;
+            dgruning.usedefaultunprepare =false;
+            dgruning.isprepare=true;
         }
 
 
@@ -381,12 +382,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
+     * 废弃
      * 在这里更新界面流.
      * 计算每个button的高度,
      * 计算每个button的顶部高度.
      * 把顶部最高的一个扑上去.
      */
-    class refresh_waterfall implements Runnable{
+    /*class refresh_waterfall implements Runnable{
         public void  run(){
             ;
         }
@@ -396,7 +398,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-
+*/
 
 
     /**
