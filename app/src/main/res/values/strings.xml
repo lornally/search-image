@@ -1,5 +1,13 @@
 <resources>
     <string name="app_name">dagong3.0</string>
+
+
+
+    <string name="border_top">Border Top</string>
+    <string name="border_bottom">Border Bottom</string>
+    <string name="image_url">Image Url</string>
+    <string name="isshowok">is show ok</string>
+
     <string name="prepareartlist">
 
         {
@@ -1240,11 +1248,6 @@
 }
 
     </string>
-
-
-    <string name="border_top">Border Top</string>
-    <string name="border_bottom">Border Bottom</string>
-    <string name="image_url">Image Url</string>
 
 
 </resources>

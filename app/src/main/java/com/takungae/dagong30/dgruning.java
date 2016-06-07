@@ -6,6 +6,8 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -23,6 +25,8 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -37,6 +41,19 @@ import java.util.UUID;
 public class dgruning {
     //这货和dgrunning的artlist完全等价, 因此, 应该注入进来. 目前是在dgruning的prepare声明了.
     public  static ArrayList<art> sArtist=null;
+    public  HashMap<String, art> stringartHashMap=null;
+    /**
+     * 这个是瀑布流.
+     *
+     * @param v
+     */
+    static mckScrollView layoutwaterfall;
+
+    /**
+     * 艺术品详情.
+     */
+    FrameLayout layoutartbigshow=null;
+
     private final String mck = "--dgruning--";
     //这里的IP要换成你服务器的IP,不可使用localhost,否则将被模拟器认为是自身
     //// : 11/12/15 上传图片总需要切换环境.
@@ -48,6 +65,10 @@ public class dgruning {
     public static String _device_id = "";
     public static Context sContext;
 
+    /**
+     * 全局就用这一个toast, 提升toast的使用效率.
+     */
+    private static  Toast toast;
 
 
     //传递drawable给detailactivity.
@@ -57,7 +78,7 @@ public class dgruning {
 
 
 
-    public ArrayList<art> mArts=new ArrayList<>();
+//    public ArrayList<art> mArts=new ArrayList<>();
 
     /**
      * 确定是否使用备用的艺术品数据.
@@ -65,7 +86,7 @@ public class dgruning {
     public static boolean usedefaultunprepare =true;
 
     /**
-     * 确定搜索结果是否加载为艺术品数据.
+     * 确定result是否已经加载好, 是否已经parse了json.
      */
     public static boolean isprepare =false;
 
@@ -77,9 +98,14 @@ public class dgruning {
     /******
      * 准备好, 要显示的素材.
      * todo 这个东西要不要重复利用?
+     * 这个地方对于集合的要求是:
+     * 1, 要有顺序. 因为是搜索结果.
+     * 2, 要能够从url映射过去. 因为到了后面, 我们要从url映射回art对象.
+     * 貌似linkedhashmap是满足要求的. 这个思路不合适, 没有get(i)方法. 我还是另外建立一个set吧.
      * */
     public  void prepareArts(String result) {
         ArrayList<art> lArts=new ArrayList<>();
+       LinkedHashMap<String, art> lhmarts = new LinkedHashMap<>();
         try {
             JSONObject jb = new JSONObject(result);
             JSONArray ja = jb.getJSONArray("data");
@@ -104,12 +130,17 @@ public class dgruning {
                 a.setThumb_url(j.optString("thumb_url"));
                 Log.d(mck, ":::::thumb_url:::" + a.getThumb_url());
                 //和picture的内容是一样的, 因此为了避免混淆, 我注释掉了.
+                lhmarts.put(a.getPicture_url(), a);
                 lArts.add(a);
             }
-            mArts=lArts;
-            sArtist =mArts;
+            //mArts=lArts;
+            stringartHashMap=lhmarts;
+            sArtist =lArts;
+            isprepare=true;
         }catch (Exception e){
-            Log.d(mck,"--------e------"+ e.toString());
+            sArtist=null;
+            isprepare=true;
+            Log.d(mck,"--------e------"+ e.toString()+ "   : "+sArtist);
         }
     }
     /******
@@ -120,9 +151,20 @@ public class dgruning {
         String s=sContext.getString(R.string.prepareartlist);
         Log.d(mck,"::::::s:::::"+s);
         prepareArts(s);
+        isprepare=true;
+        usedefaultunprepare=false;
     }
 
-
+    public static void makeNshow(final Context context, final String text, final int duration){
+        if (toast == null) {
+            //如果還沒有用過makeText方法，才使用
+            toast = android.widget.Toast.makeText(context, text, duration);
+        } else {
+            toast.setText(text);
+            toast.setDuration(duration);
+        }
+        toast.show();
+    }
 
 
 
@@ -167,8 +209,7 @@ public class dgruning {
 
             try (
                     DataOutputStream dos = new DataOutputStream(lHttpURLConnection
-                            .getOutputStream());//// TODO: 6/3/16 报错在这里. 
-                    InputStream is =sContext.getContentResolver().openInputStream(fileuri);
+                            .getOutputStream());//// TODO: 6/3/16 报错在这里.
             ) {
 
 
@@ -179,10 +220,14 @@ public class dgruning {
                 dos.writeBytes("Content-Disposition: form-data; name=\"file\"; filename=\"xxxxxxxx.jpg\"" + end);
                 dos.writeBytes(end);
 
-                int readby=0;
-                byte[] bytes = new byte[100];
-                while ((readby = is.read(bytes)) > 0) {
-                    dos.write(bytes,0,readby);
+                if(null!=fileuri) {
+                    try(InputStream is =sContext.getContentResolver().openInputStream(fileuri)) {
+                        int readby = 0;
+                        byte[] bytes = new byte[100];
+                        while ((readby = is.read(bytes)) > 0) {
+                            dos.write(bytes, 0, readby);
+                        }
+                    }
                 }
 
 
@@ -275,6 +320,18 @@ public class dgruning {
 
 
     }
+
+    /**
+     * 在显示列表结果页之前要调用这个.
+     *
+     */
+    public static void initlist(){
+        usedefaultunprepare = true;
+        isprepare =false;
+        sArtist=null;
+        layoutwaterfall.init();
+    }
+
 
 
     /******

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+
+    <ImageView
+        android:id="@+id/imageview_art_detail"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter"
+        android:background="@color/white"
+        android:contentDescription="大幅作品展示"
+        />
+
+    <ImageView
+        android:id="@+id/imageview_detail_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:onClick="ondetailclick"
+        android:scaleType="centerCrop"
+        android:src="@drawable/detail"
+        android:contentDescription="查看"
+
+        />
+
+    <ImageView
+        android:id="@+id/imageview_share_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:onClick="onshareclick"
+        android:scaleType="centerCrop"
+        android:src="@drawable/share"
+        android:contentDescription="分享"
+
+        />
+
+    <include
+        layout="@layout/view_share_choice"
+
+        ></include>
+
+</FrameLayout>

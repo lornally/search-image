@@ -11,6 +11,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.LayoutInflater;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -30,15 +33,23 @@ public class MainActivity extends AppCompatActivity {
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
     private GoogleApiClient client;
-
+    private   View layoutmain;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+
+
+        //setContentView(R.layout.activity_main);
+
+        /**
+         * 设置content的另一种方法.
+         *
+         */
         LayoutInflater inflater = getLayoutInflater();
         //LayoutInflater.from(this).inflate().
-        View layout1 = inflater.inflate(R.layout.activity_main, null);
-        setContentView(layout1);
+         layoutmain = inflater.inflate(R.layout.activity_main, null);
+        setContentView(layoutmain);
+
 
         dgruning.r().init(this);
 
@@ -62,8 +73,9 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
         Log.i(mck, "back press begin");
 
-        super.onBackPressed();
+//        super.onBackPressed();
         Log.i(mck, "back press end");
+        setContentView(layoutmain);
     }
 
 
@@ -134,8 +146,11 @@ public class MainActivity extends AppCompatActivity {
 
         }
         if (requestCode == 3) {
-            Log.i(mck, "code3---datauri:::" + data.getData());
-            startPhotoZoom(data.getData());//奔着4去了.
+            Log.i(mck, "code3---dataluri:::" + data.getData());
+
+
+            lUri=data.getData();
+            startPhotoZoom(lUri);//奔着4去了.
         }
         /**
          * 此处大量操作性代码.
@@ -147,12 +162,22 @@ public class MainActivity extends AppCompatActivity {
          *
          */
         if (requestCode == 4) {
+            dgruning.makeNshow(getApplicationContext(), "搜索中..1.", Toast.LENGTH_SHORT);
+            /**
+             * 目前还有加载好结果数据, 也没有parse为json结果. isprepare要在那个独立的线程里面设置为true.
+             */
+            dgruning.usedefaultunprepare = false;
+            dgruning.isprepare =false;
+
             Thread thread = new Thread(new search());
             thread.start();
             View v = findViewById(R.id.button_searchresult);
-            dgruning.usedefaultunprepare = false;
-            dgruning.isprepare =false;
+
+            dgruning.makeNshow(getApplicationContext(), "搜索中..2.", Toast.LENGTH_SHORT);
+
             v.performClick();
+            dgruning.makeNshow(getApplicationContext(), "搜索中..3.", Toast.LENGTH_SHORT);
+
         }
     }
 
@@ -163,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
                 String uploadUrl = dgruning.url;
                 dgruning.urlpara p = new dgruning.urlpara("token",dgruning._token); //dgruning._token);
                 dgruning.urlpara p2 = new dgruning.urlpara("type","0");
-                Log.d(mck, "uploadUrl::::::" + uploadUrl);
+                Log.d(mck, "    uploadUrl:::::: " + uploadUrl+"    luri: "+lUri+"    p:"+dgruning._token+" :@p2@: "+p2);
 
                     String result=dgruning.r().posturlstring(lUri, uploadUrl, p, p2);
                     //todo 报错在这里, 没有返回结果.
@@ -221,6 +246,7 @@ public class MainActivity extends AppCompatActivity {
     private void startPhotoZoom(Uri uri) {
         Intent intent = new Intent("com.android.camera.action.CROP");
         Log.w(mck, "startphotozoom:::::::" + uri);
+
         intent.setDataAndType(uri, "image/*");
 
         Log.w(mck, "setdata");
@@ -247,6 +273,7 @@ public class MainActivity extends AppCompatActivity {
 
         //返回一个文件到这个luri里面
         intent.putExtra(MediaStore.EXTRA_OUTPUT, lUri);
+        Log.d(mck, "luri startphotozoom: "+lUri);
 
         //用jpeg格式.
         intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
@@ -273,27 +300,20 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    /**
-     * 下面是tab区: 相册
-     *
-     * @param v
-     */
-    View layoutwaterfall;
-
     public void onbuttongallery(View v) {
 
         //替换布局为waterfall.
 
-        Log.i(mck, "layoutwaterfall before: " + layoutwaterfall);
+        Log.i(mck, "layoutwaterfall before: " + dgruning.layoutwaterfall);
 
         /**
          * 如果waterfall没有搞过, 那么就搞一下.
          */
 
-        if (null == layoutwaterfall)
-            layoutwaterfall = getLayoutInflater().inflate(R.layout.waterfall, null);
+        if (null == dgruning.layoutwaterfall)
+            dgruning.layoutwaterfall = (mckScrollView) getLayoutInflater().inflate(R.layout.waterfall, null);
 
-        Log.i(mck, "layoutwaterfall after: " + layoutwaterfall);
+        Log.i(mck, "layoutwaterfall after: " + dgruning.layoutwaterfall);
 
         /**
          * 如果还没有准备好, 那么就来准备好默认的显示素材.
@@ -302,11 +322,10 @@ public class MainActivity extends AppCompatActivity {
          * 收藏列表是从一个接口初始化. 比较简单.
          * 搜索结果最复杂, 要上传图片. 因此最后写.
          */
+        dgruning.initlist();
 
         if(dgruning.usedefaultunprepare){
             dgruning.r().prepareDefaultArts();
-            dgruning.usedefaultunprepare =false;
-            dgruning.isprepare=true;
         }
 
 
@@ -315,7 +334,7 @@ public class MainActivity extends AppCompatActivity {
         /**
          * 自动执行mckscrollview
          */
-        setContentView(layoutwaterfall);
+        setContentView(dgruning.layoutwaterfall);
 
 
 /*
@@ -409,6 +428,76 @@ public class MainActivity extends AppCompatActivity {
 
     public void onbuttonbookmark(View v) {
 
+
+        /**
+         * 和点击相册几乎一模一样. 考虑如何合并为一个.
+         */
+
+
+        //替换布局为waterfall.
+
+        Log.i(mck, "layoutwaterfall before: " + dgruning.layoutwaterfall);
+
+        /**
+         * 如果waterfall没有搞过, 那么就搞一下.
+         */
+
+        if (null == dgruning.layoutwaterfall)
+            dgruning.layoutwaterfall = (mckScrollView)getLayoutInflater().inflate(R.layout.waterfall, null);
+
+        Log.i(mck, "layoutwaterfall after: " + dgruning.layoutwaterfall);
+        dgruning.initlist();
+
+        Thread thread = new Thread(new bookmarklist());
+        thread.start();
+
+
+
+
+
+        /**
+         * 自动执行mckscrollview
+         */
+
+        setContentView(dgruning.layoutwaterfall);
+
+
+    }
+
+    class bookmarklist implements Runnable {
+        public void run() {
+            try {
+
+                String uploadUrl = "http://app.takungae.com:80/Api/Collection/my_collection";
+                dgruning.urlpara p = new dgruning.urlpara("token",dgruning._token); //dgruning._token);
+//                Log.d(mck, "    uploadUrl:::::: " + uploadUrl+"    luri: "+lUri+"    p:"+dgruning._token+" :@p2@: "+p2);
+
+                String result=dgruning.r().posturlstring(lUri, uploadUrl, p);
+                //todo 报错在这里, 没有返回结果.
+                Log.d(mck, "result:::::::::"+result);
+
+//                if(result.is)
+                ////解析result.
+                dgruning.r().prepareArts(result);
+
+                /**
+                 * 确定加载了正确的艺术品搜索结果数据.
+                 */
+                dgruning.isprepare =true;
+
+                ////建立更多的线程, 下载这些图片. 并且把图片保存在本机. 用之前的uuid建立一个目录. 这些图片都顺序放在目录里面.
+                ///然后使用缓存机制. 建立对象, 然后, 显示对象.
+                ////这个地方还有线程池的问题.
+
+                //// TODO: 5/30/16 呼唤主线程, 刷界面, 貌似不该在这里.
+//               runOnUiThread(new flash_ui_searchresult());
+
+            } catch (Exception e) {
+                Log.d(mck, e + "");
+            }
+            //在ui线程, 作动作, 更新瀑布流//// : 5/30/16
+//            runOnUiThread(Runnable);
+        }
     }
 
 
@@ -466,4 +555,6 @@ public class MainActivity extends AppCompatActivity {
         AppIndex.AppIndexApi.end(client, viewAction);
         client.disconnect();
     }
+
+
 }

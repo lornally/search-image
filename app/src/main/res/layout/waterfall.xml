@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.takungae.dagong30.mckScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.takungae.dagong30.mckScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -27,7 +28,7 @@
             android:background="@drawable/empty_photo"
 
 
-            android:text="1" />
+             />
         <Button
             android:layout_width="180dp"
             android:layout_height="140dp"
@@ -37,7 +38,7 @@
             android:layout_toRightOf="@id/button_searchresult"
 
 
-            android:text="2" />
+             />
 
         <Button
             android:layout_width="180dp"
@@ -45,7 +46,7 @@
             android:id="@+id/button_byphoto"
             android:layout_below="@id/button_searchresult"
             android:background="@drawable/empty_photo"
-            android:text="11" />
+            android:text="" />
         <Button
             android:layout_width="180dp"
             android:layout_height="200dp"
@@ -54,7 +55,7 @@
             android:layout_toRightOf="@id/button_searchresult"
 
             android:background="@drawable/empty_photo"
-            android:text="21" />
+            android:text="" />
         <Button
             android:layout_width="180dp"
             android:layout_height="180dp"
@@ -62,7 +63,7 @@
             android:layout_below="@id/button_byphoto"
             android:background="@drawable/empty_photo"
 
-            android:text="12" />
+            android:text="" />
         <Button
             android:layout_width="180dp"
             android:layout_height="140dp"
@@ -73,7 +74,7 @@
 
             android:background="@drawable/empty_photo"
 
-            android:text="22"
+            android:text=""
             />
         <Button
             android:layout_width="180dp"
@@ -82,7 +83,7 @@
             android:layout_below="@id/button_happyregister"
             android:background="@drawable/empty_photo"
 
-            android:text="a"
+            android:text=""
 
             />
         <Button
@@ -95,7 +96,7 @@
 
             android:background="@drawable/empty_photo"
 
-            android:text="ab"
+            android:text=""
 
             />
         <Button
@@ -105,7 +106,7 @@
             android:layout_below="@id/button8"
             android:background="@drawable/empty_photo"
 
-            android:text="abc"
+            android:text=""
 
             />
         <Button
@@ -118,7 +119,7 @@
 
             android:background="@drawable/empty_photo"
 
-            android:text="abcd"
+            android:text=""
 
             />
 
@@ -129,7 +130,7 @@
             android:layout_below="@id/button10"
             android:background="@drawable/empty_photo"
 
-            android:text="a"
+            android:text=""
 
             />
         <Button
@@ -142,7 +143,7 @@
 
             android:background="@drawable/empty_photo"
 
-            android:text="ab"
+            android:text=""
 
             />
         <Button
@@ -152,7 +153,7 @@
             android:layout_below="@id/button12"
             android:background="@drawable/empty_photo"
 
-            android:text="abc"
+            android:text=""
 
             />
         <Button
@@ -164,7 +165,7 @@
 
             android:background="@drawable/empty_photo"
 
-            android:text="abcd"
+            android:text=""
 
             />
 

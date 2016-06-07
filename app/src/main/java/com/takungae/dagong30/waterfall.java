@@ -4,12 +4,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.util.LruCache;
 
-import java.util.ArrayList;
-
 /**
  * Created by m on 5/31/16.
  */
-public class testwaterfall {
+public class waterfall {
 
 
     /**
@@ -30,7 +28,7 @@ public class testwaterfall {
         };
     }
 
-    private  testwaterfall() {
+    private waterfall() {
      /*   // 获取应用程序最大可用内存
         final int maxMemory = (int) Runtime.getRuntime().maxMemory();
         final int cacheSize = maxMemory / 8;
@@ -42,9 +40,9 @@ public class testwaterfall {
             }
         };*/
     }
-    private final static testwaterfall hh=new testwaterfall();
+    private final static waterfall hh=new waterfall();
 
-    public static testwaterfall getInstance(){
+    public static waterfall getInstance(){
 
         return hh;
     }

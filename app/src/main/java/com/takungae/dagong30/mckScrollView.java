@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -21,9 +22,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.RelativeLayout;
@@ -40,6 +43,11 @@ public class mckScrollView extends ScrollView implements OnTouchListener {
      * log标签.
      */
     private static final String mck = "------mcksv-------";
+    /**
+     * context
+     */
+    final Context context;
+
     /**
      * 每页要加载的图片数量
      */
@@ -87,7 +95,7 @@ public class mckScrollView extends ScrollView implements OnTouchListener {
     /**
      * 对图片进行管理的工具类
      */
-    private testwaterfall imageLoader;
+    private waterfall imageLoader;
 
     /**
      * 第一列的布局
@@ -134,13 +142,40 @@ public class mckScrollView extends ScrollView implements OnTouchListener {
     /**
      * 这个不用静态的, 为了每个scrollview独有, 并且每次装载都更新.
      */
-    private  boolean hasnotclear = true;
+    private   boolean hasnotclear = true;
 
     /**
      *     奶奶的, 这个不能是静态的, 应该是每次加载刷新.
 
      */
-    boolean hasnotallshow = true;
+    private   boolean hasnotallshow = true;
+
+    private static int toasttime=0; //toast计数器
+
+    /**
+     * 必须改为单根结构了. 奶奶的.
+     */
+
+
+    /**
+     * 必须搞一个初始化器了.
+     */
+    public void init(){
+        hasnotclear=true;
+        hasnotallshow=true;
+        page=0;
+        toasttime=0;
+        lastScrollY=-1;
+        firstColumnHeight=0;
+        secondColumnHeight=0;
+        Log.d(mck, "   init ok:");
+        /**
+         * 清空界面挪到这挺好的, 貌似.
+         */
+        RelativeLayout r = (RelativeLayout) findViewById(R.id.rlwaterfall);
+        r.removeAllViews();
+
+    }
 
 
     /**
@@ -162,26 +197,35 @@ public class mckScrollView extends ScrollView implements OnTouchListener {
 
             Log.d(mck, "handler prepare hasnotclear before   2.5:  "+hasnotclear);
             if (!dgruning.isprepare) {
-                Toast.makeText(getContext(), "搜索中", Toast.LENGTH_SHORT).show();
-                handler.sendMessageDelayed(message, 50);
+                dgruning.makeNshow(getContext(), "搜索中"+(++toasttime), Toast.LENGTH_SHORT);
+                handler.sendMessageDelayed(message, 1500);
                 Log.d(mck, "handler isprepare::::  2:  " + dgruning.isprepare);
                 return;
             }
 
             /**
              *             清掉之前的所有view. 这个应该只执行一次.
-             *             这个奇怪了, 为啥总是不执行?
+             *             这个奇怪了, 为啥总是不执行?之前逻辑有问题, 下面的代码是改好的.
+             *             但是, 最终发现把这个逻辑挪到init里面去, 会简单很多, 已经挪过去了.
+             *
              */
 
-            else if (hasnotclear) {
-                Log.d(mck, "handler prepare hasnotclear before   3:  ");
+            /*else if (hasnotclear) {
+                Log.d(mck, "handler prepare hasnotclear before   3:  "+dgruning.sArtist);
+
+                if(null==dgruning.sArtist){
+
+                    dgruning.makeNshow(getContext(), "没有任何收藏或者搜索结果", Toast.LENGTH_SHORT);
+//                    return;
+                }
                 ////shit, bug 找到了, 这个removeall 把那个里面的relativelayout也移除了. 妹的.
                 RelativeLayout r = (RelativeLayout) findViewById(R.id.rlwaterfall);
                 r.removeAllViews();
 //                removeAllViews();
                 hasnotclear = false;
+
                 Log.d(mck, "\"handler prepare hasnotclear after   4:  ");
-            }
+            }*/
 
 
 
@@ -243,11 +287,18 @@ public class mckScrollView extends ScrollView implements OnTouchListener {
         super(context, attrs);
         Log.d(mck, ":::::::mckstrlllview constractor");
 
-        imageLoader = testwaterfall.getInstance();
+        imageLoader = waterfall.getInstance();
         taskCollection = new HashSet<LoadImageTask>();
         setOnTouchListener(this);
         removeAllViews();
 
+        /**
+         * 据说这个方法能解决ondraw重复呼入的问题, 明天测试一下.
+         * 太神奇了, 真的有用.
+         */
+        setWillNotDraw(true);
+
+        this.context = context;
     }
 
 
@@ -260,15 +311,30 @@ public class mckScrollView extends ScrollView implements OnTouchListener {
      */
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-
         super.onLayout(changed, l, t, r, b);
+        Log.d(mck, "   ::::onlayout: "+dgruning.sArtist);
+        if(null==dgruning.sArtist){
+            Log.d(mck, "   ::::onlayout2: ");
 
-        Log.d(mck, "::::onlayout");
+            dgruning.makeNshow(getContext(), "没有任何收藏或者搜索结果", Toast.LENGTH_SHORT);
+            Message message = new Message();
+            message.obj = this;
+            handler.sendMessageDelayed(message, 5);
+            return;
+        }else {
+            Log.d(mck, "   ::::onlayout2: ");
+
+            dgruning.makeNshow(getContext(), "图片加载中", Toast.LENGTH_SHORT);
+            Message message = new Message();
+            message.obj = this;
+            handler.sendMessageDelayed(message, 5);
+
+        }
 //        if(null==dgruning.sArtist){
 
 //        }
        /* if (!dgruning.isprepare){
-            Toast.makeText(getContext(), "搜索中", Toast.LENGTH_SHORT).show();
+            dgruning.makeNshow(getContext(), "搜索中", Toast.LENGTH_SHORT).show();
             return;
         }*/
         if (changed && !loadOnce) {
@@ -300,6 +366,18 @@ public class mckScrollView extends ScrollView implements OnTouchListener {
         }
     }
 
+    /**
+     * 这个不知道是啥情况
+     * 太神奇了, 真的有用. 不call ondraw, 也会call这个.
+     */
+
+
+    @Override
+    protected void dispatchDraw(Canvas canvas) {
+        super.dispatchDraw(canvas);
+       // Log.d(mck, "dispatchdraw");
+        //这个必须注释了, 否则喷出一大堆.
+    }
 
     @Override
     protected void onFinishInflate() {
@@ -313,6 +391,7 @@ public class mckScrollView extends ScrollView implements OnTouchListener {
         Log.d(mck, "onfinishtemporary");
     }
 
+
     /**
      * 不能搞这个, 还是要看一下view的加载流程.
      * 这个函数被调用的次数太多了. 貌似不合适搞任何事.
@@ -322,14 +401,14 @@ public class mckScrollView extends ScrollView implements OnTouchListener {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        Log.d(mck, "ondraw");
+        Log.d(mck, "ondraw"+canvas);
 
-        if (!dgruning.isprepare) {
-            //   Toast.makeText(getContext(), "搜索中", Toast.LENGTH_SHORT).show();
+        /*if (!dgruning.isprepare) {
+            //   dgruning.makeNshow(getContext(), "搜索中", Toast.LENGTH_SHORT).show();
             Log.d(mck, "ondraw+!dgruning.isprepare");
             return;
 
-        }
+        }*/
     }
 
     /**
@@ -339,7 +418,7 @@ public class mckScrollView extends ScrollView implements OnTouchListener {
     public boolean onTouch(View v, MotionEvent event) {
         Log.d(mck, "::::ontouch   1:");
         if (!dgruning.isprepare) {
-            //   Toast.makeText(getContext(), "搜索中", Toast.LENGTH_SHORT).show();
+            //   dgruning.makeNshow(getContext(), "搜索中", Toast.LENGTH_SHORT).show();
             return true;
         }
         /**
@@ -370,6 +449,10 @@ public class mckScrollView extends ScrollView implements OnTouchListener {
      * 开始加载下一页的图片，每张图片都会开启一个异步线程去下载。
      */
     public void loadMoreImages() {
+        if(null==dgruning.sArtist){
+            dgruning.makeNshow(getContext(), "没有任何收藏或者搜索结果", Toast.LENGTH_SHORT);
+            return;
+        }
         Log.d(mck, "loadmoreimages   0 size: " + dgruning.sArtist.size());
 
         /**
@@ -378,17 +461,18 @@ public class mckScrollView extends ScrollView implements OnTouchListener {
          * 这里其实是下载图片用的, 不是现实图片用的.
          */
         if (!hasSDCard()) {
-            Toast.makeText(getContext(), "未发现SD卡", Toast.LENGTH_SHORT).show();
+            dgruning.makeNshow(getContext(), "未发现SD卡", Toast.LENGTH_SHORT);
             return;
         }
 //                if(null==dgruning.sArtist)return;
-//        Toast.makeText(getContext(), "搜索中", Toast.LENGTH_SHORT)
+//        dgruning.makeNshow(getContext(), "搜索中", Toast.LENGTH_SHORT)
 //                .show();
 //        Log.d(mck, "搜索中");
 
         if (!dgruning.isprepare) return;
 
         int startIndex = page * PAGE_SIZE;
+//        dgruning.stringartLinkedHashMap.size();
         int endIndex = (page * PAGE_SIZE + PAGE_SIZE) > dgruning.sArtist.size() ? dgruning.sArtist.size() : (page * PAGE_SIZE + PAGE_SIZE);
         int morestartindex = ((page - 5) * PAGE_SIZE > 0) ? page * PAGE_SIZE : 0;
         int morendindex = ((page + 6) * PAGE_SIZE < dgruning.sArtist.size()) ? page * PAGE_SIZE : dgruning.sArtist.size();
@@ -396,21 +480,20 @@ public class mckScrollView extends ScrollView implements OnTouchListener {
 
 
         if (startIndex >= dgruning.sArtist.size()) {
-            if (hasnotallshow) Toast.makeText(getContext(), "全部结果已展示", Toast.LENGTH_SHORT)
-                    .show();
+            if (hasnotallshow) dgruning.makeNshow(getContext(), "全部结果已展示", Toast.LENGTH_SHORT);
             hasnotallshow = false;
             return;
         }
 
 
         if (startIndex < dgruning.sArtist.size()) {
-            Toast.makeText(getContext(), "正在加载...", Toast.LENGTH_SHORT)
-                    .show();
+            dgruning.makeNshow(getContext(), "正在加载...", Toast.LENGTH_SHORT);
 
             for (int i = startIndex; i < endIndex; i++) {
                 LoadImageTask task = new LoadImageTask();
                 taskCollection.add(task);
                 task.execute(dgruning.sArtist.get(i).getPicture_url());
+//                dgruning.stringartLinkedHashMap.get()
             }
             page++;
         }
@@ -423,21 +506,30 @@ public class mckScrollView extends ScrollView implements OnTouchListener {
      *
      */
     public void checkVisibility() {
-        Log.d(mck, "                     checkvisibility");
+        //这个也必须注释掉, 否则喷的内容太多.
+       // Log.d(mck, "                     checkvisibility 1: ");
 
         for (int i = 0; i < imageViewList.size(); i++) {
+
             ImageView imageView = imageViewList.get(i);
+
+          //  Log.d(mck, "                     checkvisibility 2: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
+
             int borderTop = (Integer) imageView.getTag(R.string.border_top);////  5/31/16 崩溃在这里.因为没有settag, 直接读就崩溃了.
             int borderBottom = (Integer) imageView
                     .getTag(R.string.border_bottom);
 
             /**
              * 关键代码还是在这里, 反复判断是否在屏幕范围内, 然后决定加载图片, 还是把图片替换掉.
-             * todo 是否能加一个判断, 判断这个imageview是否改动过了.
+             * todo 是否能加一个判断, 判断这个imageview是否改动过了.  正在弄.
              */
             if (borderBottom > (getScrollY() - scrollViewHeight * 4)
                     && borderTop < getScrollY() + scrollViewHeight * 5) {
+              //  Log.d(mck, "                     checkvisibility 3: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
 
+
+                if ((boolean)imageView.getTag(R.string.isshowok)) continue;
+            //    Log.d(mck, "                     checkvisibility 4: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
 
                 String imageUrl = (String) imageView.getTag(R.string.image_url);
                 Bitmap bitmap = imageLoader.getBitmapFromMemoryCache(imageUrl);
@@ -447,11 +539,25 @@ public class mckScrollView extends ScrollView implements OnTouchListener {
                     /***
                      * 这里的加载不仅仅包括从网络加载, 还包括从磁盘加载.
                      */
+                 //   Log.d(mck, "                     checkvisibility 5: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
+
                     LoadImageTask task = new LoadImageTask(imageView);
                     task.execute(imageUrl);
+              //      Log.d(mck, "                     checkvisibility 6: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
+
                 }
+             //   Log.d(mck, "                     checkvisibility 7: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
+
+                imageView.setTag(R.string.isshowok, true);
+            //    Log.d(mck, "                     checkvisibility 8: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
+
             } else {
+            //    Log.d(mck, "                     checkvisibility 9: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
+
                 imageView.setImageResource(R.drawable.empty_photo);
+                imageView.setTag(R.string.isshowok, false);
+            //    Log.d(mck, "                     checkvisibility 10: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
+
                 //// TODO: 6/1/16 图片和空间回收利用机制, 再考虑.  ruhelru缓存.
             }
         }
@@ -490,6 +596,8 @@ public class mckScrollView extends ScrollView implements OnTouchListener {
 
         /**
          * 将可重复使用的ImageView传入
+         * 这个task不仅仅是从网络下载, 从内存载入, 从硬盘载入都在这里,
+         * 因此, 这里就是初始化imageview的地方.
          *
          * @param imageView
          */
@@ -537,7 +645,7 @@ public class mckScrollView extends ScrollView implements OnTouchListener {
                 downloadImage(imageUrl);
             }
             if (imageUrl != null) {
-                Bitmap bitmap = testwaterfall.decodeSampledBitmapFromResource(
+                Bitmap bitmap = waterfall.decodeSampledBitmapFromResource(
                         imageFile.getPath(), columnWidth);
                 if (bitmap != null) {
                     imageLoader.addBitmapToMemoryCache(imageUrl, bitmap);
@@ -549,6 +657,7 @@ public class mckScrollView extends ScrollView implements OnTouchListener {
 
         /**
          * 向ImageView中添加一张图片
+         * 不仅仅, 这里是初始化imageview的地方, 我们需要存储的东西都放到里面去.
          *
          * @param bitmap      待添加的图片
          * @param imageWidth  图片的宽度
@@ -570,7 +679,9 @@ public class mckScrollView extends ScrollView implements OnTouchListener {
                 imageView.setScaleType(ScaleType.FIT_XY);
                 imageView.setPadding(5, 5, 5, 5);
                 imageView.setTag(R.string.image_url, mImageUrl);
+                imageView.setTag(R.string.isshowok, true);
                 imageView.setId(id++);
+                imageView.setOnClickListener(new imageviewonclicklistener());
                 //findColumnToAdd(imageView, imageHeight).addView(imageView);注释掉得代码.
                 addimageatposition(imageView, layoutParams);
                 //这个报错, 崩溃. // TODO: 6/3/16
@@ -579,6 +690,55 @@ public class mckScrollView extends ScrollView implements OnTouchListener {
                 imageViewList.add(imageView);
             }
         }
+
+
+
+
+
+        /**
+         * 瀑布流的onclick在这里,
+         * 每个点击都会进入详情页,
+         * 全屏显示点击内容的详细情况.
+         */
+         class imageviewonclicklistener implements View.OnClickListener {
+            @Override
+            public void onClick(View v) {
+                ImageView iv=(ImageView)v;
+                final String  iurl=""+iv.getTag(R.string.image_url);
+                dgruning.r().stringartHashMap.get(iurl);
+
+                /**
+                 * 如果artbigshow没有搞过, 那么就搞一下.
+                 */
+
+                if (null == dgruning.r().layoutartbigshow)
+                    dgruning.r().layoutartbigshow = (FrameLayout)
+                            LayoutInflater.from(context).inflate(R.layout.waterfall, null);
+
+                Log.i(com.takungae.dagong30.mckScrollView.mck, "layoutwaterfall after: " + dgruning.r().layoutartbigshow);
+
+
+                /**
+                 * 自动执行mckscrollview
+                 */
+                ((Activity)context).setContentView(dgruning.r().layoutartbigshow);
+
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         /**
          * 添加图片, 丑陋的要命, 这些代码.
@@ -729,7 +889,7 @@ public class mckScrollView extends ScrollView implements OnTouchListener {
                 }
             }
             if (imageFile != null) {
-                Bitmap bitmap = testwaterfall.decodeSampledBitmapFromResource(
+                Bitmap bitmap = waterfall.decodeSampledBitmapFromResource(
                         imageFile.getPath(), columnWidth);
                 if (bitmap != null) {
                     imageLoader.addBitmapToMemoryCache(imageUrl, bitmap);
