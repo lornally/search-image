@@ -34,32 +34,29 @@ import java.util.UUID;
  * Created by m on 11/13/15.
  * 这个类的目标是保存运行期的各种状态, 顺便做token和device_id的持久化.
  * 使用这个类, 必须先做init, 这个方法会拿回持久化的参数.
- *  认真考虑是否把这个initSurfaceView改为构造函数.
+ * 认真考虑是否把这个initSurfaceView改为构造函数.
  * todo 依赖注入貌似是解决方案.
  * 然后才可以使用这个类.
  */
 public class dgruning {
     //这货和dgrunning的artlist完全等价, 因此, 应该注入进来. 目前是在dgruning的prepare声明了.
-    public   ArrayList<art> sArtist=null;
-    public  HashMap<String, art> stringartHashMap=null;
+    public ArrayList<art> sArtist = null;
+    public HashMap<String, art> stringartHashMap = null;
     /**
      * 这个是瀑布流.
      *
      * @param v
      */
-     mckScrollView layoutwaterfall;
+    mckScrollView layoutwaterfall;
 
     /**
      * 艺术品详情.
      */
-    FrameLayout layoutartbigshow=null;
+    FrameLayout layoutartbigshow = null;
 
     private final String mck = "--dgruning--";
-    //这里的IP要换成你服务器的IP,不可使用localhost,否则将被模拟器认为是自身
-    //// : 11/12/15 上传图片总需要切换环境.
-//                String url = "http://192.168.1.107:8888/receiver.php";
+
     public static final String url = "http://app.takungae.com/Api/Index/upload";
-//            String url="http://dg.dev.me/Api/Index/upload";
 
     public static String _token = "nothing";// 改回位nothing之后, 需要调试.
     public static String _device_id = "";
@@ -68,47 +65,21 @@ public class dgruning {
     /**
      * 全局就用这一个toast, 提升toast的使用效率.
      */
-    private static  Toast toast;
-
-
-    //传递drawable给detailactivity.
-//    public static artlist.art sArt4detailactivity;
-
-
-
-
-
-//    public ArrayList<art> mArts=new ArrayList<>();
-
-    /**
-     * 确定是否使用备用的艺术品数据.
-     * 去除掉, 因为这个复杂了.
-     */
-   // public static boolean usedefaultunprepare =true;
-
-    /**
-     * 确定result是否已经加载好, 是否已经parse了json.
-     * 去除掉, 因为这个复杂了.
-     */
-    //public static boolean isprepare =false;
-
-    /*singleton*/
-
-
+    private static Toast toast;
 
 
     /******
      * 准备好, 要显示的素材.
-     *  这个东西要不要重复利用?
+     * 这个东西要不要重复利用?
      * 这个地方对于集合的要求是:
      * 1, 要有顺序. 因为是搜索结果.
      * 2, 要能够从url映射过去. 因为到了后面, 我们要从url映射回art对象.
      * 貌似linkedhashmap是满足要求的. 这个思路不合适, 没有get(i)方法. 我还是另外建立一个set吧.
-     * */
-    public  boolean prepareArts(String result) {
-        sArtist=null;
-        ArrayList<art> lArts=new ArrayList<>();
-       LinkedHashMap<String, art> lhmarts = new LinkedHashMap<>();
+     */
+    public boolean prepareArts(String result) {
+        sArtist = null;
+        ArrayList<art> lArts = new ArrayList<>();
+        LinkedHashMap<String, art> lhmarts = new LinkedHashMap<>();
         try {
             JSONObject jb = new JSONObject(result);
             JSONArray ja = jb.getJSONArray("data");
@@ -137,33 +108,34 @@ public class dgruning {
                 lArts.add(a);
             }
             //mArts=lArts;
-            stringartHashMap=lhmarts;
-            sArtist =lArts;
+            stringartHashMap = lhmarts;
+            sArtist = lArts;
             //isprepare=true;
 //            layoutwaterfall.hasnotresult=false;
             return true;
-        }catch (Exception e){
-            sArtist=null;
+        } catch (Exception e) {
+            sArtist = null;
             //isprepare=true;
-            stringartHashMap=null;
+            stringartHashMap = null;
 //            layoutwaterfall.hasnotresult=false;
-            Log.d(mck,"--------e------"+ e.toString()+ "   : "+sArtist);
+            Log.d(mck, "--------e------" + e.toString() + "   : " + sArtist);
             return false;
         }
     }
+
     /******
      * 准备好, 测试用的素材.
-     * */
+     */
 
-    public void prepareDefaultArts(){
-        String s=sContext.getString(R.string.prepareartlist);
-        Log.d(mck,"::::::s:::::"+s);
+    public void prepareDefaultArts() {
+        String s = sContext.getString(R.string.prepareartlist);
+        Log.d(mck, "::::::s:::::" + s);
         prepareArts(s);
         //usedefaultunprepare=false;
 
     }
 
-    public static void makeNshow(final Context context, final String text, final int duration){
+    public static void makeNshow(final Context context, final String text, final int duration) {
         if (toast == null) {
             //如果還沒有用過makeText方法，才使用
             toast = android.widget.Toast.makeText(context, text, duration);
@@ -175,11 +147,10 @@ public class dgruning {
     }
 
 
-
     /**
      * 使用post方法.
      *
-     * @param fileuri 文件地址.
+     * @param fileuri   文件地址.
      * @param pUrlparas 上传需要拼接的参数.
      * @param uploadurl 上传url.
      * @return
@@ -187,7 +158,8 @@ public class dgruning {
     public String posturlstring(Uri fileuri, String uploadurl, urlpara... pUrlparas) {
         return new String(posturlbytes(fileuri, uploadurl, pUrlparas));
     }
-    public byte[] posturlbytes(Uri fileuri, String uploadUrl, urlpara... pUrlparas ) {
+
+    public byte[] posturlbytes(Uri fileuri, String uploadUrl, urlpara... pUrlparas) {
 
         try {//准备参数....
             for (urlpara p : pUrlparas) {
@@ -213,7 +185,7 @@ public class dgruning {
             lHttpURLConnection.setRequestProperty("Charset", "UTF-8");
             lHttpURLConnection.setRequestProperty("Content-Type",
                     "multipart/form-data;boundary=" + boundary);
-            Log.d(mck, "-----dos1before::::"+fileuri);
+            Log.d(mck, "-----dos1before::::" + fileuri);
 
             try (
                     DataOutputStream dos = new DataOutputStream(lHttpURLConnection
@@ -228,8 +200,8 @@ public class dgruning {
                 dos.writeBytes("Content-Disposition: form-data; name=\"file\"; filename=\"xxxxxxxx.jpg\"" + end);
                 dos.writeBytes(end);
 
-                if(null!=fileuri) {
-                    try(InputStream is =sContext.getContentResolver().openInputStream(fileuri)) {
+                if (null != fileuri) {
+                    try (InputStream is = sContext.getContentResolver().openInputStream(fileuri)) {
                         int readby = 0;
                         byte[] bytes = new byte[100];
                         while ((readby = is.read(bytes)) > 0) {
@@ -296,7 +268,6 @@ public class dgruning {
             }
 
 
-
         } catch (Exception e) {
             e.printStackTrace();
 
@@ -313,7 +284,7 @@ public class dgruning {
     private final static dgruning ourInstance = new dgruning();
 
     /**
-     *  思考,怎样保证用户在使用r函数之前一定会使用init或者getinstance呢?  最好是借助编译器的力量
+     * 思考,怎样保证用户在使用r函数之前一定会使用init或者getinstance呢?  最好是借助编译器的力量
      * todo 依赖注入解决问题.
      *
      * @return
@@ -329,56 +300,25 @@ public class dgruning {
 
     }
 
-    /**
-     * 在显示列表结果页之前要调用这个.
-     *参数都注释光了, 这个方法无用了.
-     */
-    //public  void initlist(){
-        //usedefaultunprepare = true;
-        //isprepare =false;
-        //sArtist=null;
-        /**
-         * 这个layoutwaterfall的init, 移动一下, 移动到他本身的atachlayout里面.
-         */
-//        layoutwaterfall.init();
-
-    //}
-
-
 
     /******
      * init是真正的初始化函数, 在fragment的oncreateview使用, 因为需要getactivity作为context参数.
      * 在主线程 调用新的线程, 拿到token.
+     * 拿到application的context最靠谱了
      * <p/>
      * //
      */
 
     public void init(Context c) {
-        sContext = c.getApplicationContext();
-        //拿到application的context最靠谱了.
-
-        /**
-         * 初始化两个关键参数
-         */
-        /**
-         * 默认使用使用备用的艺术品数据.
-         */
-         //usedefaultunprepare =true;
-
-        /**
-         * 默认搜索结果的艺术品数据尚未加载..
-         */
-         //isprepare =false;
-
-
         init_token_deviceid(c);
     }
 
     /**
      * 会被直接调用的init函数, 系统相机使用的时候, 就需要直接调用这个初始化函数.
+     *
      * @param c
      */
-    public void init_token_deviceid(Context c){
+    public void init_token_deviceid(Context c) {
         sContext = c.getApplicationContext();
         //拿到application的context最靠谱了.
 
@@ -410,10 +350,10 @@ public class dgruning {
             String deviceid = params[0];
             String uploadUrl = params[1];
             urlpara p = new urlpara("device_id", deviceid);
-            Log.d(mck, "deviceid:::::" + deviceid+":::::::tokenurl::::::" + uploadUrl);
+            Log.d(mck, "deviceid:::::" + deviceid + ":::::::tokenurl::::::" + uploadUrl);
             try {
                 JSONObject lJSONObject = new JSONObject(geturlstring(uploadUrl, p));
-                Log.d(mck, "-jasontostring-" + lJSONObject.toString()+ "-data-" + lJSONObject.optString("data")+ "-token-" + lJSONObject.optJSONObject("data").optString("token"));
+                Log.d(mck, "-jasontostring-" + lJSONObject.toString() + "-data-" + lJSONObject.optString("data") + "-token-" + lJSONObject.optJSONObject("data").optString("token"));
                 _token = lJSONObject.optJSONObject("data").optString("token");
 
                 Log.d(mck, "token::::::::" + _token);
@@ -454,6 +394,7 @@ public class dgruning {
 
     /**
      * 不能使用post方法, 必须是get方法拿图片.
+     *
      * @param uploadUrl
      * @param pUrlparas
      * @return
@@ -507,20 +448,20 @@ public class dgruning {
 
     /**
      * 把log保留在文件上传回来的方法.
-     * @return
-     * 两句话的写法:
-     *     File file = new File(Environment.getExternalStorageDirectory(), String.valueOf(System.currentTimeMillis()));
-     *     Runtime.getRuntime().exec("logcat -d -v time -f " + file.getAbsolutePath());}catch (IOException e){}
+     *
+     * @return 两句话的写法:
+     * File file = new File(Environment.getExternalStorageDirectory(), String.valueOf(System.currentTimeMillis()));
+     * Runtime.getRuntime().exec("logcat -d -v time -f " + file.getAbsolutePath());}catch (IOException e){}
      */
-    public File extractLogToFileAndWeb(){
+    public File extractLogToFileAndWeb() {
         //set a file
         Date datum = new Date();
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.ITALY);
-        String fullName = df.format(datum)+"appLog.log";
-        File file = new File (Environment.getExternalStorageDirectory(), fullName);
+        String fullName = df.format(datum) + "appLog.log";
+        File file = new File(Environment.getExternalStorageDirectory(), fullName);
 
         //clears a file
-        if(file.exists()){
+        if (file.exists()) {
             file.delete();
         }
 
@@ -548,15 +489,15 @@ public class dgruning {
 
             //Runtime.getRuntime().exec("logcat -d -v time -f "+file.getAbsolutePath());
         } catch (IOException e) {
-           // Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
-            Log.d(mck, ""+e);
+            // Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
+            Log.d(mck, "" + e);
         }
 
         //clear the log
         try {
             Runtime.getRuntime().exec("logcat -c");
         } catch (IOException e) {
-            Log.d(mck, ""+e);
+            Log.d(mck, "" + e);
 //            Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
         }
 
