@@ -15,17 +15,12 @@ import java.util.Set;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.os.AsyncTask;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnTouchListener;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
@@ -38,7 +33,7 @@ import android.widget.Toast;
  *
  * @author guolin
  */
-public class mckScrollView extends ScrollView implements OnTouchListener {
+public class mckScrollView extends ScrollView   {
     /**
      * log标签.
      */
@@ -90,7 +85,7 @@ public class mckScrollView extends ScrollView implements OnTouchListener {
     /**
      * 是否已加载过一次layout，这里onLayout中的初始化只需加载一次
      */
-    private boolean loadOnce;
+    private boolean loadOnce=false;
 
     /**
      * 对图片进行管理的工具类
@@ -115,12 +110,12 @@ public class mckScrollView extends ScrollView implements OnTouchListener {
     /**
      * 记录所有正在下载或等待下载的任务。
      */
-    private  Set<LoadImageTask> taskCollection;
+    private final  Set<LoadImageTask> taskCollection;
 
     /**
-     * MyScrollView下的直接子布局。
+     * ScrollView下的直接子布局,增删都在这里.
      */
-    private  View scrollLayout;
+    private final  RelativeLayout rlscroll;
 
     /**
      * MyScrollView布局的高度。
@@ -141,8 +136,10 @@ public class mckScrollView extends ScrollView implements OnTouchListener {
 
     /**
      * 这个不用静态的, 为了每个scrollview独有, 并且每次装载都更新.
+     * 还是改成静态的, 为了外部调用方便.
+     * 还是不需要静态的, dgruning持有一个实例.
      */
-    private   boolean hasnotclear = true;
+    public     boolean  hasnotresult = true;
 
     /**
      *     奶奶的, 这个不能是静态的, 应该是每次加载刷新.
@@ -161,19 +158,19 @@ public class mckScrollView extends ScrollView implements OnTouchListener {
      * 必须搞一个初始化器了.
      */
     public void init(){
-        hasnotclear=true;
+        hasnotresult =true;
         hasnotallshow=true;
         page=0;
         toasttime=0;
         lastScrollY=-1;
         firstColumnHeight=0;
         secondColumnHeight=0;
+//        loadOnce=false;
         Log.d(mck, "   init ok:");
         /**
          * 清空界面挪到这挺好的, 貌似.
          */
-        RelativeLayout r = (RelativeLayout) findViewById(R.id.rlwaterfall);
-        r.removeAllViews();
+        rlscroll.removeAllViews();
 
     }
 
@@ -181,57 +178,35 @@ public class mckScrollView extends ScrollView implements OnTouchListener {
     /**
      * 在Handler中进行图片可见性检查的判断，以及加载更多图片的操作。
      * handler就是一个死循环.
-     * 检查图片可见性, 应该在ontouch, 不应该在这里!!! todo
+     * 检查图片可见性, 应该在ontouch, 不应该在这里!!!
+     * 改一下, 改成post. 另外, 检查可见性就应该在这里. ontouch已经不再捕获了.
      */
-    private Handler handler = new Handler() {
-        public void handleMessage(Message msg) {
-            Log.d(mck, ":::::::handler   0:");
-            mckScrollView myScrollView = (mckScrollView) msg.obj;
-			int scrollY = myScrollView.getScrollY();
+    Runnable scrollrun=new Runnable() {
+
+
+        @Override
+        public void run() {
+            Log.d(mck, ":::::::runable   0:");
+            int scrollY = dgruning.r().layoutwaterfall.getScrollY();
             // 如果当前的滚动位置和上次相同，表示已停止滚动
             //停止滚动, 再加载, 是为了加载更顺畅妈?
             //保持5个以上的下载任务.
-            Message message = new Message();
-            message.obj = myScrollView;
-            Log.d(mck, "handler isprepare before  1:  " + dgruning.isprepare);
 
-            Log.d(mck, "handler prepare hasnotclear before   2.5:  "+hasnotclear);
+            Log.d(mck, "runable isprepare before  1:  " + dgruning.isprepare);
+
+//            Log.d(mck, "runable prepare hasnotresult before   2.5:  "+hasnotresult);
             if (!dgruning.isprepare) {
                 dgruning.makeNshow(getContext(), "搜索中"+(++toasttime), Toast.LENGTH_SHORT);
-                handler.sendMessageDelayed(message, 1500);
-                Log.d(mck, "handler isprepare::::  2:  " + dgruning.isprepare);
+                postDelayed(scrollrun, 1500);
+                Log.d(mck, "runable isprepare::::  2:  " + dgruning.isprepare);
                 return;
             }
-
-            /**
-             *             清掉之前的所有view. 这个应该只执行一次.
-             *             这个奇怪了, 为啥总是不执行?之前逻辑有问题, 下面的代码是改好的.
-             *             但是, 最终发现把这个逻辑挪到init里面去, 会简单很多, 已经挪过去了.
-             *
-             */
-
-            /*else if (hasnotclear) {
-                Log.d(mck, "handler prepare hasnotclear before   3:  "+dgruning.sArtist);
-
-                if(null==dgruning.sArtist){
-
-                    dgruning.makeNshow(getContext(), "没有任何收藏或者搜索结果", Toast.LENGTH_SHORT);
-//                    return;
-                }
-                ////shit, bug 找到了, 这个removeall 把那个里面的relativelayout也移除了. 妹的.
-                RelativeLayout r = (RelativeLayout) findViewById(R.id.rlwaterfall);
-                r.removeAllViews();
-//                removeAllViews();
-                hasnotclear = false;
-
-                Log.d(mck, "\"handler prepare hasnotclear after   4:  ");
-            }*/
-
+            Log.d(mck, "runable hasnotallshow:  4.5:  " + hasnotallshow+"    tasksize: "+taskCollection.size());
 
 
             if(hasnotallshow && (taskCollection.size() < 5)){
-                Log.d(mck, "handler load more    5:   ");
-                myScrollView.loadMoreImages();
+                Log.d(mck, "runable load more    5:   ");
+                dgruning.r().layoutwaterfall.loadMoreImages();
 
             }
 
@@ -244,36 +219,70 @@ public class mckScrollView extends ScrollView implements OnTouchListener {
              * 滚动到底, 就不在轮询了.
              *
              */
-            myScrollView.checkVisibility();
+            dgruning.r().layoutwaterfall.checkVisibility();
             if (scrollY == lastScrollY)  return;
             else lastScrollY = scrollY;
 
             // 5毫秒后再次对滚动位置进行判断
-            handler.sendMessageDelayed(message, 50);
+            postDelayed(scrollrun, 50);
 
-            /*
-            if (scrollY == lastScrollY) {
-				// 当滚动的最底部，并且当前没有正在下载的任务时，开始加载下一页的图片
-                //删除了滚到最底部: scrollViewHeight + scrollY >= scrollLayout.getHeight()                &&
-				if ( taskCollection.isEmpty()) {
-					myScrollView.loadMoreImages();
-				}
-				myScrollView.checkVisibility();
-			} else {
-				lastScrollY = scrollY;
-				Message message = new Message();
-				message.obj = myScrollView;
-				// 5毫秒后再次对滚动位置进行判断
-				handler.sendMessageDelayed(message, 5);
-			}*/
+
         }
-
     };
 
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         Log.d(mck, "onattachedtowindow");
+        /**
+         * oh shit 应该在这里唤起轮询.
+         */
+
+        Log.d(mck, "   ::::onlayout: "+dgruning.sArtist);
+        if((null==dgruning.sArtist)&&hasnotresult){
+            Log.d(mck, "   ::::onlayout2: ");
+
+//            dgruning.makeNshow(getContext(), "没有任何收藏或者搜索结果", Toast.LENGTH_SHORT);
+
+            postDelayed(scrollrun, 5);
+
+            return;
+        }
+        if (!hasnotresult){
+
+            postDelayed(scrollrun, 5);
+
+            hasnotresult=true;
+            return;
+        }
+
+        if ( !loadOnce) {
+            Log.d(mck, " onlayout   2: ");
+            scrollViewHeight = getHeight();
+
+            /**
+             * 改成relative layout
+             */
+			/*firstColumn = (LinearLayout) findViewById(R.id.first_column);
+			secondColumn = (LinearLayout) findViewById(R.id.second_column);
+			thirdColumn = (LinearLayout) findViewById(R.id.third_column);*/
+
+            columnWidth = rlscroll.getWidth() / 2;
+            loadOnce = true;
+
+            //这句必须注释掉, 因为无法保证执行顺序, 必须都移到线程里面执行.
+            // if (dgruning.isprepare) loadMoreImages();
+
+            if(!hasnotallshow)return;
+            Log.d(mck, " onlayout  before  handle 3: ");
+
+            postDelayed(scrollrun, 5);
+
+            ///这个有问题, 貌似不应该.
+            Log.d(mck, " onlayout  after   handle 4: ");
+
+
+        }
     }
 
     /**
@@ -288,8 +297,8 @@ public class mckScrollView extends ScrollView implements OnTouchListener {
         Log.d(mck, ":::::::mckstrlllview constractor");
 
         imageLoader = waterfall.getInstance();
-        taskCollection = new HashSet<LoadImageTask>();
-        setOnTouchListener(this);
+        taskCollection = new HashSet<>();
+        postDelayed(scrollrun, 5);
         removeAllViews();
 
         /**
@@ -299,127 +308,18 @@ public class mckScrollView extends ScrollView implements OnTouchListener {
         setWillNotDraw(true);
 
         this.context = context;
+        rlscroll = (RelativeLayout) findViewById(R.id.rlwaterfall);
     }
 
 
-    /**
-     * 进行一些关键性的初始化操作，获取MyScrollView的高度，以及得到第一列的宽度值。
-     * 并在这里开始加载第一页的图片。
-     * 考虑这里不做第一页加载.
-     * 不知是否可行.
-     * 不做第一页, 是可行的.
-     */
-    @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        super.onLayout(changed, l, t, r, b);
-        Log.d(mck, "   ::::onlayout: "+dgruning.sArtist);
-        if(null==dgruning.sArtist){
-            Log.d(mck, "   ::::onlayout2: ");
-
-            dgruning.makeNshow(getContext(), "没有任何收藏或者搜索结果", Toast.LENGTH_SHORT);
-            Message message = new Message();
-            message.obj = this;
-            handler.sendMessageDelayed(message, 5);
-            return;
-        }else {
-            Log.d(mck, "   ::::onlayout2: ");
-
-            dgruning.makeNshow(getContext(), "图片加载中", Toast.LENGTH_SHORT);
-            Message message = new Message();
-            message.obj = this;
-            handler.sendMessageDelayed(message, 5);
-
-        }
-//        if(null==dgruning.sArtist){
-
-//        }
-       /* if (!dgruning.isprepare){
-            dgruning.makeNshow(getContext(), "搜索中", Toast.LENGTH_SHORT).show();
-            return;
-        }*/
-        if (changed && !loadOnce) {
-            Log.d(mck, " onlayout   2: ");
-            scrollViewHeight = getHeight();
-            scrollLayout = getChildAt(0);
-            /**
-             * 改成relative layout
-             */
-			/*firstColumn = (LinearLayout) findViewById(R.id.first_column);
-			secondColumn = (LinearLayout) findViewById(R.id.second_column);
-			thirdColumn = (LinearLayout) findViewById(R.id.third_column);*/
-
-            columnWidth = findViewById(R.id.rlwaterfall).getWidth() / 2;
-            loadOnce = true;
-
-           //这句必须注释掉, 因为无法保证执行顺序, 必须都移到线程里面执行.
-            // if (dgruning.isprepare) loadMoreImages();
-            Message message = new Message();
-            message.obj = this;
-            if(!hasnotallshow)return;
-            Log.d(mck, " onlayout  before message handle 3: ");
-
-            handler.sendMessageDelayed(message, 5);
-            ///这个有问题, 貌似不应该.
-            Log.d(mck, " onlayout  after  message handle 4: ");
-
-
-        }
-    }
-
-    /**
-     * 这个不知道是啥情况
-     * 太神奇了, 真的有用. 不call ondraw, 也会call这个.
-     */
-
 
     @Override
-    protected void dispatchDraw(Canvas canvas) {
-        super.dispatchDraw(canvas);
-       // Log.d(mck, "dispatchdraw");
-        //这个必须注释了, 否则喷出一大堆.
-    }
-
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-        Log.d(mck, "onfinishinflate");
-    }
-
-    @Override
-    public void onFinishTemporaryDetach() {
-        super.onFinishTemporaryDetach();
-        Log.d(mck, "onfinishtemporary");
-    }
-
-
-    /**
-     * 不能搞这个, 还是要看一下view的加载流程.
-     * 这个函数被调用的次数太多了. 貌似不合适搞任何事.
-     * 因为, 如果在这里检查visible, 那么, 检查结果会再次导致这个函数被调用.     *
-     * @param canvas
-     */
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-        Log.d(mck, "ondraw"+canvas);
-
-        /*if (!dgruning.isprepare) {
-            //   dgruning.makeNshow(getContext(), "搜索中", Toast.LENGTH_SHORT).show();
-            Log.d(mck, "ondraw+!dgruning.isprepare");
-            return;
-
-        }*/
-    }
-
-    /**
-     * 监听用户的触屏事件，如果用户手指离开屏幕则开始进行滚动检测。
-     */
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
+    protected void onScrollChanged(int l, int t, int oldl, int oldt) {
+        super.onScrollChanged(l, t, oldl, oldt);
         Log.d(mck, "::::ontouch   1:");
         if (!dgruning.isprepare) {
             //   dgruning.makeNshow(getContext(), "搜索中", Toast.LENGTH_SHORT).show();
-            return true;
+            return ;
         }
         /**
          *
@@ -428,11 +328,10 @@ public class mckScrollView extends ScrollView implements OnTouchListener {
          * 注释之后, 发现不行, 因为滑动到位之后, 就不调用这个函数了.
          */
         Log.d(mck, "::::ontouch   2:");
-        if (event.getAction() == MotionEvent.ACTION_UP) {
-            Message message = new Message();
-            message.obj = this;
-            handler.sendMessageDelayed(message, 5);
-        }
+//        if (event.getAction() == MotionEvent.ACTION_UP) {
+        postDelayed(scrollrun, 5);
+
+        //}
         /**
          * 本来的逻辑是, 不加载图片的情况下, 才检查元素可见性.
          * 改为, 不论如何都检查元素的可见性.
@@ -440,7 +339,7 @@ public class mckScrollView extends ScrollView implements OnTouchListener {
         Log.d(mck, "::::ontouch   3:");
         checkVisibility();
         Log.d(mck, "::::ontouch   4:");
-        return false;
+//        super.onTouchEvent(event);
     }
 
 
@@ -746,7 +645,6 @@ public class mckScrollView extends ScrollView implements OnTouchListener {
         private void addimageatposition(ImageView v, RelativeLayout.LayoutParams rl) {
             Log.d(mck, "addimageatposition");
 
-            RelativeLayout r = (RelativeLayout) findViewById(R.id.rlwaterfall);
             rl.setMargins(0, 0, 0, 0);
             rl.alignWithParent = true;
             /**
@@ -788,8 +686,8 @@ public class mckScrollView extends ScrollView implements OnTouchListener {
 
             //这句话应该是无效的, 因为下面一句话加了.
             //b.setLayoutParams(layoutParams);
-            Log.d(mck, "r: "+r+"   v: "+v+"   rl: "+rl);
-            r.addView(v, rl);
+            Log.d(mck, "r: "+rlscroll+"   v: "+v+"   rl: "+rl);
+            rlscroll.addView(v, rl);
             //这个报错, 崩溃. // TODO: 6/3/16
 
         }

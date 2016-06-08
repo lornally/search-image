@@ -1,0 +1,232 @@
+ /**
+     * 这个不知道是啥情况
+     * 太神奇了, 真的有用. 不call ondraw, 也会call这个.
+     */
+
+    /**
+    @Override
+    protected void dispatchDraw(Canvas canvas) {
+        super.dispatchDraw(canvas);
+       // Log.d(mck, "dispatchdraw");
+        //这个必须注释了, 否则喷出一大堆.
+    }
+
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+        Log.d(mck, "onfinishinflate");
+    }
+
+    @Override
+    public void onFinishTemporaryDetach() {
+        super.onFinishTemporaryDetach();
+        Log.d(mck, "onfinishtemporary");
+    }
+*/
+
+/**
+     * 监听用户的触屏事件，如果用户手指离开屏幕则开始进行滚动检测。
+     * 就不该在这里监控, 改地方
+     */
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        Log.d(mck, "::::ontouch   1:");
+        if (!dgruning.isprepare) {
+            //   dgruning.makeNshow(getContext(), "搜索中", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        /**
+         *
+         * 这个是否需要, notouch, 就是检查可见性是否就好了.
+         * 注释掉, 试试.
+         * 注释之后, 发现不行, 因为滑动到位之后, 就不调用这个函数了.
+         */
+        Log.d(mck, "::::ontouch   2:");
+        if (event.getAction() == MotionEvent.ACTION_UP) {
+            Message message = new Message();
+            message.obj = this;
+            handler.sendMessageDelayed(message, 5);
+        }
+        /**
+         * 本来的逻辑是, 不加载图片的情况下, 才检查元素可见性.
+         * 改为, 不论如何都检查元素的可见性.
+         */
+        Log.d(mck, "::::ontouch   3:");
+        checkVisibility();
+        Log.d(mck, "::::ontouch   4:");
+        super.onTouchEvent(event);
+        return false;
+    }
+
+
+
+
+    /**
+     * 不能搞这个, 还是要看一下view的加载流程.
+     * 这个函数被调用的次数太多了. 貌似不合适搞任何事.
+     * 因为, 如果在这里检查visible, 那么, 检查结果会再次导致这个函数被调用.     *
+     * @param canvas
+     */
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        Log.d(mck, "ondraw"+canvas);
+
+        /*if (!dgruning.isprepare) {
+            //   dgruning.makeNshow(getContext(), "搜索中", Toast.LENGTH_SHORT).show();
+            Log.d(mck, "ondraw+!dgruning.isprepare");
+            return;
+
+        }*/
+    }
+
+
+
+
+
+    /**
+     * 进行一些关键性的初始化操作，获取MyScrollView的高度，以及得到第一列的宽度值。
+     * 并在这里开始加载第一页的图片。
+     * 考虑这里不做第一页加载.
+     * 不知是否可行.
+     * 不做第一页, 是可行的.
+     * onlayout啥时候调用. 这是个问题.
+     这个也改掉, 改到: onAttachedToWindow
+     */
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        super.onLayout(changed, l, t, r, b);
+        Log.d(mck, "   ::::onlayout: "+dgruning.sArtist);
+        if((null==dgruning.sArtist)&&hasnotresult){
+            Log.d(mck, "   ::::onlayout2: ");
+
+//            dgruning.makeNshow(getContext(), "没有任何收藏或者搜索结果", Toast.LENGTH_SHORT);
+            Message message = new Message();
+            message.obj = this;
+            handler.sendMessageDelayed(message, 5);
+            return;
+        }
+        if (!hasnotresult){
+            Message message = new Message();
+            message.obj = this;
+            handler.sendMessageDelayed(message, 5);
+            hasnotresult=true;
+            return;
+        }
+        /*else {
+            Log.d(mck, "   ::::onlayout2: ");
+
+            dgruning.makeNshow(getContext(), "图片加载中", Toast.LENGTH_SHORT);
+            Message message = new Message();
+            message.obj = this;
+            handler.sendMessageDelayed(message, 5);
+
+        }*/
+//        if(null==dgruning.sArtist){
+
+//        }
+       /* if (!dgruning.isprepare){
+            dgruning.makeNshow(getContext(), "搜索中", Toast.LENGTH_SHORT).show();
+            return;
+        }*/
+        if (changed && !loadOnce) {
+            Log.d(mck, " onlayout   2: ");
+            scrollViewHeight = getHeight();
+            scrollLayout = getChildAt(0);
+            /**
+             * 改成relative layout
+             */
+			/*firstColumn = (LinearLayout) findViewById(R.id.first_column);
+			secondColumn = (LinearLayout) findViewById(R.id.second_column);
+			thirdColumn = (LinearLayout) findViewById(R.id.third_column);*/
+
+            columnWidth = findViewById(R.id.rlwaterfall).getWidth() / 2;
+            loadOnce = true;
+
+           //这句必须注释掉, 因为无法保证执行顺序, 必须都移到线程里面执行.
+            // if (dgruning.isprepare) loadMoreImages();
+            Message message = new Message();
+            message.obj = this;
+            if(!hasnotallshow)return;
+            Log.d(mck, " onlayout  before message handle 3: ");
+
+            handler.sendMessageDelayed(message, 5);
+            ///这个有问题, 貌似不应该.
+            Log.d(mck, " onlayout  after  message handle 4: ");
+
+
+        }
+    }
+private Handler handler = new Handler() {
+        public void handleMessage(Message msg) {
+            Log.d(mck, ":::::::handler   0:");
+            mckScrollView myScrollView = (mckScrollView) msg.obj;
+			int scrollY = myScrollView.getScrollY();
+            // 如果当前的滚动位置和上次相同，表示已停止滚动
+            //停止滚动, 再加载, 是为了加载更顺畅妈?
+            //保持5个以上的下载任务.
+            Message message = new Message();
+            message.obj = myScrollView;
+            Log.d(mck, "handler isprepare before  1:  " + dgruning.isprepare);
+
+//            Log.d(mck, "handler prepare hasnotresult before   2.5:  "+hasnotresult);
+            if (!dgruning.isprepare) {
+                dgruning.makeNshow(getContext(), "搜索中"+(++toasttime), Toast.LENGTH_SHORT);
+                handler.sendMessageDelayed(message, 1500);
+                Log.d(mck, "handler isprepare::::  2:  " + dgruning.isprepare);
+                return;
+            }
+
+            /**
+             *             清掉之前的所有view. 这个应该只执行一次.
+             *             这个奇怪了, 为啥总是不执行?之前逻辑有问题, 下面的代码是改好的.
+             *             但是, 最终发现把这个逻辑挪到init里面去, 会简单很多, 已经挪过去了.
+             *
+             */
+
+            /*else if (hasnotresult) {
+                Log.d(mck, "handler prepare hasnotresult before   3:  "+dgruning.sArtist);
+
+                if(null==dgruning.sArtist){
+
+                    dgruning.makeNshow(getContext(), "没有任何收藏或者搜索结果", Toast.LENGTH_SHORT);
+//                    return;
+                }
+                ////shit, bug 找到了, 这个removeall 把那个里面的relativelayout也移除了. 妹的.
+                RelativeLayout r = (RelativeLayout) findViewById(R.id.rlwaterfall);
+                r.removeAllViews();
+//                removeAllViews();
+                hasnotresult = false;
+
+                Log.d(mck, "\"handler prepare hasnotresult after   4:  ");
+            }*/
+
+            Log.d(mck, "handler hasnotallshow:  4.5:  " + hasnotallshow+"    tasksize: "+taskCollection.size());
+
+
+            if(hasnotallshow && (taskCollection.size() < 5)){
+                Log.d(mck, "handler load more    5:   ");
+                myScrollView.loadMoreImages();
+
+            }
+
+            /**
+             * 本来的逻辑是, 不加载图片的情况下, 才检查元素可见性.
+             * 1, 改为, 不论如何都检查元素的可见性.
+             * 2, 应该再改一下, 改为, 在页面不滚动的情况下, 检测图片的可见性.
+             * 因为已经不滚了, 因此应该结束这个死循环.
+             * 3, 改为每次都检查可见性.
+             * 滚动到底, 就不在轮询了.
+             *
+             */
+            myScrollView.checkVisibility();
+            if (scrollY == lastScrollY)  return;
+            else lastScrollY = scrollY;
+
+            // 5毫秒后再次对滚动位置进行判断
+            handler.sendMessageDelayed(message, 50);
+
+
+        }
+
+    };

@@ -304,16 +304,16 @@ public class MainActivity extends AppCompatActivity {
 
         //替换布局为waterfall.
 
-        Log.i(mck, "layoutwaterfall before: " + dgruning.layoutwaterfall);
+        Log.i(mck, "layoutwaterfall before: " + dgruning.r().layoutwaterfall);
 
         /**
          * 如果waterfall没有搞过, 那么就搞一下.
          */
 
-        if (null == dgruning.layoutwaterfall)
-            dgruning.layoutwaterfall = (mckScrollView) getLayoutInflater().inflate(R.layout.waterfall, null);
+        if (null == dgruning.r().layoutwaterfall)
+            dgruning.r().layoutwaterfall = (mckScrollView) getLayoutInflater().inflate(R.layout.waterfall, null);
 
-        Log.i(mck, "layoutwaterfall after: " + dgruning.layoutwaterfall);
+        Log.i(mck, "layoutwaterfall after: " + dgruning.r().layoutwaterfall);
 
         /**
          * 如果还没有准备好, 那么就来准备好默认的显示素材.
@@ -322,7 +322,7 @@ public class MainActivity extends AppCompatActivity {
          * 收藏列表是从一个接口初始化. 比较简单.
          * 搜索结果最复杂, 要上传图片. 因此最后写.
          */
-        dgruning.initlist();
+        dgruning.r().initlist();
 
         if(dgruning.usedefaultunprepare){
             dgruning.r().prepareDefaultArts();
@@ -334,10 +334,10 @@ public class MainActivity extends AppCompatActivity {
         /**
          * 自动执行mckscrollview
          */
-        setContentView(dgruning.layoutwaterfall);
+        setContentView(dgruning.r().layoutwaterfall);
 
 
-/*
+/**
 
         //向waterfall 添加button.
 
@@ -436,17 +436,17 @@ public class MainActivity extends AppCompatActivity {
 
         //替换布局为waterfall.
 
-        Log.i(mck, "layoutwaterfall before: " + dgruning.layoutwaterfall);
+        Log.i(mck, "layoutwaterfall before: " + dgruning.r().layoutwaterfall);
 
         /**
          * 如果waterfall没有搞过, 那么就搞一下.
          */
 
-        if (null == dgruning.layoutwaterfall)
-            dgruning.layoutwaterfall = (mckScrollView)getLayoutInflater().inflate(R.layout.waterfall, null);
+        if (null == dgruning.r().layoutwaterfall)
+            dgruning.r().layoutwaterfall = (mckScrollView)getLayoutInflater().inflate(R.layout.waterfall, null);
 
-        Log.i(mck, "layoutwaterfall after: " + dgruning.layoutwaterfall);
-        dgruning.initlist();
+        Log.i(mck, "layoutwaterfall after: " + dgruning.r().layoutwaterfall);
+        dgruning.r().initlist();
 
         Thread thread = new Thread(new bookmarklist());
         thread.start();
@@ -459,7 +459,7 @@ public class MainActivity extends AppCompatActivity {
          * 自动执行mckscrollview
          */
 
-        setContentView(dgruning.layoutwaterfall);
+        setContentView(dgruning.r().layoutwaterfall);
 
 
     }

@@ -47,7 +47,7 @@ public class dgruning {
      *
      * @param v
      */
-    static mckScrollView layoutwaterfall;
+     mckScrollView layoutwaterfall;
 
     /**
      * 艺术品详情.
@@ -137,9 +137,11 @@ public class dgruning {
             stringartHashMap=lhmarts;
             sArtist =lArts;
             isprepare=true;
+            layoutwaterfall.hasnotresult=false;
         }catch (Exception e){
             sArtist=null;
             isprepare=true;
+            layoutwaterfall.hasnotresult=false;
             Log.d(mck,"--------e------"+ e.toString()+ "   : "+sArtist);
         }
     }
@@ -151,8 +153,8 @@ public class dgruning {
         String s=sContext.getString(R.string.prepareartlist);
         Log.d(mck,"::::::s:::::"+s);
         prepareArts(s);
-        isprepare=true;
         usedefaultunprepare=false;
+
     }
 
     public static void makeNshow(final Context context, final String text, final int duration){
@@ -325,11 +327,12 @@ public class dgruning {
      * 在显示列表结果页之前要调用这个.
      *
      */
-    public static void initlist(){
+    public  void initlist(){
         usedefaultunprepare = true;
         isprepare =false;
         sArtist=null;
         layoutwaterfall.init();
+
     }
 
 

@@ -3,22 +3,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-
-
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/rlwaterfall"
         android:orientation="vertical"
         >
-
-
-
-
-
-
         <Button
             android:layout_width="180dp"
 
@@ -168,12 +158,5 @@
             android:text=""
 
             />
-
-
-
     </RelativeLayout>
-
-
-
-
 </com.takungae.dagong30.mckScrollView>
