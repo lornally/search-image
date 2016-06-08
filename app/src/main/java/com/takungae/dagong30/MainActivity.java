@@ -311,7 +311,8 @@ public class MainActivity extends AppCompatActivity {
          */
 
         if (null == dgruning.r().layoutwaterfall)
-            dgruning.r().layoutwaterfall = (mckScrollView) getLayoutInflater().inflate(R.layout.waterfall, null);
+            dgruning.r().layoutwaterfall = //new mckScrollView(this);
+                    (mckScrollView) getLayoutInflater().inflate(R.layout.waterfall, null);
 
         Log.i(mck, "layoutwaterfall after: " + dgruning.r().layoutwaterfall);
 
@@ -333,6 +334,8 @@ public class MainActivity extends AppCompatActivity {
 
         /**
          * 自动执行mckscrollview
+         * 这个地方要判断一下, 如何正确的姿势setcontentview.
+         * 解决办法, 在ondestroy里面setcontent一个空的xml.
          */
         setContentView(dgruning.r().layoutwaterfall);
 
@@ -418,6 +421,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 */
+
+
+
 
 
     /**
@@ -556,5 +562,9 @@ public class MainActivity extends AppCompatActivity {
         client.disconnect();
     }
 
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        setContentView(R.layout.none);
+    }
 }

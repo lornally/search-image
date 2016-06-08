@@ -331,7 +331,10 @@ public class dgruning {
         usedefaultunprepare = true;
         isprepare =false;
         sArtist=null;
-        layoutwaterfall.init();
+        /**
+         * 这个layoutwaterfall的init, 移动一下, 移动到他本身的atachlayout里面.
+         */
+//        layoutwaterfall.init();
 
     }
 

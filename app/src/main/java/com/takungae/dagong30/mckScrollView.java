@@ -110,12 +110,12 @@ public class mckScrollView extends ScrollView   {
     /**
      * 记录所有正在下载或等待下载的任务。
      */
-    private final  Set<LoadImageTask> taskCollection;
+    private final  Set<LoadImageTask> taskCollection= new HashSet<>();
 
     /**
      * ScrollView下的直接子布局,增删都在这里.
      */
-    private final  RelativeLayout rlscroll;
+    private     RelativeLayout rlscroll;
 
     /**
      * MyScrollView布局的高度。
@@ -154,25 +154,6 @@ public class mckScrollView extends ScrollView   {
      */
 
 
-    /**
-     * 必须搞一个初始化器了.
-     */
-    public void init(){
-        hasnotresult =true;
-        hasnotallshow=true;
-        page=0;
-        toasttime=0;
-        lastScrollY=-1;
-        firstColumnHeight=0;
-        secondColumnHeight=0;
-//        loadOnce=false;
-        Log.d(mck, "   init ok:");
-        /**
-         * 清空界面挪到这挺好的, 貌似.
-         */
-        rlscroll.removeAllViews();
-
-    }
 
 
     /**
@@ -230,29 +211,56 @@ public class mckScrollView extends ScrollView   {
         }
     };
 
+    /**
+     * 必须搞一个初始化器了.
+     */
+    public void init(){
+        hasnotresult =true;
+        hasnotallshow=true;
+        page=0;
+        toasttime=0;
+        lastScrollY=-1;
+        firstColumnHeight=0;
+        secondColumnHeight=0;
+//        loadOnce=false;
+        Log.d(mck, "   init ok:   : ");
+
+
+
+    }
+
+
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        Log.d(mck, "onattachedtowindow");
+        init();
+        Log.d(mck, "onattachedtowindow   rlscroll: "+rlscroll);
+
+        /**
+         * 清空界面挪到这挺好的, 貌似.
+         * 不好, 第一次进入, 无法拿到清空的layout, 因为这个layout还没有初始化成功.
+         * 还是放到这里因为我们把这个函数的调用改在了atachwindows里面.
+         * 不能放到单参数的构造器里面, 因为inflate会调用双参数构造器. 神奇了.
+         * 只能放到attachwindows里面.
+         */
+
+        rlscroll = (RelativeLayout) findViewById(R.id.rlwaterfall);
+        Log.d(mck, "     rlscroll:"+rlscroll);
+        rlscroll.removeAllViews();
+
+
         /**
          * oh shit 应该在这里唤起轮询.
          */
 
         Log.d(mck, "   ::::onlayout: "+dgruning.sArtist);
-        if((null==dgruning.sArtist)&&hasnotresult){
+        if(null==dgruning.sArtist){
             Log.d(mck, "   ::::onlayout2: ");
 
 //            dgruning.makeNshow(getContext(), "没有任何收藏或者搜索结果", Toast.LENGTH_SHORT);
 
-            postDelayed(scrollrun, 5);
+            postDelayed(scrollrun, 1500);
 
-            return;
-        }
-        if (!hasnotresult){
-
-            postDelayed(scrollrun, 5);
-
-            hasnotresult=true;
             return;
         }
 
@@ -273,20 +281,61 @@ public class mckScrollView extends ScrollView   {
             //这句必须注释掉, 因为无法保证执行顺序, 必须都移到线程里面执行.
             // if (dgruning.isprepare) loadMoreImages();
 
-            if(!hasnotallshow)return;
-            Log.d(mck, " onlayout  before  handle 3: ");
-
+//            if(!hasnotallshow)return;
+//            Log.d(mck, " onlayout  before  handle 3: ");
+        }
             postDelayed(scrollrun, 5);
 
             ///这个有问题, 貌似不应该.
             Log.d(mck, " onlayout  after   handle 4: ");
 
 
-        }
+
     }
 
     /**
-     * MyScrollView的构造函数。
+     * 这个单参数的构造器不能用, 因为inflate需要双参数的. 然后, 其实起作用的还是双参数的那个.
+     * @param context
+     */
+
+   /* public mckScrollView(Context context) {
+        super(context);
+
+        Log.d(mck, ":::::::mckstrlllview constractor 1con");
+
+
+        *//**
+         * 清空界面挪到这挺好的, 貌似.
+         * 不好, 第一次进入, 无法拿到清空的layout, 因为这个layout还没有初始化成功.
+         * 还是放到这里因为我们把这个函数的调用改在了atachwindows里面.
+         * 不能放到单参数的构造器里面, 因为inflate会调用双参数构造器. 神奇了.
+         * 只能放到attachwindows里面.
+         *//*
+
+        LayoutInflater.from(context).inflate(R.layout.waterfall, this);
+        rlscroll = (RelativeLayout) dgruning.r().layoutwaterfall.findViewById(R.id.rlwaterfall);
+        Log.d(mck, "     rlscroll:"+rlscroll);
+        rlscroll.removeAllViews();
+
+
+
+        imageLoader = waterfall.getInstance();
+        postDelayed(scrollrun, 5);
+        removeAllViews();
+
+        *//**
+         * 据说这个方法能解决ondraw重复呼入的问题, 明天测试一下.
+         * 太神奇了, 真的有用.
+         *//*
+        setWillNotDraw(true);
+
+        this.context = context;
+    }
+*/
+    /**
+     * MyScrollView的构造函数, 从xml构造要用这个.
+     * 注释掉吧, 留着比较烦.
+     * 不能注释, 明白了, 必须有这个才行.
      *
      * @param context
      * @param attrs
@@ -294,23 +343,27 @@ public class mckScrollView extends ScrollView   {
     public mckScrollView(Context context, AttributeSet attrs) {
 
         super(context, attrs);
-        Log.d(mck, ":::::::mckstrlllview constractor");
-
+        Log.d(mck, ":::::::mckstrlllview constractor 2con");
         imageLoader = waterfall.getInstance();
-        taskCollection = new HashSet<>();
         postDelayed(scrollrun, 5);
         removeAllViews();
-
         /**
          * 据说这个方法能解决ondraw重复呼入的问题, 明天测试一下.
          * 太神奇了, 真的有用.
          */
         setWillNotDraw(true);
-
         this.context = context;
-        rlscroll = (RelativeLayout) findViewById(R.id.rlwaterfall);
     }
 
+    /**
+     * 双参数形式, inflate之后, 要调用这个函数, 清掉本来的view.
+     */
+    /*public void initclearwaterfall(){
+        Log.d(mck, " dgrung    rlscroll:"+rlscroll);
+        rlscroll=(RelativeLayout) dgruning.r().layoutwaterfall.findViewById(R.id.rlwaterfall);
+        rlscroll.removeAllViews();
+    }
+    */
 
 
     @Override
