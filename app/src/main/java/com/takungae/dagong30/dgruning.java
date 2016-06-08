@@ -34,13 +34,13 @@ import java.util.UUID;
  * Created by m on 11/13/15.
  * 这个类的目标是保存运行期的各种状态, 顺便做token和device_id的持久化.
  * 使用这个类, 必须先做init, 这个方法会拿回持久化的参数.
- * todo 认真考虑是否把这个initSurfaceView改为构造函数.
+ *  认真考虑是否把这个initSurfaceView改为构造函数.
  * todo 依赖注入貌似是解决方案.
  * 然后才可以使用这个类.
  */
 public class dgruning {
     //这货和dgrunning的artlist完全等价, 因此, 应该注入进来. 目前是在dgruning的prepare声明了.
-    public  static ArrayList<art> sArtist=null;
+    public   ArrayList<art> sArtist=null;
     public  HashMap<String, art> stringartHashMap=null;
     /**
      * 这个是瀑布流.
@@ -82,13 +82,15 @@ public class dgruning {
 
     /**
      * 确定是否使用备用的艺术品数据.
+     * 去除掉, 因为这个复杂了.
      */
-    public static boolean usedefaultunprepare =true;
+   // public static boolean usedefaultunprepare =true;
 
     /**
      * 确定result是否已经加载好, 是否已经parse了json.
+     * 去除掉, 因为这个复杂了.
      */
-    public static boolean isprepare =false;
+    //public static boolean isprepare =false;
 
     /*singleton*/
 
@@ -97,13 +99,14 @@ public class dgruning {
 
     /******
      * 准备好, 要显示的素材.
-     * todo 这个东西要不要重复利用?
+     *  这个东西要不要重复利用?
      * 这个地方对于集合的要求是:
      * 1, 要有顺序. 因为是搜索结果.
      * 2, 要能够从url映射过去. 因为到了后面, 我们要从url映射回art对象.
      * 貌似linkedhashmap是满足要求的. 这个思路不合适, 没有get(i)方法. 我还是另外建立一个set吧.
      * */
-    public  void prepareArts(String result) {
+    public  boolean prepareArts(String result) {
+        sArtist=null;
         ArrayList<art> lArts=new ArrayList<>();
        LinkedHashMap<String, art> lhmarts = new LinkedHashMap<>();
         try {
@@ -136,13 +139,16 @@ public class dgruning {
             //mArts=lArts;
             stringartHashMap=lhmarts;
             sArtist =lArts;
-            isprepare=true;
-            layoutwaterfall.hasnotresult=false;
+            //isprepare=true;
+//            layoutwaterfall.hasnotresult=false;
+            return true;
         }catch (Exception e){
             sArtist=null;
-            isprepare=true;
-            layoutwaterfall.hasnotresult=false;
+            //isprepare=true;
+            stringartHashMap=null;
+//            layoutwaterfall.hasnotresult=false;
             Log.d(mck,"--------e------"+ e.toString()+ "   : "+sArtist);
+            return false;
         }
     }
     /******
@@ -153,7 +159,7 @@ public class dgruning {
         String s=sContext.getString(R.string.prepareartlist);
         Log.d(mck,"::::::s:::::"+s);
         prepareArts(s);
-        usedefaultunprepare=false;
+        //usedefaultunprepare=false;
 
     }
 
@@ -211,7 +217,7 @@ public class dgruning {
 
             try (
                     DataOutputStream dos = new DataOutputStream(lHttpURLConnection
-                            .getOutputStream());//// TODO: 6/3/16 报错在这里.
+                            .getOutputStream());//// : 6/3/16 报错在这里.
             ) {
 
 
@@ -307,7 +313,7 @@ public class dgruning {
     private final static dgruning ourInstance = new dgruning();
 
     /**
-     * todo 思考,怎样保证用户在使用r函数之前一定会使用init或者getinstance呢?  最好是借助编译器的力量
+     *  思考,怎样保证用户在使用r函数之前一定会使用init或者getinstance呢?  最好是借助编译器的力量
      * todo 依赖注入解决问题.
      *
      * @return
@@ -325,18 +331,18 @@ public class dgruning {
 
     /**
      * 在显示列表结果页之前要调用这个.
-     *
+     *参数都注释光了, 这个方法无用了.
      */
-    public  void initlist(){
-        usedefaultunprepare = true;
-        isprepare =false;
-        sArtist=null;
+    //public  void initlist(){
+        //usedefaultunprepare = true;
+        //isprepare =false;
+        //sArtist=null;
         /**
          * 这个layoutwaterfall的init, 移动一下, 移动到他本身的atachlayout里面.
          */
 //        layoutwaterfall.init();
 
-    }
+    //}
 
 
 
@@ -357,12 +363,12 @@ public class dgruning {
         /**
          * 默认使用使用备用的艺术品数据.
          */
-         usedefaultunprepare =true;
+         //usedefaultunprepare =true;
 
         /**
          * 默认搜索结果的艺术品数据尚未加载..
          */
-         isprepare =false;
+         //isprepare =false;
 
 
         init_token_deviceid(c);

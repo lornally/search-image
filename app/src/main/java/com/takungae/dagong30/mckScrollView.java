@@ -85,7 +85,7 @@ public class mckScrollView extends ScrollView   {
     /**
      * 是否已加载过一次layout，这里onLayout中的初始化只需加载一次
      */
-    private boolean loadOnce=false;
+//    private boolean loadOnce=false;
 
     /**
      * 对图片进行管理的工具类
@@ -138,14 +138,16 @@ public class mckScrollView extends ScrollView   {
      * 这个不用静态的, 为了每个scrollview独有, 并且每次装载都更新.
      * 还是改成静态的, 为了外部调用方便.
      * 还是不需要静态的, dgruning持有一个实例.
+     * 这个本身就不是必须的.
      */
-    public     boolean  hasnotresult = true;
+//    public     boolean  hasnotresult = true;
 
     /**
      *     奶奶的, 这个不能是静态的, 应该是每次加载刷新.
+     *     这个也不该存在.
 
      */
-    private   boolean hasnotallshow = true;
+//    private   boolean hasnotallshow = true;
 
     private static int toasttime=0; //toast计数器
 
@@ -168,26 +170,26 @@ public class mckScrollView extends ScrollView   {
         @Override
         public void run() {
             Log.d(mck, ":::::::runable   0:");
-            int scrollY = dgruning.r().layoutwaterfall.getScrollY();
+            int scrollY = getScrollY();
             // 如果当前的滚动位置和上次相同，表示已停止滚动
             //停止滚动, 再加载, 是为了加载更顺畅妈?
             //保持5个以上的下载任务.
 
-            Log.d(mck, "runable isprepare before  1:  " + dgruning.isprepare);
+            Log.d(mck, "runable isprepare before  1:  " + dgruning.r().sArtist);
 
 //            Log.d(mck, "runable prepare hasnotresult before   2.5:  "+hasnotresult);
-            if (!dgruning.isprepare) {
+            if (null==dgruning.r().sArtist) {
                 dgruning.makeNshow(getContext(), "搜索中"+(++toasttime), Toast.LENGTH_SHORT);
                 postDelayed(scrollrun, 1500);
-                Log.d(mck, "runable isprepare::::  2:  " + dgruning.isprepare);
+                Log.d(mck, "runable isprepare::::  2:  " + dgruning.r().sArtist);
                 return;
             }
-            Log.d(mck, "runable hasnotallshow:  4.5:  " + hasnotallshow+"    tasksize: "+taskCollection.size());
+            Log.d(mck, "runable hasnotallshow:  4.5:  " +"    tasksize: "+taskCollection.size());
 
 
-            if(hasnotallshow && (taskCollection.size() < 5)){
+            if(page*PAGE_SIZE<=dgruning.r().sArtist.size() && (taskCollection.size() < 5)){
                 Log.d(mck, "runable load more    5:   ");
-                dgruning.r().layoutwaterfall.loadMoreImages();
+                loadMoreImages();
 
             }
 
@@ -200,7 +202,7 @@ public class mckScrollView extends ScrollView   {
              * 滚动到底, 就不在轮询了.
              *
              */
-            dgruning.r().layoutwaterfall.checkVisibility();
+            checkVisibility();
             if (scrollY == lastScrollY)  return;
             else lastScrollY = scrollY;
 
@@ -215,8 +217,8 @@ public class mckScrollView extends ScrollView   {
      * 必须搞一个初始化器了.
      */
     public void init(){
-        hasnotresult =true;
-        hasnotallshow=true;
+//        hasnotresult =true;
+//        hasnotallshow=true;
         page=0;
         toasttime=0;
         lastScrollY=-1;
@@ -249,45 +251,23 @@ public class mckScrollView extends ScrollView   {
         rlscroll.removeAllViews();
 
 
-        /**
-         * oh shit 应该在这里唤起轮询.
-         */
 
-        Log.d(mck, "   ::::onlayout: "+dgruning.sArtist);
-        if(null==dgruning.sArtist){
-            Log.d(mck, "   ::::onlayout2: ");
-
-//            dgruning.makeNshow(getContext(), "没有任何收藏或者搜索结果", Toast.LENGTH_SHORT);
-
-            postDelayed(scrollrun, 1500);
-
-            return;
-        }
-
-        if ( !loadOnce) {
-            Log.d(mck, " onlayout   2: ");
+            Log.d(mck, " onAttachedToWindow   2: height: "+getHeight()+"    width: "+getWidth()+"   rls:"+rlscroll.getWidth());
             scrollViewHeight = getHeight();
 
-            /**
-             * 改成relative layout
-             */
-			/*firstColumn = (LinearLayout) findViewById(R.id.first_column);
-			secondColumn = (LinearLayout) findViewById(R.id.second_column);
-			thirdColumn = (LinearLayout) findViewById(R.id.third_column);*/
+
 
             columnWidth = rlscroll.getWidth() / 2;
-            loadOnce = true;
 
-            //这句必须注释掉, 因为无法保证执行顺序, 必须都移到线程里面执行.
-            // if (dgruning.isprepare) loadMoreImages();
 
-//            if(!hasnotallshow)return;
-//            Log.d(mck, " onlayout  before  handle 3: ");
+        Log.d(mck, "   ::::onAttachedToWindow:artlist: "+dgruning.r().sArtist);
+        if(null==dgruning.r().sArtist){
+            Log.d(mck, "   ::::onAttachedToWindow: ");
+            postDelayed(scrollrun, 1500);
+            return;
         }
             postDelayed(scrollrun, 5);
-
-            ///这个有问题, 貌似不应该.
-            Log.d(mck, " onlayout  after   handle 4: ");
+         Log.d(mck, " onlayout  after   handle 4: ");
 
 
 
@@ -336,6 +316,7 @@ public class mckScrollView extends ScrollView   {
      * MyScrollView的构造函数, 从xml构造要用这个.
      * 注释掉吧, 留着比较烦.
      * 不能注释, 明白了, 必须有这个才行.
+     * 不需要这里吊起轮询, 因为有onattachwindows呢.
      *
      * @param context
      * @param attrs
@@ -345,8 +326,8 @@ public class mckScrollView extends ScrollView   {
         super(context, attrs);
         Log.d(mck, ":::::::mckstrlllview constractor 2con");
         imageLoader = waterfall.getInstance();
-        postDelayed(scrollrun, 5);
-        removeAllViews();
+//        postDelayed(scrollrun, 5);
+//        removeAllViews(); 这句话错了, 这里remove, 就真的remove所有了.
         /**
          * 据说这个方法能解决ondraw重复呼入的问题, 明天测试一下.
          * 太神奇了, 真的有用.
@@ -355,22 +336,14 @@ public class mckScrollView extends ScrollView   {
         this.context = context;
     }
 
-    /**
-     * 双参数形式, inflate之后, 要调用这个函数, 清掉本来的view.
-     */
-    /*public void initclearwaterfall(){
-        Log.d(mck, " dgrung    rlscroll:"+rlscroll);
-        rlscroll=(RelativeLayout) dgruning.r().layoutwaterfall.findViewById(R.id.rlwaterfall);
-        rlscroll.removeAllViews();
-    }
-    */
+
 
 
     @Override
     protected void onScrollChanged(int l, int t, int oldl, int oldt) {
         super.onScrollChanged(l, t, oldl, oldt);
         Log.d(mck, "::::ontouch   1:");
-        if (!dgruning.isprepare) {
+        if (null==dgruning.r().sArtist) {
             //   dgruning.makeNshow(getContext(), "搜索中", Toast.LENGTH_SHORT).show();
             return ;
         }
@@ -398,14 +371,16 @@ public class mckScrollView extends ScrollView   {
 
 
     /**
-     * 开始加载下一页的图片，每张图片都会开启一个异步线程去下载。
+     * 开始加载下一页的图片，每张图片都会开启一个异步线程去下载.
+     * prepareart返回的值可以作判断用, todo.
+     *
      */
     public void loadMoreImages() {
-        if(null==dgruning.sArtist){
+        if(null==dgruning.r().sArtist){
             dgruning.makeNshow(getContext(), "没有任何收藏或者搜索结果", Toast.LENGTH_SHORT);
             return;
         }
-        Log.d(mck, "loadmoreimages   0 size: " + dgruning.sArtist.size());
+        Log.d(mck, "loadmoreimages   0 size: " + dgruning.r().sArtist.size());
 
         /**
          * 设置点击事件. 传递一个art给后面.
@@ -421,30 +396,30 @@ public class mckScrollView extends ScrollView   {
 //                .show();
 //        Log.d(mck, "搜索中");
 
-        if (!dgruning.isprepare) return;
+        if (null==dgruning.r().sArtist) return;
 
         int startIndex = page * PAGE_SIZE;
 //        dgruning.stringartLinkedHashMap.size();
-        int endIndex = (page * PAGE_SIZE + PAGE_SIZE) > dgruning.sArtist.size() ? dgruning.sArtist.size() : (page * PAGE_SIZE + PAGE_SIZE);
+        int endIndex = (page * PAGE_SIZE + PAGE_SIZE) > dgruning.r().sArtist.size() ? dgruning.r().sArtist.size() : (page * PAGE_SIZE + PAGE_SIZE);
         int morestartindex = ((page - 5) * PAGE_SIZE > 0) ? page * PAGE_SIZE : 0;
-        int morendindex = ((page + 6) * PAGE_SIZE < dgruning.sArtist.size()) ? page * PAGE_SIZE : dgruning.sArtist.size();
+        int morendindex = ((page + 6) * PAGE_SIZE < dgruning.r().sArtist.size()) ? page * PAGE_SIZE : dgruning.r().sArtist.size();
         Log.d(mck, "loadmoreimages   1 star: " + startIndex+"   end: "+endIndex);
 
 
-        if (startIndex >= dgruning.sArtist.size()) {
-            if (hasnotallshow) dgruning.makeNshow(getContext(), "全部结果已展示", Toast.LENGTH_SHORT);
-            hasnotallshow = false;
+        if (startIndex >= dgruning.r().sArtist.size()) {
+            dgruning.makeNshow(getContext(), "全部结果已展示", Toast.LENGTH_SHORT);
+//            hasnotallshow = false;
             return;
         }
 
 
-        if (startIndex < dgruning.sArtist.size()) {
+        if (startIndex < dgruning.r().sArtist.size()) {
             dgruning.makeNshow(getContext(), "正在加载...", Toast.LENGTH_SHORT);
 
             for (int i = startIndex; i < endIndex; i++) {
                 LoadImageTask task = new LoadImageTask();
                 taskCollection.add(task);
-                task.execute(dgruning.sArtist.get(i).getPicture_url());
+                task.execute(dgruning.r().sArtist.get(i).getPicture_url());
 //                dgruning.stringartLinkedHashMap.get()
             }
             page++;
@@ -739,9 +714,9 @@ public class mckScrollView extends ScrollView   {
 
             //这句话应该是无效的, 因为下面一句话加了.
             //b.setLayoutParams(layoutParams);
-            Log.d(mck, "r: "+rlscroll+"   v: "+v+"   rl: "+rl);
+            Log.d(mck, "r: "+rlscroll.getId()+"   v: "+v+"   rl: "+rl);
             rlscroll.addView(v, rl);
-            //这个报错, 崩溃. // TODO: 6/3/16
+            //这个报错, 崩溃. // : 6/3/16
 
         }
 

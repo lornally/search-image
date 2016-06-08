@@ -27,12 +27,12 @@ import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
     private String mck = ":::::::::main activity:::::::::";
-    private Uri lUri;
+    private Uri lUri=null;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
-    private GoogleApiClient client;
+//    private GoogleApiClient client;
     private   View layoutmain;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
         Log.e("e", "hello world!");
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+//        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     /**
@@ -166,8 +166,8 @@ public class MainActivity extends AppCompatActivity {
             /**
              * 目前还有加载好结果数据, 也没有parse为json结果. isprepare要在那个独立的线程里面设置为true.
              */
-            dgruning.usedefaultunprepare = false;
-            dgruning.isprepare =false;
+            //dgruning.usedefaultunprepare = false;
+            //dgruning.isprepare =false;
 
             Thread thread = new Thread(new search());
             thread.start();
@@ -191,23 +191,27 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(mck, "    uploadUrl:::::: " + uploadUrl+"    luri: "+lUri+"    p:"+dgruning._token+" :@p2@: "+p2);
 
                     String result=dgruning.r().posturlstring(lUri, uploadUrl, p, p2);
-                    //todo 报错在这里, 没有返回结果.
+                    // 报错在这里, 没有返回结果.
                 Log.d(mck, "result:::::::::"+result);
 
 //                if(result.is)
                 ////解析result.
+                /**
+                 * 如果返回是false, 那么就应该显示button, [没有搜索结果, 返回]
+                 * todo.
+                 */
                 dgruning.r().prepareArts(result);
 
                 /**
                  * 确定加载了正确的艺术品搜索结果数据.
                  */
-            dgruning.isprepare =true;
+            //dgruning.isprepare =true;
 
                 ////建立更多的线程, 下载这些图片. 并且把图片保存在本机. 用之前的uuid建立一个目录. 这些图片都顺序放在目录里面.
                 ///然后使用缓存机制. 建立对象, 然后, 显示对象.
                 ////这个地方还有线程池的问题.
 
-                //// TODO: 5/30/16 呼唤主线程, 刷界面, 貌似不该在这里.
+                ////  5/30/16 呼唤主线程, 刷界面, 貌似不该在这里.
 //               runOnUiThread(new flash_ui_searchresult());
 
             } catch (Exception e) {
@@ -322,10 +326,11 @@ public class MainActivity extends AppCompatActivity {
          * 这个是最基础的从string中初始化.
          * 收藏列表是从一个接口初始化. 比较简单.
          * 搜索结果最复杂, 要上传图片. 因此最后写.
+         * 这个地方要判断是否要自己搞.
          */
-        dgruning.r().initlist();
+        //dgruning.r().initlist();
 
-        if(dgruning.usedefaultunprepare){
+        if(null==lUri){
             dgruning.r().prepareDefaultArts();
         }
 
@@ -452,7 +457,7 @@ public class MainActivity extends AppCompatActivity {
             dgruning.r().layoutwaterfall = (mckScrollView)getLayoutInflater().inflate(R.layout.waterfall, null);
 
         Log.i(mck, "layoutwaterfall after: " + dgruning.r().layoutwaterfall);
-        dgruning.r().initlist();
+//        dgruning.r().initlist();
 
         Thread thread = new Thread(new bookmarklist());
         thread.start();
@@ -479,23 +484,27 @@ public class MainActivity extends AppCompatActivity {
 //                Log.d(mck, "    uploadUrl:::::: " + uploadUrl+"    luri: "+lUri+"    p:"+dgruning._token+" :@p2@: "+p2);
 
                 String result=dgruning.r().posturlstring(lUri, uploadUrl, p);
-                //todo 报错在这里, 没有返回结果.
+                // 报错在这里, 没有返回结果.
                 Log.d(mck, "result:::::::::"+result);
 
 //                if(result.is)
                 ////解析result.
+                /**
+                 * 这个地方如果返回false, 那么应该放一个button在界面上, [返回].
+                 * todo.
+                 */
                 dgruning.r().prepareArts(result);
 
                 /**
                  * 确定加载了正确的艺术品搜索结果数据.
                  */
-                dgruning.isprepare =true;
+//                dgruning.isprepare =true;
 
                 ////建立更多的线程, 下载这些图片. 并且把图片保存在本机. 用之前的uuid建立一个目录. 这些图片都顺序放在目录里面.
                 ///然后使用缓存机制. 建立对象, 然后, 显示对象.
                 ////这个地方还有线程池的问题.
 
-                //// TODO: 5/30/16 呼唤主线程, 刷界面, 貌似不该在这里.
+                //// : 5/30/16 呼唤主线程, 刷界面, 貌似不该在这里.
 //               runOnUiThread(new flash_ui_searchresult());
 
             } catch (Exception e) {
@@ -522,45 +531,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    @Override
-    public void onStart() {
-        super.onStart();
 
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.connect();
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "Main Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page URL is correct.
-                // Otherwise, set the URL to null.
-                Uri.parse("http://host/path"),
-                // TODO: Make sure this auto-generated app URL is correct.
-                Uri.parse("android-app://com.takungae.dagong30/http/host/path")
-        );
-        AppIndex.AppIndexApi.start(client, viewAction);
-    }
 
-    @Override
-    public void onStop() {
-        super.onStop();
 
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "Main Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page URL is correct.
-                // Otherwise, set the URL to null.
-                Uri.parse("http://host/path"),
-                // TODO: Make sure this auto-generated app URL is correct.
-                Uri.parse("android-app://com.takungae.dagong30/http/host/path")
-        );
-        AppIndex.AppIndexApi.end(client, viewAction);
-        client.disconnect();
-    }
 
     @Override
     protected void onDestroy() {
