@@ -33,7 +33,7 @@ import android.widget.Toast;
  *
  * @author guolin
  */
-public class mckScrollView extends ScrollView   {
+public class mckScrollView extends ScrollView {
     /**
      * log标签.
      */
@@ -68,13 +68,13 @@ public class mckScrollView extends ScrollView   {
      */
     private int secondColumnHeight = 0;
 
-    private  int firstcolumn;//第一列的最后一个id.
-    private  int secondcolumn;//的二列的最后一个id.
+    private int firstcolumn;//第一列的最后一个id.
+    private int secondcolumn;//的二列的最后一个id.
 
     /**
      * 这个id有用的, 布局时, 需要制定blow, 以及leftalign.
      */
-    private  int id = 100;//最后一个id.
+    private int id = 100;//最后一个id.
 
 
     /**
@@ -110,23 +110,23 @@ public class mckScrollView extends ScrollView   {
     /**
      * 记录所有正在下载或等待下载的任务。
      */
-    private final  Set<LoadImageTask> taskCollection= new HashSet<>();
+    private final Set<LoadImageTask> taskCollection = new HashSet<>();
 
     /**
      * ScrollView下的直接子布局,增删都在这里.
      */
-    private     RelativeLayout rlscroll;
+    private RelativeLayout rlscroll;
 
     /**
      * MyScrollView布局的高度。
      */
-    private  int scrollViewHeight;
+    private int scrollViewHeight;
 
 
     /**
      * 记录上垂直方向的滚动距离。
      */
-    private  int lastScrollY = -1;
+    private int lastScrollY = -1;
 
     /**
      * 记录所有界面上的图片，用以可以随时控制对图片的释放。
@@ -143,19 +143,16 @@ public class mckScrollView extends ScrollView   {
 //    public     boolean  hasnotresult = true;
 
     /**
-     *     奶奶的, 这个不能是静态的, 应该是每次加载刷新.
-     *     这个也不该存在.
-
+     * 奶奶的, 这个不能是静态的, 应该是每次加载刷新.
+     * 这个也不该存在.
      */
 //    private   boolean hasnotallshow = true;
 
-    private static int toasttime=0; //toast计数器
+    private static int toasttime = 0; //toast计数器
 
     /**
      * 必须改为单根结构了. 奶奶的.
      */
-
-
 
 
     /**
@@ -164,33 +161,28 @@ public class mckScrollView extends ScrollView   {
      * 检查图片可见性, 应该在ontouch, 不应该在这里!!!
      * 改一下, 改成post. 另外, 检查可见性就应该在这里. ontouch已经不再捕获了.
      */
-    Runnable scrollrun=new Runnable() {
+    Runnable scrollrun = new Runnable() {
 
 
         @Override
         public void run() {
             Log.d(mck, ":::::::runable   0:");
             int scrollY = getScrollY();
-            // 如果当前的滚动位置和上次相同，表示已停止滚动
-            //停止滚动, 再加载, 是为了加载更顺畅妈?
-            //保持5个以上的下载任务.
-
             Log.d(mck, "runable isprepare before  1:  " + dgruning.r().sArtist);
-
-//            Log.d(mck, "runable prepare hasnotresult before   2.5:  "+hasnotresult);
-            if (null==dgruning.r().sArtist) {
-                dgruning.makeNshow(getContext(), "搜索中"+(++toasttime), Toast.LENGTH_SHORT);
+            /**
+             * 这个地方判断是否显示了, 无搜索结果之后应该显示的内容. 如果那样, 就返回, 并结束轮询.
+             */
+            if (null == dgruning.r().sArtist) {
+                dgruning.makeNshow(getContext(), "搜索中" + (++toasttime), Toast.LENGTH_SHORT);
                 postDelayed(scrollrun, 1500);
                 Log.d(mck, "runable isprepare::::  2:  " + dgruning.r().sArtist);
                 return;
             }
-            Log.d(mck, "runable hasnotallshow:  4.5:  " +"    tasksize: "+taskCollection.size());
+            Log.d(mck, "runable hasnotallshow:  4.5:  " + "    tasksize: " + taskCollection.size());
 
-
-            if(page*PAGE_SIZE<=dgruning.r().sArtist.size() && (taskCollection.size() < 5)){
+            if (page * PAGE_SIZE <= dgruning.r().sArtist.size() && (taskCollection.size() < 5)) {
                 Log.d(mck, "runable load more    5:   ");
                 loadMoreImages();
-
             }
 
             /**
@@ -199,124 +191,66 @@ public class mckScrollView extends ScrollView   {
              * 2, 应该再改一下, 改为, 在页面不滚动的情况下, 检测图片的可见性.
              * 因为已经不滚了, 因此应该结束这个死循环.
              * 3, 改为每次都检查可见性.
-             * 滚动到底, 就不在轮询了.
+             * 滚动到底, 就不再轮询了.
              *
              */
             checkVisibility();
-            if (scrollY == lastScrollY)  return;
+            if (scrollY == lastScrollY) return;
             else lastScrollY = scrollY;
-
             // 5毫秒后再次对滚动位置进行判断
             postDelayed(scrollrun, 50);
-
-
         }
     };
 
     /**
      * 必须搞一个初始化器了.
      */
-    public void init(){
-//        hasnotresult =true;
-//        hasnotallshow=true;
-        page=0;
-        toasttime=0;
-        lastScrollY=-1;
-        firstColumnHeight=0;
-        secondColumnHeight=0;
-//        loadOnce=false;
+    public void init() {
+        page = 0;
+        toasttime = 0;
+        lastScrollY = -1;
+        firstColumnHeight = 0;
+        secondColumnHeight = 0;
         Log.d(mck, "   init ok:   : ");
-
-
-
     }
+
+    /**
+     * 清空界面挪到这挺好的, 貌似.
+     * 不好, 第一次进入, 无法拿到清空的layout, 因为这个layout还没有初始化成功.
+     * 还是放到这里因为我们把这个函数的调用改在了atachwindows里面.
+     * 不能放到单参数的构造器里面, 因为inflate会调用双参数构造器. 神奇了.
+     * 只能放到attachwindows里面.
+     */
 
 
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         init();
-        Log.d(mck, "onattachedtowindow   rlscroll: "+rlscroll);
-
-        /**
-         * 清空界面挪到这挺好的, 貌似.
-         * 不好, 第一次进入, 无法拿到清空的layout, 因为这个layout还没有初始化成功.
-         * 还是放到这里因为我们把这个函数的调用改在了atachwindows里面.
-         * 不能放到单参数的构造器里面, 因为inflate会调用双参数构造器. 神奇了.
-         * 只能放到attachwindows里面.
-         */
-
+        Log.d(mck, "onattachedtowindow   rlscroll: " + rlscroll);
         rlscroll = (RelativeLayout) findViewById(R.id.rlwaterfall);
-        Log.d(mck, "     rlscroll:"+rlscroll);
+        Log.d(mck, "     rlscroll:" + rlscroll);
         rlscroll.removeAllViews();
-
-
-
-            Log.d(mck, " onAttachedToWindow   2: height: "+getHeight()+"    width: "+getWidth()+"   rls:"+rlscroll.getWidth());
-            scrollViewHeight = getHeight();
-
-
-
-            columnWidth = rlscroll.getWidth() / 2;
-
-
-        Log.d(mck, "   ::::onAttachedToWindow:artlist: "+dgruning.r().sArtist);
-        if(null==dgruning.r().sArtist){
+        Log.d(mck, " onAttachedToWindow   2: height: " + getHeight() + "    width: " + getWidth() + "   rls:" + rlscroll.getWidth());
+        scrollViewHeight = getHeight();
+        columnWidth = rlscroll.getWidth() / 2;
+        Log.d(mck, "   ::::onAttachedToWindow:artlist: " + dgruning.r().sArtist);
+        if (null == dgruning.r().sArtist) {
             Log.d(mck, "   ::::onAttachedToWindow: ");
             postDelayed(scrollrun, 1500);
             return;
         }
-            postDelayed(scrollrun, 5);
-         Log.d(mck, " onlayout  after   handle 4: ");
-
-
-
-    }
-
-    /**
-     * 这个单参数的构造器不能用, 因为inflate需要双参数的. 然后, 其实起作用的还是双参数的那个.
-     * @param context
-     */
-
-   /* public mckScrollView(Context context) {
-        super(context);
-
-        Log.d(mck, ":::::::mckstrlllview constractor 1con");
-
-
-        *//**
-         * 清空界面挪到这挺好的, 貌似.
-         * 不好, 第一次进入, 无法拿到清空的layout, 因为这个layout还没有初始化成功.
-         * 还是放到这里因为我们把这个函数的调用改在了atachwindows里面.
-         * 不能放到单参数的构造器里面, 因为inflate会调用双参数构造器. 神奇了.
-         * 只能放到attachwindows里面.
-         *//*
-
-        LayoutInflater.from(context).inflate(R.layout.waterfall, this);
-        rlscroll = (RelativeLayout) dgruning.r().layoutwaterfall.findViewById(R.id.rlwaterfall);
-        Log.d(mck, "     rlscroll:"+rlscroll);
-        rlscroll.removeAllViews();
-
-
-
-        imageLoader = waterfall.getInstance();
         postDelayed(scrollrun, 5);
-        removeAllViews();
-
-        *//**
-         * 据说这个方法能解决ondraw重复呼入的问题, 明天测试一下.
-         * 太神奇了, 真的有用.
-         *//*
-        setWillNotDraw(true);
-
-        this.context = context;
+        Log.d(mck, " onlayout  after   handle 4: ");
     }
-*/
+
+
     /**
      * MyScrollView的构造函数, 从xml构造要用这个.
      * 注释掉吧, 留着比较烦.
      * 不能注释, 明白了, 必须有这个才行.
      * 不需要这里吊起轮询, 因为有onattachwindows呢.
+     * 同样原因, 不需要在这里remove all.
      *
      * @param context
      * @param attrs
@@ -326,8 +260,6 @@ public class mckScrollView extends ScrollView   {
         super(context, attrs);
         Log.d(mck, ":::::::mckstrlllview constractor 2con");
         imageLoader = waterfall.getInstance();
-//        postDelayed(scrollrun, 5);
-//        removeAllViews(); 这句话错了, 这里remove, 就真的remove所有了.
         /**
          * 据说这个方法能解决ondraw重复呼入的问题, 明天测试一下.
          * 太神奇了, 真的有用.
@@ -336,47 +268,51 @@ public class mckScrollView extends ScrollView   {
         this.context = context;
     }
 
-
+    /**
+     * @param l
+     * @param t
+     * @param oldl
+     * @param oldt 这个函数checkvisibility就好了, 完全没必要让轮询去判断
+     *             这个函数需要log跟踪一下. todo.
+     *             这个函数就没有唤起轮询的必要性.
+     *             检查可见性, 还是放到轮询里面, 这个函数唤醒轮询.
+     */
 
 
     @Override
     protected void onScrollChanged(int l, int t, int oldl, int oldt) {
         super.onScrollChanged(l, t, oldl, oldt);
         Log.d(mck, "::::ontouch   1:");
-        if (null==dgruning.r().sArtist) {
+        if (null == dgruning.r().sArtist) {
             //   dgruning.makeNshow(getContext(), "搜索中", Toast.LENGTH_SHORT).show();
-            return ;
+            return;
         }
         /**
          *
          * 这个是否需要, notouch, 就是检查可见性是否就好了.
          * 注释掉, 试试.
          * 注释之后, 发现不行, 因为滑动到位之后, 就不调用这个函数了.
+         * 再次注释试试.
          */
-        Log.d(mck, "::::ontouch   2:");
-//        if (event.getAction() == MotionEvent.ACTION_UP) {
+//        Log.d(mck, "::::ontouch   2:");
         postDelayed(scrollrun, 5);
-
-        //}
         /**
          * 本来的逻辑是, 不加载图片的情况下, 才检查元素可见性.
          * 改为, 不论如何都检查元素的可见性.
          */
-        Log.d(mck, "::::ontouch   3:");
-        checkVisibility();
-        Log.d(mck, "::::ontouch   4:");
+//        Log.d(mck, "::::ontouch   3:");
+//        checkVisibility();
+//        Log.d(mck, "::::ontouch   4:");
 //        super.onTouchEvent(event);
     }
-
 
 
     /**
      * 开始加载下一页的图片，每张图片都会开启一个异步线程去下载.
      * prepareart返回的值可以作判断用, todo.
-     *
      */
     public void loadMoreImages() {
-        if(null==dgruning.r().sArtist){
+        if (null == dgruning.r().sArtist) {
             dgruning.makeNshow(getContext(), "没有任何收藏或者搜索结果", Toast.LENGTH_SHORT);
             return;
         }
@@ -396,14 +332,14 @@ public class mckScrollView extends ScrollView   {
 //                .show();
 //        Log.d(mck, "搜索中");
 
-        if (null==dgruning.r().sArtist) return;
+        if (null == dgruning.r().sArtist) return;
 
         int startIndex = page * PAGE_SIZE;
 //        dgruning.stringartLinkedHashMap.size();
         int endIndex = (page * PAGE_SIZE + PAGE_SIZE) > dgruning.r().sArtist.size() ? dgruning.r().sArtist.size() : (page * PAGE_SIZE + PAGE_SIZE);
         int morestartindex = ((page - 5) * PAGE_SIZE > 0) ? page * PAGE_SIZE : 0;
         int morendindex = ((page + 6) * PAGE_SIZE < dgruning.r().sArtist.size()) ? page * PAGE_SIZE : dgruning.r().sArtist.size();
-        Log.d(mck, "loadmoreimages   1 star: " + startIndex+"   end: "+endIndex);
+        Log.d(mck, "loadmoreimages   1 star: " + startIndex + "   end: " + endIndex);
 
 
         if (startIndex >= dgruning.r().sArtist.size()) {
@@ -430,17 +366,16 @@ public class mckScrollView extends ScrollView   {
      * 遍历imageViewList中的每张图片，对图片的可见性进行检查，如果图片已经离开屏幕可见范围，则将图片替换成一张空图。
      * 改为保留3倍屏幕尺寸.
      * 这个函数, 导致多次ondraw.
-     *
      */
     public void checkVisibility() {
         //这个也必须注释掉, 否则喷的内容太多.
-       // Log.d(mck, "                     checkvisibility 1: ");
+        // Log.d(mck, "                     checkvisibility 1: ");
 
         for (int i = 0; i < imageViewList.size(); i++) {
 
             ImageView imageView = imageViewList.get(i);
 
-          //  Log.d(mck, "                     checkvisibility 2: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
+            //  Log.d(mck, "                     checkvisibility 2: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
 
             int borderTop = (Integer) imageView.getTag(R.string.border_top);////  5/31/16 崩溃在这里.因为没有settag, 直接读就崩溃了.
             int borderBottom = (Integer) imageView
@@ -452,11 +387,11 @@ public class mckScrollView extends ScrollView   {
              */
             if (borderBottom > (getScrollY() - scrollViewHeight * 4)
                     && borderTop < getScrollY() + scrollViewHeight * 5) {
-              //  Log.d(mck, "                     checkvisibility 3: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
+                //  Log.d(mck, "                     checkvisibility 3: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
 
 
-                if ((boolean)imageView.getTag(R.string.isshowok)) continue;
-            //    Log.d(mck, "                     checkvisibility 4: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
+                if ((boolean) imageView.getTag(R.string.isshowok)) continue;
+                //    Log.d(mck, "                     checkvisibility 4: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
 
                 String imageUrl = (String) imageView.getTag(R.string.image_url);
                 Bitmap bitmap = imageLoader.getBitmapFromMemoryCache(imageUrl);
@@ -466,24 +401,24 @@ public class mckScrollView extends ScrollView   {
                     /***
                      * 这里的加载不仅仅包括从网络加载, 还包括从磁盘加载.
                      */
-                 //   Log.d(mck, "                     checkvisibility 5: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
+                    //   Log.d(mck, "                     checkvisibility 5: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
 
                     LoadImageTask task = new LoadImageTask(imageView);
                     task.execute(imageUrl);
-              //      Log.d(mck, "                     checkvisibility 6: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
+                    //      Log.d(mck, "                     checkvisibility 6: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
 
                 }
-             //   Log.d(mck, "                     checkvisibility 7: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
+                //   Log.d(mck, "                     checkvisibility 7: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
 
                 imageView.setTag(R.string.isshowok, true);
-            //    Log.d(mck, "                     checkvisibility 8: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
+                //    Log.d(mck, "                     checkvisibility 8: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
 
             } else {
-            //    Log.d(mck, "                     checkvisibility 9: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
+                //    Log.d(mck, "                     checkvisibility 9: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
 
                 imageView.setImageResource(R.drawable.empty_photo);
                 imageView.setTag(R.string.isshowok, false);
-            //    Log.d(mck, "                     checkvisibility 10: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
+                //    Log.d(mck, "                     checkvisibility 10: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
 
                 //// TODO: 6/1/16 图片和空间回收利用机制, 再考虑.  ruhelru缓存.
             }
@@ -619,19 +554,16 @@ public class mckScrollView extends ScrollView   {
         }
 
 
-
-
-
         /**
          * 瀑布流的onclick在这里,
          * 每个点击都会进入详情页,
          * 全屏显示点击内容的详细情况.
          */
-         class imageviewonclicklistener implements View.OnClickListener {
+        class imageviewonclicklistener implements View.OnClickListener {
             @Override
             public void onClick(View v) {
-                ImageView iv=(ImageView)v;
-                final String  iurl=""+iv.getTag(R.string.image_url);
+                ImageView iv = (ImageView) v;
+                final String iurl = "" + iv.getTag(R.string.image_url);
                 dgruning.r().stringartHashMap.get(iurl);
 
                 /**
@@ -648,23 +580,10 @@ public class mckScrollView extends ScrollView   {
                 /**
                  * 自动执行mckscrollview
                  */
-                ((Activity)context).setContentView(dgruning.r().layoutartbigshow);
+                ((Activity) context).setContentView(dgruning.r().layoutartbigshow);
 
             }
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         /**
@@ -714,7 +633,7 @@ public class mckScrollView extends ScrollView   {
 
             //这句话应该是无效的, 因为下面一句话加了.
             //b.setLayoutParams(layoutParams);
-            Log.d(mck, "r: "+rlscroll.getId()+"   v: "+v+"   rl: "+rl);
+            Log.d(mck, "r: " + rlscroll.getId() + "   v: " + v + "   rl: " + rl);
             rlscroll.addView(v, rl);
             //这个报错, 崩溃. // : 6/3/16
 
@@ -727,7 +646,7 @@ public class mckScrollView extends ScrollView   {
          * @param imageHeight
          * @return 应该添加图片的一列
          */
-		/*
+        /*
 		private LinearLayout findColumnToAdd(ImageView imageView,
 				int imageHeight) {
 			if (firstColumnHeight <= secondColumnHeight) {
