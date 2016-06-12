@@ -104,7 +104,18 @@ public class waterfallimageload {
         options.inJustDecodeBounds = false;
         return BitmapFactory.decodeFile(pathName, options);
     }
-
+    public static Bitmap decodeSampledBitmapFromResource(String pathName
+                                                         ) {
+        Log.d(mck, "path 3:"+pathName+"      wid 3:");
+        // 第一次解析将inJustDecodeBounds设置为true，来获取图片大小
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(pathName, options);
+        // 调用上面定义的方法计算inSampleSize值
+        // 使用获取到的inSampleSize值再次解析图片
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeFile(pathName, options);
+    }
 
 
 

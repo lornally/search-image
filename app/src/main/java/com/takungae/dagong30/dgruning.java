@@ -61,6 +61,8 @@ public class dgruning {
     public static String _token = "nothing";// 改回位nothing之后, 需要调试.
     public static String _device_id = "";
     public static Context sContext=null;
+    public static String _weixinurl="";
+
 
     /**
      * 全局就用这一个toast, 提升toast的使用效率.

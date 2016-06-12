@@ -17,12 +17,22 @@ import android.util.Log;
 import android.view.View;
 import android.view.LayoutInflater;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
+import com.tencent.mm.sdk.modelmsg.WXImageObject;
+import com.tencent.mm.sdk.modelmsg.WXMediaMessage;
+import com.tencent.mm.sdk.modelmsg.WXTextObject;
+import com.tencent.mm.sdk.modelmsg.WXWebpageObject;
+import com.tencent.mm.sdk.openapi.IWXAPI;
+import com.tencent.mm.sdk.openapi.WXAPIFactory;
+
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.UUID;
 
 /**
@@ -517,8 +527,8 @@ class nosearchresult implements Runnable{
      * @param v
      */
 
-
-    private  IWXAPI wxapi;
+    public art a;
+    private IWXAPI wxapi;
     private void reg2wx(){
         final String APP_ID = "wx9f1b28e2a4fa3427";
         //// TODO: 3/7/16 正式打包的时候, 需要替换这个app_id为正式的app_id.
@@ -528,11 +538,21 @@ class nosearchresult implements Runnable{
     }
 
 
+    /**
+     * 不应该在这里错误的初始化, 初始化, 还是应该去另一个地方.
+     * todo         lTextView.setText(dgruning.sArt4detailactivity.getIllustrate());
+
+     * @param v
+     */
     public void ondetailclick(View v){
         Log.d("mck", "\\\\\\\\show detail, =======/////////");
+        a=(art) v.getTag();
+
+
         TextView lTextView=(TextView)findViewById(R.id.detail_text);
-        lTextView.setText(dgruning.sArt4detailactivity.getIllustrate());
         lTextView.setMovementMethod(ScrollingMovementMethod.getInstance());
+
+
         View lView=findViewById(R.id.detail_text_layout);
         lView.setVisibility(View.VISIBLE);
         lView=findViewById(R.id.imageview_detail_button);
@@ -557,12 +577,12 @@ class nosearchresult implements Runnable{
         View nLViewnv = findViewById(R.id.layout_share);
         nLViewnv.setVisibility(View.VISIBLE);
 
-        if (dgruning.sArt4detailactivity.getCollection_id()==1)return;
+        if (a.getCollection_id()==1)return;
         /**
          * 分享=收藏, 要加入收藏夹.
          * */
-        collecttask lTokentask = new collecttask();
-        lTokentask.execute(dgruning.sArt4detailactivity.getPicture_id() + "", "http://app.takungae.com:80/Api/Collection/add_collection");
+        collecttask collecttask = new collecttask();
+        collecttask.execute(a.getPicture_id() + "", "http://app.takungae.com:80/Api/Collection/add_collection");
         //三个参数, url, mac地址, deviceid.
         //        改为使用uuid代替
     }
@@ -675,7 +695,7 @@ class nosearchresult implements Runnable{
          * 分享=收藏, 要加入收藏夹.
          * */
         weixinurltask ltask = new weixinurltask();
-        ltask.execute(dgruning.sArt4detailactivity.getPicture_id() + "", "http://app.takungae.com:80/Api/Index/share_art");
+        ltask.execute(a.getPicture_id() + "", "http://app.takungae.com:80/Api/Index/share_art");
         //
 
 
@@ -687,16 +707,27 @@ class nosearchresult implements Runnable{
          * text分享, 只有文字.
          */
         WXTextObject to=new WXTextObject();
-        to.text=dgruning.sArt4detailactivity.getArt_name()+"-"+dgruning.sArt4detailactivity.getAuthor()+"\r\n"+dgruning.sArt4detailactivity.getPicture_url();
+        to.text=a.getArt_name()+"-"+a.getAuthor()+"\r\n"+a.getPicture_url();
 
         /**
          * 图片分享, 竟然是only pic, 木有文字.
          */
-        Bitmap lBitmap=dgruning.sArt4detailactivity.getDrawable().getBitmap();
-        // BitmapFactory.decodeResource(getResources(), dgruning.sArt4detailactivity.getDrawable().);
-        WXImageObject lWXImageObject=new WXImageObject(lBitmap);
+        final waterfallimageload imageLoader = waterfallimageload.getInstance();
 
-        Bitmap thumbmap=Bitmap.createScaledBitmap(lBitmap,32,32,true );
+        Bitmap imageBitmap = imageLoader
+                .getBitmapFromMemoryCache(a.getPicture_url());
+        Log.d(mck, "doinback: 1: "+imageBitmap);
+        if (imageBitmap == null) {
+
+            File imageFile = new File(a.getPicture_url());
+            imageBitmap = waterfallimageload.decodeSampledBitmapFromResource(
+                    imageFile.getPath());
+        }
+
+            // BitmapFactory.decodeResource(getResources(), a.getDrawable().);
+            WXImageObject lWXImageObject = new WXImageObject(imageBitmap);
+
+            Bitmap thumbmap = Bitmap.createScaledBitmap(imageBitmap, 32, 32, true);
 
 
         /**
@@ -713,7 +744,7 @@ class nosearchresult implements Runnable{
 
 
         ms.title=to.text;
-        ms.description=dgruning.sArt4detailactivity.getArt_name()+dgruning.sArt4detailactivity.getAuthor();
+        ms.description=a.getArt_name()+a.getAuthor();
 
         SendMessageToWX.Req re=new SendMessageToWX.Req();
         re.transaction=String.valueOf(System.currentTimeMillis());
@@ -725,7 +756,7 @@ class nosearchresult implements Runnable{
 
     public void onclick_weibo(View v){
         //敬请期待
-        Toast.makeText(ActivityArtDetail.this, "敬请期待", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "敬请期待", Toast.LENGTH_SHORT).show();
     }
 
 
