@@ -47,7 +47,7 @@ public class dgruning {
      *
      * @param v
      */
-    mckScrollView layoutwaterfall;
+    mckScrollView layoutwaterfall=null;
 
     /**
      * 艺术品详情.
@@ -56,18 +56,26 @@ public class dgruning {
 
     private final String mck = "--dgruning--";
 
-    public static final String url = "http://app.takungae.com/Api/Index/upload";
+    public static final String uploadurl = "http://app.takungae.com/Api/Index/upload";
 
     public static String _token = "nothing";// 改回位nothing之后, 需要调试.
     public static String _device_id = "";
-    public static Context sContext;
+    public static Context sContext=null;
 
     /**
      * 全局就用这一个toast, 提升toast的使用效率.
      */
     private static Toast toast;
+//    public int height ;
+//    public int width ;
 
-
+    /**
+     *
+     */
+    public void clearart(){
+        sArtist = null;
+        stringartHashMap=null;
+    }
     /******
      * 准备好, 要显示的素材.
      * 这个东西要不要重复利用?
@@ -75,9 +83,18 @@ public class dgruning {
      * 1, 要有顺序. 因为是搜索结果.
      * 2, 要能够从url映射过去. 因为到了后面, 我们要从url映射回art对象.
      * 貌似linkedhashmap是满足要求的. 这个思路不合适, 没有get(i)方法. 我还是另外建立一个set吧.
+     * 只需要7个属性
+     * art_name
+     * author
+     * illustrate
+     * picture_url
+     * picture_id
+     * collection_id
+     * thumb_url
      */
     public boolean prepareArts(String result) {
         sArtist = null;
+        stringartHashMap=null;
         ArrayList<art> lArts = new ArrayList<>();
         LinkedHashMap<String, art> lhmarts = new LinkedHashMap<>();
         try {
@@ -166,7 +183,7 @@ public class dgruning {
                 uploadUrl = Uri.parse(uploadUrl).buildUpon().appendQueryParameter(p.getName(), p.getValue()).build().toString();
             }
 
-//            Log.d(mck, "final url::::::" + uploadUrl);
+//            Log.d(mck, "final uploadurl::::::" + uploadUrl);
 //            String macid=params[2];
             String end = "\r\n";
             String twoHyphens = "--";
@@ -175,7 +192,7 @@ public class dgruning {
             URL url = new URL(uploadUrl);
             HttpURLConnection lHttpURLConnection = (HttpURLConnection) url
                     .openConnection();
-            Log.d(mck, "url::::::" + lHttpURLConnection.getURL());
+            Log.d(mck, "uploadurl::::::" + lHttpURLConnection.getURL());
             lHttpURLConnection.setDoInput(true);
             lHttpURLConnection.setDoOutput(true);
             lHttpURLConnection.setUseCaches(false);
@@ -286,11 +303,12 @@ public class dgruning {
     /**
      * 思考,怎样保证用户在使用r函数之前一定会使用init或者getinstance呢?  最好是借助编译器的力量
      * todo 依赖注入解决问题.
-     *
+     * 如果没有init, 则抛出异常, 也是不错的解决方案.
      * @return
      */
     public static dgruning r() {
         //这就是一个单例, singleton
+
         return ourInstance;
     }
 
@@ -305,12 +323,18 @@ public class dgruning {
      * init是真正的初始化函数, 在fragment的oncreateview使用, 因为需要getactivity作为context参数.
      * 在主线程 调用新的线程, 拿到token.
      * 拿到application的context最靠谱了
+     * 一次程序启动, 只调用一次这个.
      * <p/>
      * //
      */
 
-    public void init(Context c) {
+    public void init(Context c){//}, int w, int h) {
+//        width=w;
+//        height=h;
+
         init_token_deviceid(c);
+
+
     }
 
     /**
@@ -320,6 +344,7 @@ public class dgruning {
      */
     public void init_token_deviceid(Context c) {
         sContext = c.getApplicationContext();
+
         //拿到application的context最靠谱了.
 
         _device_id = PreferenceManager.getDefaultSharedPreferences(c).getString("device_id", "nothing");
@@ -335,7 +360,7 @@ public class dgruning {
         Log.d(mck, "+++++++++++should not get here, if not first run++++++++++");
         tokentask lTokentask = new tokentask();
         lTokentask.execute(_device_id + "", "http://app.takungae.com/Api/Device/getToken");
-        //三个参数, url, mac地址, deviceid.
+        //三个参数, uploadurl, mac地址, deviceid.
         //        改为使用uuid代替
     }
 
@@ -405,7 +430,7 @@ public class dgruning {
             for (urlpara p : pUrlparas) {
                 uploadUrl = Uri.parse(uploadUrl).buildUpon().appendQueryParameter(p.getName(), p.getValue()).build().toString();
             }
-//            Log.d(mck, "final url::::::" + uploadUrl);
+//            Log.d(mck, "final uploadurl::::::" + uploadUrl);
 //            String macid=params[2];
             String end = "\r\n";
             String twoHyphens = "--";
@@ -415,7 +440,7 @@ public class dgruning {
             HttpURLConnection lHttpURLConnection = (HttpURLConnection) url
                     .openConnection();
 
-            Log.d(mck, "url::::::" + lHttpURLConnection.getURL());
+            Log.d(mck, "uploadurl::::::" + lHttpURLConnection.getURL());
 
             int status = lHttpURLConnection.getResponseCode();
 

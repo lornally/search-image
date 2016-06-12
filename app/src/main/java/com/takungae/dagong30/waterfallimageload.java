@@ -3,17 +3,19 @@ package com.takungae.dagong30;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.util.LruCache;
+import android.util.Log;
 
 /**
  * Created by m on 5/31/16.
  */
-public class waterfall {
+public class waterfallimageload {
 
 
     /**
      * 图片缓存技术的核心类，用于缓存所有下载好的图片，在程序内存达到设定值时会将最少最近使用的图片移除掉。
      */
     private final static LruCache<String, Bitmap> mMemoryCache;
+    private final static String mck="waterfallimageload";
 
     static {
         // 获取应用程序最大可用内存
@@ -28,7 +30,7 @@ public class waterfall {
         };
     }
 
-    private waterfall() {
+    private waterfallimageload() {
      /*   // 获取应用程序最大可用内存
         final int maxMemory = (int) Runtime.getRuntime().maxMemory();
         final int cacheSize = maxMemory / 8;
@@ -40,9 +42,9 @@ public class waterfall {
             }
         };*/
     }
-    private final static waterfall hh=new waterfall();
+    private final static waterfallimageload hh=new waterfallimageload();
 
-    public static waterfall getInstance(){
+    public static waterfallimageload getInstance(){
 
         return hh;
     }
@@ -79,14 +81,19 @@ public class waterfall {
         int inSampleSize = 1;
         if (width > reqWidth) {
             // 计算出实际宽度和目标宽度的比率
-            final int widthRatio = Math.round((float) width / (float) reqWidth);
+            final int widthRatio = Math.round((float) width /  reqWidth);
             inSampleSize = widthRatio;
+            Log.d(mck, "req 1:"+reqWidth+"   wid 1:"+widthRatio);
+
         }
+        Log.d(mck, "req 2:"+reqWidth+"   ins 2:"+inSampleSize);
+
         return inSampleSize;
     }
 
     public static Bitmap decodeSampledBitmapFromResource(String pathName,
                                                          int reqWidth) {
+        Log.d(mck, "path 3:"+pathName+"      wid 3:"+reqWidth);
         // 第一次解析将inJustDecodeBounds设置为true，来获取图片大小
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;

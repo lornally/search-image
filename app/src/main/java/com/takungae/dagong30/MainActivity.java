@@ -1,28 +1,33 @@
 package com.takungae.dagong30;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.UiThread;
 import android.support.v7.app.AppCompatActivity;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.view.LayoutInflater;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
+import android.widget.Button;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.common.api.GoogleApiClient;
+import org.json.JSONObject;
 
 import java.util.UUID;
 
 /**
  * 先手工实现界面切换, 以后会考虑弄一个界面切换的框架.
+ * @author m
  */
 
 public class MainActivity extends AppCompatActivity {
@@ -34,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
      */
 //    private GoogleApiClient client;
     private   View layoutmain;
+    private final Context c=this;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
          layoutmain = inflater.inflate(R.layout.activity_main, null);
         setContentView(layoutmain);
 
-
         dgruning.r().init(this);
 
 
@@ -65,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
         // See https://g.co/AppIndexing/AndroidStudio for more information.
 //        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
+
 
     /**
      * 这个是回退链, 有空再弄.
@@ -124,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
                     getExternalFilesDir(Environment.DIRECTORY_PICTURES)));//// : 5/25/16 是否这样就好了?*/
             cI.putExtra(MediaStore.EXTRA_OUTPUT, lUri);
         } catch (Exception e) {
-            Log.d(mck, e.getMessage());
+            Log.d(mck, "onbuttoncamerasearch: "+e.getMessage());
         }
         startActivityForResult(cI, 2);
     }
@@ -162,21 +169,22 @@ public class MainActivity extends AppCompatActivity {
          *
          */
         if (requestCode == 4) {
-            dgruning.makeNshow(getApplicationContext(), "搜索中..1.", Toast.LENGTH_SHORT);
+            dgruning.makeNshow(getApplicationContext(), "上传..1.", Toast.LENGTH_SHORT);
             /**
              * 目前还有加载好结果数据, 也没有parse为json结果. isprepare要在那个独立的线程里面设置为true.
              */
             //dgruning.usedefaultunprepare = false;
             //dgruning.isprepare =false;
 
+
             Thread thread = new Thread(new search());
             thread.start();
             View v = findViewById(R.id.button_searchresult);
 
-            dgruning.makeNshow(getApplicationContext(), "搜索中..2.", Toast.LENGTH_SHORT);
+            dgruning.makeNshow(getApplicationContext(), "上传..2.", Toast.LENGTH_SHORT);
 
             v.performClick();
-            dgruning.makeNshow(getApplicationContext(), "搜索中..3.", Toast.LENGTH_SHORT);
+            dgruning.makeNshow(getApplicationContext(), "上传..3.", Toast.LENGTH_SHORT);
 
         }
     }
@@ -185,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
         public void run() {
             try {
 
-                String uploadUrl = dgruning.url;
+                String uploadUrl = dgruning.uploadurl;
                 dgruning.urlpara p = new dgruning.urlpara("token",dgruning._token); //dgruning._token);
                 dgruning.urlpara p2 = new dgruning.urlpara("type","0");
                 Log.d(mck, "    uploadUrl:::::: " + uploadUrl+"    luri: "+lUri+"    p:"+dgruning._token+" :@p2@: "+p2);
@@ -198,9 +206,26 @@ public class MainActivity extends AppCompatActivity {
                 ////解析result.
                 /**
                  * 如果返回是false, 那么就应该显示button, [没有搜索结果, 返回]
-                 * todo.
+                 *
                  */
-                dgruning.r().prepareArts(result);
+                Log.d(mck, "before preparearts");
+                final boolean bl=dgruning.r().prepareArts(result);
+                Log.d(mck, "search bl:"+bl);
+                if(!bl)runOnUiThread(new nosearchresult());
+                /**
+                 * 呼唤主线程, 显示一个toast.
+                 */
+                //dgruning.makeNshow(c, "全部结果已展示", Toast.LENGTH_SHORT);
+
+/*
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        dgruning.makeNshow(c, "全部结果已展示", Toast.LENGTH_SHORT);
+
+                    }
+                });*/
+
 
                 /**
                  * 确定加载了正确的艺术品搜索结果数据.
@@ -215,24 +240,14 @@ public class MainActivity extends AppCompatActivity {
 //               runOnUiThread(new flash_ui_searchresult());
 
             } catch (Exception e) {
-                Log.d(mck, e + "");
+                Log.d(mck, " search: "+e + "");
             }
             //在ui线程, 作动作, 更新瀑布流//// : 5/30/16
 //            runOnUiThread(Runnable);
         }
     }
 
-    /***
-     * 这个地方用搜索结果, 然后, 互换搜索结果页面.
-     *
-     */
-   /* class flash_ui_searchresult implements Runnable {
-        public void run() {
-            View v = findViewById(R.id.button_searchresult);
-            dgruning.usedefaultunprepare = false;
-            v.performClick();
-        }
-    }*/
+
 
 
 
@@ -308,17 +323,16 @@ public class MainActivity extends AppCompatActivity {
 
         //替换布局为waterfall.
 
-        Log.i(mck, "layoutwaterfall before: " + dgruning.r().layoutwaterfall);
+        Log.i(mck, "onbuttongallery layoutwaterfall before: " + dgruning.r().layoutwaterfall);
 
         /**
          * 如果waterfall没有搞过, 那么就搞一下.
          */
 
         if (null == dgruning.r().layoutwaterfall)
-            dgruning.r().layoutwaterfall = //new mckScrollView(this);
-                    (mckScrollView) getLayoutInflater().inflate(R.layout.waterfall, null);
+            dgruning.r().layoutwaterfall =  (mckScrollView) getLayoutInflater().inflate(R.layout.waterfall, null);
 
-        Log.i(mck, "layoutwaterfall after: " + dgruning.r().layoutwaterfall);
+        Log.i(mck, "onbuttongallery layoutwaterfall after: " + dgruning.r().layoutwaterfall);
 
         /**
          * 如果还没有准备好, 那么就来准备好默认的显示素材.
@@ -329,13 +343,11 @@ public class MainActivity extends AppCompatActivity {
          * 这个地方要判断是否要自己搞.
          */
         //dgruning.r().initlist();
+        Log.d(mck, "onbuttongallery luri: "+lUri);
 
         if(null==lUri){
             dgruning.r().prepareDefaultArts();
-        }
-
-
-
+        }else dgruning.r().clearart();
 
         /**
          * 自动执行mckscrollview
@@ -345,87 +357,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(dgruning.r().layoutwaterfall);
 
 
-/**
-
-        //向waterfall 添加button.
-
-        RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.rlwaterfall);
-
-
-
-
-
-
-        //考虑把这些button组织为一个数据结构. 这样就可以展示了.
-        for (int i = 100; i < 310; i++) {
-            Button b = new Button(this);
-            //设置按钮本身.
-            b.setId(i);
-            b.setText("b" + i);
-
-            b.setPadding(50, 50, 50, 50);
-            b.setBackgroundColor(Color.parseColor("#8899aa") + i * 100);
-//            b.setBackground(R.drawable.a1080);
-//            b.setForeground(getResources().getDrawable(R.drawable.house, getTheme())); 这个是api23的, 不是api1. 所以不能用.
-//            b.setBackgroundResource(R.drawable.heart);
-            b.setCompoundDrawablesWithIntrinsicBounds(R.drawable.back, R.drawable.heart, R.drawable.note, R.drawable.camera);
-//            b.setCompoundDrawablesRelative();
-//            b.setCompoundDrawables();
-
-            //计算dp转化的数据.
-            float t = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 180, getResources().getDisplayMetrics());
-
-            //设置按钮的布局.
-            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams((int) t, (int) t);
-            //Log.i(mck, "tttt"+t);
-
-
-            layoutParams.setMargins(0, 0, 0, 0);
-            layoutParams.alignWithParent = true;
-
-            if (i < 102) {
-                layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-            } else {
-                layoutParams.addRule(RelativeLayout.BELOW, i - 2);
-            }
-
-            int n = i / 2;
-            Log.i(mck, "n" + n + "i" + i + "!!!" + (i != n * 2));
-            if (i != n * 2) layoutParams.addRule(RelativeLayout.RIGHT_OF, 100);
-
-
-            //向relativelayout里面添加按钮. 如果移除某个控件: removeview
-
-
-            //这句话应该是无效的, 因为下面一句话加了.
-            b.setLayoutParams(layoutParams);
-           // relativeLayout.addView(b, layoutParams);
-            //注意, 上面两句话都添加了layoutparams, 所以有一句话是没有用的.
-
-        }*/
-
-
-
     }
 
-    /**
-     * 废弃
-     * 在这里更新界面流.
-     * 计算每个button的高度,
-     * 计算每个button的顶部高度.
-     * 把顶部最高的一个扑上去.
-     */
-    /*class refresh_waterfall implements Runnable{
-        public void  run(){
-            ;
-        }
 
-
-
-
-
-    }
-*/
 
 
 
@@ -442,7 +376,10 @@ public class MainActivity extends AppCompatActivity {
 
         /**
          * 和点击相册几乎一模一样. 考虑如何合并为一个.
+         * 就是把结果刷掉, 就对了.
          */
+        dgruning.r().clearart();
+
 
 
         //替换布局为waterfall.
@@ -489,49 +426,76 @@ public class MainActivity extends AppCompatActivity {
 
 //                if(result.is)
                 ////解析result.
+
+
                 /**
-                 * 这个地方如果返回false, 那么应该放一个button在界面上, [返回].
-                 * todo.
+                 * 如果返回是false, 那么就应该显示button, [没有搜索结果, 返回]
+                 *
                  */
-                dgruning.r().prepareArts(result);
+            final boolean bl=dgruning.r().prepareArts(result);
+                Log.d(mck, "bookmarklist bl1:"+bl);
+                if(!bl)runOnUiThread(new nosearchresult());
+                Log.d(mck, "bookmarklist bl2:"+bl);
+
+                /**
+                 *
+                 * 呼唤主线程, 显示一个toast.
+                 * 这个toast不能这么现实, 会报一个exception. 线程错误的exception.
+                 */
+                //dgruning.makeNshow(c, "全部结果已展示", Toast.LENGTH_SHORT);
+
+
 
                 /**
                  * 确定加载了正确的艺术品搜索结果数据.
                  */
-//                dgruning.isprepare =true;
-
-                ////建立更多的线程, 下载这些图片. 并且把图片保存在本机. 用之前的uuid建立一个目录. 这些图片都顺序放在目录里面.
-                ///然后使用缓存机制. 建立对象, 然后, 显示对象.
-                ////这个地方还有线程池的问题.
-
-                //// : 5/30/16 呼唤主线程, 刷界面, 貌似不该在这里.
-//               runOnUiThread(new flash_ui_searchresult());
-
             } catch (Exception e) {
-                Log.d(mck, e + "");
+                Log.d(mck,"bookmarklist: "+ e + "");
             }
             //在ui线程, 作动作, 更新瀑布流//// : 5/30/16
 //            runOnUiThread(Runnable);
         }
+
+
     }
+class nosearchresult implements Runnable{
+
+    @Override
+    public void run() {
+        Log.d(mck, "nosearchresult 1: ");
+        /**
+         * 下面这句话虽然没有错, 但是, 实际上也没有用.
+         */
+        //dgruning.r().layoutwaterfall.rlscroll.removeAllViews();
+        Log.d(mck, "nosearchresult 2: ");
+
+        RelativeLayout.LayoutParams rl=
+                new RelativeLayout.LayoutParams(600, 200);
+        Log.d(mck, "nosearchresult 3: ");
+
+        Button v=new Button(c);
+        v.setId(R.id.noreasch);
+        Log.d(mck, "nosearchresult 4: ");
+
+        v.setText("没有结果, 请按返回");
+        rl.addRule(RelativeLayout.CENTER_IN_PARENT);
+        Log.d(mck, "nosearchresult 5: ");
+
+        dgruning.r().layoutwaterfall.rlscroll.addView(v, rl);
+        Log.d(mck, "nosearchresult 6: ");
+
+    }
+}
+
+
 
 
 //==========================================================================================================================
 
+
     /**
-     * 下面是点击区.
-     * 备用.
-     *
-     * @param v
+     * 销毁activity时, 给一个没有内容的layout.
      */
-
-    public void onbuttonhappy1111(View v) {
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://member.takungae.com/zh/register_e_channel.htm"));
-        startActivity(browserIntent);
-    }
-
-
-
 
 
 
@@ -540,4 +504,231 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         setContentView(R.layout.none);
     }
+
+
+
+
+//==========================================================================================================================
+
+    /**
+     * 下面是bigshow页面的点击区, 主要就是各种分享啥的.
+     *
+     *
+     * @param v
+     */
+
+
+    private  IWXAPI wxapi;
+    private void reg2wx(){
+        final String APP_ID = "wx9f1b28e2a4fa3427";
+        //// TODO: 3/7/16 正式打包的时候, 需要替换这个app_id为正式的app_id.
+
+        wxapi = WXAPIFactory.createWXAPI(this, APP_ID);
+        wxapi.registerApp(APP_ID);
+    }
+
+
+    public void ondetailclick(View v){
+        Log.d("mck", "\\\\\\\\show detail, =======/////////");
+        TextView lTextView=(TextView)findViewById(R.id.detail_text);
+        lTextView.setText(dgruning.sArt4detailactivity.getIllustrate());
+        lTextView.setMovementMethod(ScrollingMovementMethod.getInstance());
+        View lView=findViewById(R.id.detail_text_layout);
+        lView.setVisibility(View.VISIBLE);
+        lView=findViewById(R.id.imageview_detail_button);
+        lView.setVisibility(View.INVISIBLE);
+        lView=findViewById(R.id.imageview_share_button);
+        lView.setVisibility(View.INVISIBLE);
+    }
+    public void ondetail_cancel_click(View v){
+        Log.d("mck", "\\\\\\\\share/////////");
+        View nLViewnv=findViewById(R.id.layout_share);
+        nLViewnv.setVisibility(View.INVISIBLE);
+        View lView=findViewById(R.id.detail_text_layout);
+        lView.setVisibility(View.INVISIBLE);
+        lView=findViewById(R.id.imageview_detail_button);
+        lView.setVisibility(View.VISIBLE);
+        lView=findViewById(R.id.imageview_share_button);
+        lView.setVisibility(View.VISIBLE);
+    }
+
+    public void onshareclick(View v) {
+        Log.d("mck", "\\\\\\\\share/////////");
+        View nLViewnv = findViewById(R.id.layout_share);
+        nLViewnv.setVisibility(View.VISIBLE);
+
+        if (dgruning.sArt4detailactivity.getCollection_id()==1)return;
+        /**
+         * 分享=收藏, 要加入收藏夹.
+         * */
+        collecttask lTokentask = new collecttask();
+        lTokentask.execute(dgruning.sArt4detailactivity.getPicture_id() + "", "http://app.takungae.com:80/Api/Collection/add_collection");
+        //三个参数, url, mac地址, deviceid.
+        //        改为使用uuid代替
+    }
+
+
+    /*****
+     * 添加到收藏夹, 只有不被收藏的内容才需要收藏
+     */
+
+    private class collecttask extends AsyncTask<String, Integer, String> {
+        @Override
+        protected String doInBackground(String... params) {
+            String pictureid = params[0];
+            String uploadUrl = params[1];
+            dgruning.urlpara p = new dgruning.urlpara("picture_id", pictureid);
+            dgruning.urlpara tp = new dgruning.urlpara("token", dgruning._token);
+
+
+            Log.d(mck, "deviceid:::::" + pictureid);
+            Log.d(mck, "tokenurl::::::" + uploadUrl);
+            try {
+                dgruning.r().geturlstring(uploadUrl, tp, p);
+
+                Log.d(mck, "token success");
+                return "token成功";
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.d(mck, "token fail" + e);
+                return "token失败";
+            }
+
+
+        }
+    }
+    public void onshare_cancel_click(View v){
+        Log.d("mck", "\\\\\\\\share/////////");
+        View nLViewnv=findViewById(R.id.layout_share);
+        nLViewnv.setVisibility(View.INVISIBLE);
+
+    }
+    /*****
+     * 得到wexinurl
+     */
+
+    private class weixinurltask extends AsyncTask<String, Integer, String> {
+        @Override
+        protected String doInBackground(String... params) {
+            String pictureid = params[0];
+            String uploadUrl = params[1];
+            dgruning.urlpara p = new dgruning.urlpara("picture_id", pictureid);
+            dgruning.urlpara tp = new dgruning.urlpara("token", dgruning._token);
+
+            Log.d(mck, "tokenurl::::::" + uploadUrl);
+            try {
+                JSONObject lJSONObject = new JSONObject(dgruning.r().geturlstring(uploadUrl, p, tp));
+                Log.d(mck, "-jasontostring-" + lJSONObject.toString());
+
+                dgruning._weixinurl = lJSONObject.getJSONObject("data").getString("web_url");
+                Log.d(mck, "weixinurl::::::::" + dgruning._weixinurl);
+                if (null ==  dgruning._weixinurl ||  dgruning._weixinurl.length() == 0)
+                    return "weixinurl 失败";
+
+
+
+                Log.d(mck, "weixinurl success");
+                return "weixinurl 成功";
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.d(mck, "token fail" + e);
+                return "token失败";
+            }
+
+
+        }
+    }
+    /**
+     * 1, 拿到分享的url
+     * 2, 把这个url给微信.
+     *
+     * @param v
+     */
+    public void onclick_weixin(View v){
+
+        SendMessageToWX.Req re=prepareweixin();
+
+        wxapi.sendReq(re);
+
+
+
+
+
+
+    }
+    public void onclick_friendcircle(View v){
+
+
+        SendMessageToWX.Req re=prepareweixin();
+
+
+
+
+
+        re.scene= SendMessageToWX.Req.WXSceneTimeline;
+        wxapi.sendReq(re);
+
+    }
+    private SendMessageToWX.Req prepareweixin(){
+
+        /**
+         * 分享=收藏, 要加入收藏夹.
+         * */
+        weixinurltask ltask = new weixinurltask();
+        ltask.execute(dgruning.sArt4detailactivity.getPicture_id() + "", "http://app.takungae.com:80/Api/Index/share_art");
+        //
+
+
+
+
+//        Toast.makeText(ActivityArtDetail.this, "微信", Toast.LENGTH_SHORT).show();
+
+        /**
+         * text分享, 只有文字.
+         */
+        WXTextObject to=new WXTextObject();
+        to.text=dgruning.sArt4detailactivity.getArt_name()+"-"+dgruning.sArt4detailactivity.getAuthor()+"\r\n"+dgruning.sArt4detailactivity.getPicture_url();
+
+        /**
+         * 图片分享, 竟然是only pic, 木有文字.
+         */
+        Bitmap lBitmap=dgruning.sArt4detailactivity.getDrawable().getBitmap();
+        // BitmapFactory.decodeResource(getResources(), dgruning.sArt4detailactivity.getDrawable().);
+        WXImageObject lWXImageObject=new WXImageObject(lBitmap);
+
+        Bitmap thumbmap=Bitmap.createScaledBitmap(lBitmap,32,32,true );
+
+
+        /**
+         * 网页分享
+         */
+        WXWebpageObject WebpageObject=new WXWebpageObject();
+        WebpageObject.webpageUrl=dgruning._weixinurl;
+
+
+
+        WXMediaMessage ms=new WXMediaMessage(WebpageObject);
+//        ms.mediaObject=lWXImageObject;
+        ms.thumbData=Util.bmpToByteArray(thumbmap, true);
+
+
+        ms.title=to.text;
+        ms.description=dgruning.sArt4detailactivity.getArt_name()+dgruning.sArt4detailactivity.getAuthor();
+
+        SendMessageToWX.Req re=new SendMessageToWX.Req();
+        re.transaction=String.valueOf(System.currentTimeMillis());
+        re.message=ms;
+        return re;
+    }
+
+
+
+    public void onclick_weibo(View v){
+        //敬请期待
+        Toast.makeText(ActivityArtDetail.this, "敬请期待", Toast.LENGTH_SHORT).show();
+    }
+
+
+
+
 }

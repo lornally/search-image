@@ -1,3 +1,14 @@
+
+ /**
+                  * 拿到art, 根据
+                  */
+                 // art a=dgruning.r().stringartHashMap.get(iurl);
+                 Log.d(mck, "imageviewonclick: "+iurl+"     a"+a.getArt_name());
+
+
+
+
+
  /**
      * 这个不知道是啥情况
      * 太神奇了, 真的有用. 不call ondraw, 也会call这个.
