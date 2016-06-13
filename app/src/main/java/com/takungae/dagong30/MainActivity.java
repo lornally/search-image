@@ -528,9 +528,9 @@ class nosearchresult implements Runnable{
      */
 
     public art a;
-    private IWXAPI wxapi;
-    private void reg2wx(){
-        final String APP_ID = "wx9f1b28e2a4fa3427";
+    private  IWXAPI wxapi;
+    public  void reg2wx(){
+        final String APP_ID = "wx434f0a989ac6a564";
         //// TODO: 3/7/16 正式打包的时候, 需要替换这个app_id为正式的app_id.
 
         wxapi = WXAPIFactory.createWXAPI(this, APP_ID);
@@ -542,7 +542,7 @@ class nosearchresult implements Runnable{
      * 不应该在这里错误的初始化, 初始化, 还是应该去另一个地方.
      * todo         lTextView.setText(dgruning.sArt4detailactivity.getIllustrate());
 
-     * @param v
+     *
      */
     public void ondetailclick(View v){
         Log.d("mck", "\\\\\\\\show detail, =======/////////");
@@ -576,6 +576,9 @@ class nosearchresult implements Runnable{
         Log.d("mck", "\\\\\\\\share/////////");
         View nLViewnv = findViewById(R.id.layout_share);
         nLViewnv.setVisibility(View.VISIBLE);
+        Log.d(mck, "a:"+a);
+
+        Log.d(mck, "a.id:"+a.getArt_name());
 
         if (a.getCollection_id()==1)return;
         /**
@@ -601,17 +604,17 @@ class nosearchresult implements Runnable{
             dgruning.urlpara tp = new dgruning.urlpara("token", dgruning._token);
 
 
-            Log.d(mck, "deviceid:::::" + pictureid);
-            Log.d(mck, "tokenurl::::::" + uploadUrl);
+            Log.d(mck, "pic id:::::" + pictureid);
+            Log.d(mck, "up nurl::::::" + uploadUrl);
             try {
                 dgruning.r().geturlstring(uploadUrl, tp, p);
 
-                Log.d(mck, "token success");
-                return "token成功";
+                Log.d(mck, "collecttask success");
+                return "collecttask成功";
             } catch (Exception e) {
                 e.printStackTrace();
                 Log.d(mck, "token fail" + e);
-                return "token失败";
+                return "collecttask失败";
             }
 
 
@@ -635,7 +638,7 @@ class nosearchresult implements Runnable{
             dgruning.urlpara p = new dgruning.urlpara("picture_id", pictureid);
             dgruning.urlpara tp = new dgruning.urlpara("token", dgruning._token);
 
-            Log.d(mck, "tokenurl::::::" + uploadUrl);
+            Log.d(mck, "weixinurltask::::::" + uploadUrl);
             try {
                 JSONObject lJSONObject = new JSONObject(dgruning.r().geturlstring(uploadUrl, p, tp));
                 Log.d(mck, "-jasontostring-" + lJSONObject.toString());
@@ -667,12 +670,7 @@ class nosearchresult implements Runnable{
     public void onclick_weixin(View v){
 
         SendMessageToWX.Req re=prepareweixin();
-
         wxapi.sendReq(re);
-
-
-
-
 
 
     }
@@ -680,9 +678,6 @@ class nosearchresult implements Runnable{
 
 
         SendMessageToWX.Req re=prepareweixin();
-
-
-
 
 
         re.scene= SendMessageToWX.Req.WXSceneTimeline;
@@ -697,7 +692,7 @@ class nosearchresult implements Runnable{
         weixinurltask ltask = new weixinurltask();
         ltask.execute(a.getPicture_id() + "", "http://app.takungae.com:80/Api/Index/share_art");
         //
-
+        Log.d(mck, "sendme re: 1");
 
 
 
@@ -708,6 +703,7 @@ class nosearchresult implements Runnable{
          */
         WXTextObject to=new WXTextObject();
         to.text=a.getArt_name()+"-"+a.getAuthor()+"\r\n"+a.getPicture_url();
+        Log.d(mck, "sendme re: 2:"+to.text);
 
         /**
          * 图片分享, 竟然是only pic, 木有文字.
@@ -716,7 +712,7 @@ class nosearchresult implements Runnable{
 
         Bitmap imageBitmap = imageLoader
                 .getBitmapFromMemoryCache(a.getPicture_url());
-        Log.d(mck, "doinback: 1: "+imageBitmap);
+        Log.d(mck, "sendme re: 2.5:: "+imageBitmap);
         if (imageBitmap == null) {
 
             File imageFile = new File(a.getPicture_url());
@@ -728,6 +724,7 @@ class nosearchresult implements Runnable{
             WXImageObject lWXImageObject = new WXImageObject(imageBitmap);
 
             Bitmap thumbmap = Bitmap.createScaledBitmap(imageBitmap, 32, 32, true);
+        Log.d(mck, "sendme re: 3:"+thumbmap.getHeight());
 
 
         /**
@@ -736,6 +733,7 @@ class nosearchresult implements Runnable{
         WXWebpageObject WebpageObject=new WXWebpageObject();
         WebpageObject.webpageUrl=dgruning._weixinurl;
 
+        Log.d(mck, "sendme re: 4:"+ WebpageObject.webpageUrl);
 
 
         WXMediaMessage ms=new WXMediaMessage(WebpageObject);
@@ -745,10 +743,13 @@ class nosearchresult implements Runnable{
 
         ms.title=to.text;
         ms.description=a.getArt_name()+a.getAuthor();
+        Log.d(mck, "sendme re: 5:"+ ms.description);
 
         SendMessageToWX.Req re=new SendMessageToWX.Req();
         re.transaction=String.valueOf(System.currentTimeMillis());
         re.message=ms;
+        Log.d(mck, "sendme re: 6:"+ re.transaction);
+
         return re;
     }
 

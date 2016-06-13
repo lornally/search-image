@@ -222,10 +222,13 @@ class LoadImageTask extends AsyncTask<Void, Void, Bitmap> {
             final TextView friendcircle=(TextView)dgruning.r().layoutartbigshow.findViewById(R.id.share_moment);
             weixin.setTag(a);
             friendcircle.setTag(a);*/
-
+            /**
+             * 微信api, 需要先注册, 再使用 妹的.
+             */
+            ((MainActivity)mckScrollView.context).reg2wx();//reg2wx
 
             // hide the window title.
-            ((Activity) mckScrollView.context).requestWindowFeature(Window.FEATURE_NO_TITLE);
+//            ((Activity) mckScrollView.context).requestWindowFeature(Window.FEATURE_NO_TITLE);
             // hide the status bar and other OS-level chrome
             ((Activity) mckScrollView.context).getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
             ((Activity) mckScrollView.context).setContentView(dgruning.r().layoutartbigshow);
