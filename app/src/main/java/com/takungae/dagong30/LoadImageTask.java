@@ -122,7 +122,6 @@ class LoadImageTask extends AsyncTask<Void, Void, Bitmap> {
             inu.iv.setScaleType(ImageView.ScaleType.FIT_XY);
             inu.iv.setPadding(5, 5, 5, 5);
             inu.iv.setTag(R.string.image_url, inu.url);
-            inu.iv.setTag(R.string.isshowok, true);
             inu.iv.setId(id++);
             inu.iv.setOnClickListener(new imageviewonclicklistener());
             //findColumnToAdd(imageView, imageHeight).addView(imageView);注释掉得代码.
@@ -131,6 +130,12 @@ class LoadImageTask extends AsyncTask<Void, Void, Bitmap> {
                     new RelativeLayout.LayoutParams(columnWidth, scaledHeight);
 
             addimageatposition(inu.iv, layoutParams);
+
+            /**
+             * 标记这个imageview是可以操作的, 比如checkvisibility.
+             */
+            inu.iv.setTag(R.string.isshowok, true);
+
             //这个报错, 崩溃. // : 6/3/16
 
 
@@ -231,7 +236,10 @@ class LoadImageTask extends AsyncTask<Void, Void, Bitmap> {
 //            ((Activity) mckScrollView.context).requestWindowFeature(Window.FEATURE_NO_TITLE);
             // hide the status bar and other OS-level chrome
             ((Activity) mckScrollView.context).getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            Log.d(mck, "before set content");
             ((Activity) mckScrollView.context).setContentView(dgruning.r().layoutartbigshow);
+            Log.d(mck, "after set content");
+
 
         }
     }

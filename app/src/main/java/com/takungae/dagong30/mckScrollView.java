@@ -283,8 +283,11 @@ public class mckScrollView extends ScrollView {
          * 注释掉, 试试.
          * 注释之后, 发现不行, 因为滑动到位之后, 就不调用这个函数了.
          * 再次注释试试.
+         * 这个地方要检查, 如果还没有load好图片, 就不清理缓存. 因为清理缓存的方式太粗暴了.
+         * 还是去checkvisibility改.
          */
-        checkVisibility();
+//        if(page * PAGE_SIZE >= dgruning.r().sArtist.size())
+            checkVisibility();
 //        Log.d(mck, "::::ontouch   2:");
      //   postDelayed(scrollrun, 5);
 
@@ -364,9 +367,13 @@ public class mckScrollView extends ScrollView {
 
             final ImageView iv = imageViewList.get(i);
 
-            //  Log.d(mck, "                     checkvisibility 2: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
+              Log.d(mck, "                     checkvisibility 2: "+i+"   tag: "+iv.getTag(R.string.isshowok)+"      border-top:"+iv.getTag(R.string.border_top));
+
+            if(iv.getTag(R.string.isshowok)==null)return;
+
 
             int borderTop = (Integer) iv.getTag(R.string.border_top);////  5/31/16 崩溃在这里.因为没有settag, 直接读就崩溃了.
+            //6.14, 为啥. 又崩溃.
             int borderBottom = (Integer) iv
                     .getTag(R.string.border_bottom);
 

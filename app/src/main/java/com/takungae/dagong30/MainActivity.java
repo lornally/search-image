@@ -545,8 +545,8 @@ class nosearchresult implements Runnable{
      *
      */
     public void ondetailclick(View v){
-        Log.d("mck", "\\\\\\\\show detail, =======/////////");
-        a=(art) v.getTag();
+        Log.d(mck, "\\\\\\\\show detail, =======/////////");
+//        a=(art) v.getTag();
 
 
         TextView lTextView=(TextView)findViewById(R.id.detail_text);
@@ -561,7 +561,7 @@ class nosearchresult implements Runnable{
         lView.setVisibility(View.INVISIBLE);
     }
     public void ondetail_cancel_click(View v){
-        Log.d("mck", "\\\\\\\\share/////////");
+        Log.d(mck, "\\\\\\\\share/////////");
         View nLViewnv=findViewById(R.id.layout_share);
         nLViewnv.setVisibility(View.INVISIBLE);
         View lView=findViewById(R.id.detail_text_layout);
@@ -573,7 +573,7 @@ class nosearchresult implements Runnable{
     }
 
     public void onshareclick(View v) {
-        Log.d("mck", "\\\\\\\\share/////////");
+        Log.d(mck, "\\\\\\\\share/////////");
         View nLViewnv = findViewById(R.id.layout_share);
         nLViewnv.setVisibility(View.VISIBLE);
         Log.d(mck, "a:"+a);
@@ -621,7 +621,7 @@ class nosearchresult implements Runnable{
         }
     }
     public void onshare_cancel_click(View v){
-        Log.d("mck", "\\\\\\\\share/////////");
+        Log.d(mck, "\\\\\\\\share/////////");
         View nLViewnv=findViewById(R.id.layout_share);
         nLViewnv.setVisibility(View.INVISIBLE);
 
