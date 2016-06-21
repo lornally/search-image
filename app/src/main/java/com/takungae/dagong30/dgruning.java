@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.widget.FrameLayout;
 import android.widget.Toast;
@@ -62,7 +63,9 @@ public class dgruning {
     public static String _device_id = "";
     public static Context sContext=null;
     public static String _weixinurl="";
-
+    public static String _artstring="nothing";
+    public final int screenHeight;
+    public final  int screenWidth;
 
     /**
      * 全局就用这一个toast, 提升toast的使用效率.
@@ -131,6 +134,10 @@ public class dgruning {
             sArtist = lArts;
             //isprepare=true;
 //            layoutwaterfall.hasnotresult=false;
+//            sContext.getString(R.string.prepareartlist)=result;
+            _artstring=result;
+            PreferenceManager.getDefaultSharedPreferences(sContext).edit().putString("artstring", _artstring).apply();
+
             return true;
         } catch (Exception e) {
             sArtist = null;
@@ -144,12 +151,13 @@ public class dgruning {
 
     /******
      * 准备好, 测试用的素材.
+     * 优先从本地拿, 本地拿不到, 才从系统拿.
      */
 
     public void prepareDefaultArts() {
-        String s = sContext.getString(R.string.prepareartlist);
-        Log.d(mck, "::::::s:::::" + s);
-        prepareArts(s);
+//        String s = sContext.getString(R.string.prepareartlist);
+        Log.d(mck, "::::::s:::::" );
+        prepareArts(_artstring);
         //usedefaultunprepare=false;
 
     }
@@ -317,7 +325,13 @@ public class dgruning {
 
     private dgruning() {
 
-
+        /**
+         * 这两个应该在构造函数搞定, 这样就只需要搞一次了.
+         */
+//        Log.d(mck, " onAttachedToWindow   2: height: " + screenHeight + "    width: " + columnWidth + "   rls:" + rlscroll);
+        DisplayMetrics dm =sContext.getResources().getDisplayMetrics(); //就是崩溃在这里.
+        screenHeight = dm.heightPixels;
+        screenWidth = dm.widthPixels;
     }
 
 
@@ -349,8 +363,15 @@ public class dgruning {
 
         //拿到application的context最靠谱了.
 
-        _device_id = PreferenceManager.getDefaultSharedPreferences(c).getString("device_id", "nothing");
-        _token = PreferenceManager.getDefaultSharedPreferences(c).getString("token", "nothing");
+        _device_id =    PreferenceManager.getDefaultSharedPreferences(c).getString("device_id", "nothing");
+        _token =        PreferenceManager.getDefaultSharedPreferences(c).getString("token", "nothing");
+        _artstring=     PreferenceManager.getDefaultSharedPreferences(c).getString("artstring","nothing");
+
+        if(_artstring.equals("nothing")){
+            _artstring=sContext.getString(R.string.prepareartlist);
+            PreferenceManager.getDefaultSharedPreferences(c).edit().putString("artstring", _artstring).apply();
+
+        }
         //这段是拿到token:
         Log.d(mck, "ltoken before return::::" + _token);
         if (!(_token.equals("nothing"))) return;//保证拿token这件事只执行一次. 第二次就不会被执行了.

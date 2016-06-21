@@ -33,6 +33,8 @@ import com.tencent.mm.sdk.openapi.WXAPIFactory;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -50,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
 //    private GoogleApiClient client;
     private   View layoutmain;
     private final Context c=this;
+    private List<ImageView> imageViewList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
          layoutmain = inflater.inflate(R.layout.activity_main, null);
         setContentView(layoutmain);
 
-        dgruning.r().init(this);
+        dgruning.r().init(this);//crash. // TODO: 6/20/16  
 
 
 
@@ -81,6 +84,61 @@ public class MainActivity extends AppCompatActivity {
         // See https://g.co/AppIndexing/AndroidStudio for more information.
 //        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        /**
+         * 检查界面上的images的可见情况. 不可见就加载.
+         * 是否能拿到所有的imageview?
+         */
+        /**
+         * 这个地方直接new一个macscrollview?
+         */
+        //// TODO: 6/20/16  这个代码丑死了, 傻死了, 咋办呢?
+        dgruning.makeNshow(c, "正在加载...", Toast.LENGTH_SHORT);
+
+
+        ImageView iv=(ImageView)findViewById(R.id.image0);
+        imageViewList.add(iv);
+        ImageView iv1=(ImageView)findViewById(R.id.image1);
+        imageViewList.add(iv1);
+        ImageView iv2=(ImageView)findViewById(R.id.image2);
+        imageViewList.add(iv2);
+
+        for (int i=3; i<15; i++) {
+            ImageView iv3 = (ImageView) findViewById(R.id.image2);
+            imageViewList.add(iv3);
+
+
+            final ImageView imageView = new ImageView(c);
+//				imageView.setLayoutParams(layoutParams);
+            imageViewList.add(imageView);
+        }
+        for (int i=0; i<15;i++){
+            final ImageView imageView =imageViewList.get(i);
+
+
+            final imageviewNurl inu=new imageviewNurl(imageView, dgruning.r().sArtist.get(i).getPicture_url());
+
+
+            if (null == dgruning.r().layoutwaterfall)
+                dgruning.r().layoutwaterfall =  (mckScrollView) getLayoutInflater().inflate(R.layout.waterfall, null);
+
+            LoadImageTask task = new LoadImageTask(dgruning.r().layoutwaterfall, inu, dgruning.r().screenWidth);//// TODO: 6/20/16 这个地方一列.
+            LoadImageTask.taskCollection.add(task);
+            task.execute();
+        }
+
+
+
+    }
+
+
+
+
+
+
 
 
     /**

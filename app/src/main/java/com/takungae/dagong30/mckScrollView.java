@@ -7,7 +7,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Environment;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -64,8 +63,7 @@ public class mckScrollView extends ScrollView {
     /**
      * MyScrollView布局的高度。
      */
-    private int scrollViewHeight;
-    private int scrollViewWidth;
+
 
 
     /**
@@ -107,17 +105,8 @@ public class mckScrollView extends ScrollView {
          */
         setWillNotDraw(true);
         context = c;
-        /**
-         * 这两个应该在构造函数搞定, 这样就只需要搞一次了.
-         */
-//        Log.d(mck, " onAttachedToWindow   2: height: " + scrollViewHeight + "    width: " + columnWidth + "   rls:" + rlscroll);
-        DisplayMetrics dm =getResources().getDisplayMetrics();
 
-
-
-        scrollViewHeight = dm.heightPixels;
-        scrollViewWidth = dm.widthPixels;
-       // Log.d(mck, " onAttachedToWindow   3: height: " + scrollViewHeight + "    width: " + columnWidth + "   rls:" + rlscroll);
+       // Log.d(mck, " onAttachedToWindow   3: height: " + screenHeight + "    width: " + columnWidth + "   rls:" + rlscroll);
 
 
     }
@@ -342,7 +331,7 @@ public class mckScrollView extends ScrollView {
                 final imageviewNurl inu=new imageviewNurl(imageView, dgruning.r().sArtist.get(i).getPicture_url());
 //				imageView.setLayoutParams(layoutParams);
                 imageViewList.add(imageView);
-                LoadImageTask task = new LoadImageTask(this, inu, scrollViewWidth/2);//// TODO: 6/12/16
+                LoadImageTask task = new LoadImageTask(this, inu, dgruning.r().screenWidth /2);//// TODO: 6/12/16 这个地方2 是列数.
                 LoadImageTask.taskCollection.add(task);
                 task.execute();
             }
@@ -381,8 +370,8 @@ public class mckScrollView extends ScrollView {
              * 关键代码还是在这里, 反复判断是否在屏幕范围内, 然后决定加载图片, 还是把图片替换掉.
              *  是否能加一个判断, 判断这个imageview是否改动过了.  正在弄.
              */
-            if (borderBottom > (getScrollY() - scrollViewHeight * 4)
-                    && borderTop < getScrollY() + scrollViewHeight * 5) {
+            if (borderBottom > (getScrollY() - dgruning.r().screenHeight * 4)
+                    && borderTop < getScrollY() + dgruning.r().screenHeight * 5) {
                 //  Log.d(mck, "                     checkvisibility 3: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
 
 
@@ -425,7 +414,7 @@ public class mckScrollView extends ScrollView {
              */
             //   Log.d(mck, "                     checkvisibility 5: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
 
-            LoadImageTask task = new LoadImageTask(this, inu, scrollViewWidth);
+            LoadImageTask task = new LoadImageTask(this, inu, dgruning.r().screenWidth);
             task.execute();
             //      Log.d(mck, "                     checkvisibility 6: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
 

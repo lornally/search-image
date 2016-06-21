@@ -63,10 +63,87 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:id="@+id/adscroll">
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="280dp"
+                android:layout_alignParentStart="true"
+                android:src="@drawable/empty_photo"
+                android:scaleType="centerCrop"
+                android:id="@+id/image0"
+                />
+
+
+            <Button
+                android:layout_width="120dp"
+                android:layout_height="70dp"
+                android:text="照片搜索
+        艺术品    "
+                android:id="@+id/button_byphoto"
+                android:background="@drawable/lice"
+                android:textColor="#000"
+                android:drawableLeft="@drawable/gallery_circle"
+                android:onClick="onbuttonphotosearch"
+                android:layout_below="@id/image0"
+                android:layout_alignParentLeft="true"
+                android:paddingLeft="10dp"
+                />
+            <Button
+                android:layout_width="120dp"
+                android:layout_height="70dp"
+                android:text="拍照搜索
+        艺术品    "
+                android:id="@+id/button_bycamera"
+                android:background="@drawable/lice"
+                android:textColor="#000"
+                android:layout_below="@+id/image0"
+                android:textSize="14sp"
+                android:drawableLeft="@drawable/camera_circle"
+                android:onClick="onbuttoncamerasearch"
+                android:layout_toRightOf="@id/button_byphoto"
+                android:paddingLeft="10dp"
+
+                />
+            <Button
+                android:layout_width="120dp"
+                android:layout_height="70dp"
+                android:text="点击有惊喜"
+                android:id="@+id/button_happyregister"
+                android:layout_below="@+id/image0"
+                android:background="@drawable/lice"
+                android:textColor="#C4A054"
+                android:textSize="14sp"
+                android:onClick="onbuttonhappy"
+                android:layout_alignParentRight="true"
+                />
+
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:src="@drawable/empty_photo"
+                android:scaleType="centerCrop"
+                android:id="@+id/image1"
+                android:layout_below="@id/button_byphoto"
+
+                />
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:src="@drawable/empty_photo"
+                android:scaleType="centerCrop"
+                android:id="@+id/image2"
+                android:layout_below="@id/image1"
+
+                />
+
+
 
 
 
@@ -77,78 +154,6 @@
 
     </ScrollView>
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="280dp"
-        android:layout_alignParentStart="true"
-        android:src="@drawable/a1080"
-        android:scaleType="centerCrop"
-        android:id="@+id/topimage"
-        />
-
-
-    <Button
-        android:layout_width="120dp"
-        android:layout_height="70dp"
-        android:text="照片搜索
-        艺术品    "
-        android:id="@+id/button_byphoto"
-        android:background="@drawable/lice"
-        android:textColor="#000"
-        android:drawableLeft="@drawable/gallery_circle"
-        android:onClick="onbuttonphotosearch"
-        android:layout_below="@id/topimage"
-        android:layout_alignParentLeft="true"
-        android:paddingLeft="10dp"
-        />
-    <Button
-        android:layout_width="120dp"
-        android:layout_height="70dp"
-        android:text="拍照搜索
-        艺术品    "
-        android:id="@+id/button_bycamera"
-        android:background="@drawable/lice"
-        android:textColor="#000"
-        android:layout_below="@+id/topimage"
-        android:textSize="14sp"
-        android:drawableLeft="@drawable/camera_circle"
-        android:onClick="onbuttoncamerasearch"
-        android:layout_toRightOf="@id/button_byphoto"
-        android:paddingLeft="10dp"
-
-        />
-    <Button
-        android:layout_width="120dp"
-        android:layout_height="70dp"
-        android:text="点击有惊喜"
-        android:id="@+id/button_happyregister"
-        android:layout_below="@+id/topimage"
-        android:background="@drawable/lice"
-        android:textColor="#C4A054"
-        android:textSize="14sp"
-        android:onClick="onbuttonhappy"
-        android:layout_alignParentRight="true"
-        />
-
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="187dp"
-        android:src="@drawable/a1080"
-        android:scaleType="centerCrop"
-        android:id="@+id/image1"
-        android:layout_below="@id/button_byphoto"
-
-        />
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="187dp"
-        android:src="@drawable/a1080"
-        android:scaleType="centerCrop"
-        android:id="@+id/image2"
-        android:layout_below="@id/image1"
-
-        />
 
 
 </RelativeLayout>
