@@ -6,9 +6,9 @@ import android.widget.RelativeLayout;
 /**
  * Created by m on 6/21/16.
  */
-public interface LayoutImageview {
+public interface LayoutImageV {
 
     int getColumnWidth();
-    void addimageatposition(ImageView v, RelativeLayout.LayoutParams rl);
+    void addimageatposition(ImageviewNurl v);
 
 }

@@ -40,7 +40,7 @@ import java.util.UUID;
  * @author m
  */
 
-public class MainActivity extends AppCompatActivity implements LayoutImageview {
+public class MainActivity extends AppCompatActivity implements LayoutImageV {
     private String mck = "::::main activity::::";
     private Uri lUri=null;
     /**
@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageview {
      */
 //    private GoogleApiClient client;
     private   View layoutmain;
-    private final Context c=this;
+//    private final Context c=this;
     public static Context cma;//外部类使用.
     private List<ImageView> imageViewList = new ArrayList<>();
     public static Dgruning _drn;
@@ -57,16 +57,16 @@ public class MainActivity extends AppCompatActivity implements LayoutImageview {
     private  RelativeLayout reLyou;
     @Override
     public int getColumnWidth() {
-        return _drn.screenWidth/2;
+        return _drn.screenWidth;
     }
 
     /**
      * 这个页面很简单, 本身是固定高度的. 因此不需要任何布局代码.
      * @param v
-     * @param rl
+     *
      */
     @Override
-    public void addimageatposition(ImageView v, RelativeLayout.LayoutParams rl) {
+    public void addimageatposition(ImageviewNurl v) {
 
 
     }
@@ -137,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageview {
         final int as=_drn.sArtist.size();
         for (int i=3; i<as; i++) {
             Log.d(mck, "    begin i:"+i);
-            final ImageView imageView = new ImageView(c);
+            final ImageView imageView = new ImageView(getApplicationContext());
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             RelativeLayout.LayoutParams rl= new RelativeLayout.LayoutParams(iv2.getLayoutParams().width,iv2.getLayoutParams().height);
 //				imageView.setLayoutParams(layoutParams);
@@ -152,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageview {
             final ImageView imageView =imageViewList.get(i);
 
 
-            final ImageviewNurl inu=new ImageviewNurl(imageView, _drn.sArtist.get(i).getPicture_url());
+            final ImageviewNurl inu=new ImageviewNurl(imageView, _drn.sArtist.get(i).getPicture_url(), this);
 
 
             /*if (null == _drn.layoutwaterfall)
@@ -575,7 +575,7 @@ class nosearchresult implements Runnable{
                 new RelativeLayout.LayoutParams(600, 200);
         Log.d(mck, "nosearchresult 3: ");
 
-        Button v=new Button(c);
+        Button v=new Button(getApplicationContext());
         v.setId(R.id.noreasch);
         Log.d(mck, "nosearchresult 4: ");
 

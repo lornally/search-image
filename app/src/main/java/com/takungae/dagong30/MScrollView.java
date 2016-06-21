@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Environment;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -22,7 +24,7 @@ import android.widget.Toast;
  *
  * @author machangkun
  */
-public class MScrollView extends ScrollView implements LayoutImageview{
+public class MScrollView extends ScrollView implements LayoutImageV {
     /**
      * log标签.
      */
@@ -324,10 +326,10 @@ public class MScrollView extends ScrollView implements LayoutImageview{
                  * 这种情况仅仅发生在, load图片的线程中. 但是, 也挺魔幻的, 貌似不该这样写代码哈.
                  * 其实完全可以把这段挪出去, 所有的下载图片的线程, 都是弄好了图片再下载. 对的, 这样逻辑就通畅了.
                  * todo, 改成所有的图片下载都是有imageview的. 而且, imageview和url, 不该绑定.
-                 *
+                 * todo, 设置id应该就在这里弄.
                  */
                 final ImageView imageView = new ImageView(getContext());
-                final ImageviewNurl inu=new ImageviewNurl(imageView, MainActivity._drn.sArtist.get(i).getPicture_url());
+                final ImageviewNurl inu=new ImageviewNurl(imageView, MainActivity._drn.sArtist.get(i).getPicture_url(), this);
                 inu.iv.setScaleType(ImageView.ScaleType.FIT_XY);
                 inu.iv.setPadding(5, 5, 5, 5);
 //				imageView.setLayoutParams(layoutParams);
@@ -376,7 +378,7 @@ public class MScrollView extends ScrollView implements LayoutImageview{
 
 
                 if ((boolean) iv.getTag(R.string.isshowok)) continue;
-                final ImageviewNurl inu=new ImageviewNurl(iv,""+iv.getTag(R.string.image_url) );
+                final ImageviewNurl inu=new ImageviewNurl(iv,""+iv.getTag(R.string.image_url), this);
                 //    Log.d(mck, "                     checkvisibility 4: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
                 Imageloader.getInstance().imageviewshowurlpicture(inu, this);
 
@@ -409,6 +411,7 @@ public class MScrollView extends ScrollView implements LayoutImageview{
                 .getExternalStorageState());
     }@Override
     public int getColumnWidth() {
+        Log.d(mck, "        getcolumnwith:"+MainActivity._drn.screenWidth/2);
         return MainActivity._drn.screenWidth/2;
     }
 
@@ -432,8 +435,22 @@ public class MScrollView extends ScrollView implements LayoutImageview{
 
     public  int firstcolumn;//第一列的最后一个id.
     public  int secondcolumn;//的二列的最后一个id.
+
+    /**
+     * 这个地方必须要调整了. 不能这么弄了, 并且不能基于id的增长, 应该搞一个list存储各自的id.
+     * @param v
+     */
+
     @Override
-    public void addimageatposition(ImageView v, RelativeLayout.LayoutParams rl) {
+    public void addimageatposition(ImageviewNurl v) {
+
+        Bitmap bitmap = ((BitmapDrawable)v.iv.getDrawable()).getBitmap();  //v.iv.getDrawingCache();
+        double ratio = bitmap.getWidth() / (getColumnWidth() * 1.0);
+        Log.d(mck, "dopost: ratio: "+ratio);
+        int scaledHeight = (int) (bitmap.getHeight() / ratio);
+
+        RelativeLayout.LayoutParams rl =
+                new RelativeLayout.LayoutParams(getColumnWidth(), scaledHeight);
         Log.d(mck, "addimageatposition");
 
         rl.setMargins(0, 0, 0, 0);
@@ -444,7 +461,7 @@ public class MScrollView extends ScrollView implements LayoutImageview{
          */
         Log.d(mck, " addimageatposition fistco 1:"+ firstcolumn+"      h:"+ firstColumnHeight);
         Log.d(mck, " addimageatposition sectco 1:"+ secondcolumn+"      h:"+ secondColumnHeight);
-        Log.d(mck,"addimageatposition id:"+v.getId());
+       // Log.d(mck,"addimageatposition id:"+v.getId());
         if (firstColumnHeight == 0) {
             rl.addRule(RelativeLayout.ALIGN_PARENT_TOP);
             firstcolumn = v.getId();

@@ -1,26 +1,17 @@
 package com.takungae.dagong30;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.support.v4.util.LruCache;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.WindowManager;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PipedReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashSet;
@@ -147,10 +138,11 @@ public class Imageloader {
      * 需要移动走. 移动到imageloader里面.
      * 这里才是加载图片的入口.
      */
-    public  void imageviewshowurlpicture(ImageviewNurl inu, LayoutImageview liv){
+    public  void imageviewshowurlpicture(ImageviewNurl inu, LayoutImageV liv){
         Bitmap bitmap = getBitmapFromMemoryCache(inu.url);
         if (bitmap != null) {
             inu.iv.setImageBitmap(bitmap);
+            Log.d(mck, "    isp:::"+inu.iv.getId());
         } else {
             /***
              * 这里的加载不仅仅包括从网络加载, 还包括从磁盘加载.
@@ -184,10 +176,10 @@ public class Imageloader {
          * 可重复使用的ImageView
          */
         final private ImageviewNurl inu;
-        final static String mck="..l.i.t..";
+        //final static String mck="..l.i.t..";
         //    final private int columnWidth;
 
-        final private LayoutImageview layoutImageview;
+        final private LayoutImageV layoutImageview;
 
         /**
          * 将可重复使用的ImageView传入
@@ -197,11 +189,11 @@ public class Imageloader {
          * todo 分几列, 列的宽度, 都不应该在这里考虑.
          * 应该是一个interface考虑.
          *
-         * @param imageView
+         * @param iV
          * @param cW
          */
-        public LoadImageTask(ImageviewNurl imageView, LayoutImageview cW) {
-            inu = imageView;
+        public LoadImageTask(ImageviewNurl iV, LayoutImageV cW) {
+            inu = iV;
             layoutImageview = cW;
         }
 
@@ -232,36 +224,41 @@ public class Imageloader {
             Log.d(mck, "dopost: "+bitmap);
 
             if (bitmap == null) return;
-            double ratio = bitmap.getWidth() / (layoutImageview.getColumnWidth() * 1.0);
-            Log.d(mck, "dopost: ratio: "+ratio);
-            int scaledHeight = (int) (bitmap.getHeight() / ratio);
 
 
             inu.iv.setImageBitmap(bitmap);
 
             //addImage(bitmap, columnWidth, scaledHeight);
             //这个报错, 崩溃. // : 6/3/16
-            Log.d(mck, "dopost sh:"+scaledHeight);
+//            Log.d(mck, "dopost sh:"+scaledHeight+ "    id:"+inu.iv.getId());
 
             /**
              * 这一段要移回到task里面. , 改正确牛牛的的牛的.哈哈哈, 宽这里高和要改一下, 兼容各种情况.
              * 简单 imagerNurl, 里面加上宽度参数, 哈哈哈, niude牛的.
              *
+             * 下面这两段没用的, 这个tag可以不设置, 以后都基于inu.url也可以的. todo.
              */
-            if (null!=inu.iv.getTag(R.string.image_url))return;
+            //if (null!=inu.iv.getTag(R.string.image_url))return;
 
-            inu.iv.setImageBitmap(bitmap);
+            //inu.iv.setImageBitmap(bitmap);
 //            inu.iv.setScaleType(ImageView.ScaleType.FIT_XY);
 //            inu.iv.setPadding(5, 5, 5, 5);
-            inu.iv.setTag(R.string.image_url, inu.url);
-            inu.iv.setId(id++);
-            inu.iv.setOnClickListener(new imageviewonclicklistener());
+           // inu.iv.setTag(R.string.image_url, inu.url);
+
+            //inu.iv.setId(id++);//这句话绝对有问题.todo 解决id问题.
+            //generateViewId
+
+            /**
+             * 每张图片一开始都是不在内存的, 因此在这里初始化onclick时间是合适的. 不会多做也不会少做.
+             * 或许不合适. 因为这里其实没什么内容. 可以挪到inu的初始化地方.
+             */
+//            inu.iv.setOnClickListener(new imageviewonclicklistener());
             //findColumnToAdd(imageView, imageHeight).addView(imageView);注释掉得代码.
 
-            RelativeLayout.LayoutParams layoutParams =
-                    new RelativeLayout.LayoutParams(layoutImageview.getColumnWidth(), scaledHeight);
+//            RelativeLayout.LayoutParams layoutParams =
+//                    new RelativeLayout.LayoutParams(layoutImageview.getColumnWidth(), scaledHeight);
 
-            layoutImageview.addimageatposition(inu.iv, layoutParams);
+            layoutImageview.addimageatposition(inu);
 
             /**
              * 标记这个imageview是可以操作的, 比如checkvisibility.
@@ -269,9 +266,6 @@ public class Imageloader {
             inu.iv.setTag(R.string.isshowok, true);
 
             //这个报错, 崩溃. // : 6/3/16
-
-
-
 
             taskCollection.remove(this);
         }
@@ -317,68 +311,6 @@ public class Imageloader {
 
     }*/
 
-
-        /**
-         * 瀑布流的onclick在这里,
-         * 每个点击都会进入详情页,
-         * 全屏显示点击内容的详细情况.
-         * 重新显示的bug, 原来在这里.
-         *
-         */
-        class imageviewonclicklistener implements View.OnClickListener {
-            @Override
-            public void onClick(View v) {
-//                ImageView iv = (ImageView) v;
-
-                final String iurl = "" + v.getTag(R.string.image_url);
-                /**
-                 * 如果artbigshow没有搞过, 那么就搞一下.
-                 */
-                if (null == MainActivity._drn.layoutartbigshow){
-                    MainActivity._drn.layoutartbigshow = (FrameLayout)
-                            LayoutInflater.from(MainActivity.cma).inflate(R.layout.art_bigshow, null);
-                }
-                final ImageView i=(ImageView) MainActivity._drn.layoutartbigshow.findViewById(R.id.imageview_art_detail);
-                final ImageviewNurl inu=new ImageviewNurl(i, iurl);
-                // i.setImageBitmap(); //  6/12/16  应该加载各种关于art的东西, 不需要, url, 可以带走.
-                // i.setTag(R.string.image_url, iurl);
-//                i.setTag(R.string.Art, a);
-                imageviewshowurlpicture(inu, layoutImageview);
-                Log.i(mck, "layoutwaterfall after: " + MainActivity._drn.layoutartbigshow);
-                /**
-                 * 加载界面, 把简介写进去.
-                 * 把id, 也写进去.
-                 */
-                final Art a=MainActivity._drn.stringartHashMap.get(iurl);
-
-                final TextView textView=(TextView)MainActivity._drn.layoutartbigshow.findViewById(R.id.detail_text);
-                textView.setText(a.getIllustrate());
-                ((MainActivity)MainActivity.cma).a=a;
-            /*
-            final TextView weixin=(TextView)MainActivity._drn.layoutartbigshow.findViewById(R.id.share_friend);
-            final TextView friendcircle=(TextView)MainActivity._drn.layoutartbigshow.findViewById(R.id.share_moment);
-            weixin.setTag(a);
-            friendcircle.setTag(a);*/
-                /**
-                 * 微信api, 需要先注册, 再使用 妹的.
-                 */
-                ((MainActivity)MainActivity.cma).reg2wx();//reg2wx
-
-                // hide the window title.
-//            ((Activity) MainActivity.cma).requestWindowFeature(Window.FEATURE_NO_TITLE);
-                // hide the status bar and other OS-level chrome
-                ((Activity) MainActivity.cma).getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                Log.d(mck, "before set content");
-                ((Activity) MainActivity.cma).setContentView(MainActivity._drn.layoutartbigshow);
-                Log.d(mck, "after set content");
-
-
-            }
-        }
-
-
-
-
         /**
          * 找到此时应该添加图片的一列。原则就是对三列的高度进行判断，当前高度最小的一列就是应该添加的一列。
          *
@@ -420,6 +352,7 @@ public class Imageloader {
          * 将图片下载到SD卡缓存起来。
          *
          * @param imageUrl 图片的URL地址。
+         *                 todo 代码太曲折了, 竟然是先存成file, 再从file里面读出来. 妈呀.
          */
         private void downloadImage(String imageUrl) {
             Log.d(mck, "downloadimage");
@@ -430,14 +363,10 @@ public class Imageloader {
             } else {
                 Log.d("TAG", "has no sdcard");
             }
-            HttpURLConnection con = null;
-            FileOutputStream fos = null;
-            BufferedOutputStream bos = null;
-            BufferedInputStream bis = null;
-            File imageFile = null;
-            try {
+
+            try{
                 URL url = new URL(imageUrl);
-                con = (HttpURLConnection) url.openConnection();
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
                 con.setConnectTimeout(5 * 1000);
                 con.setReadTimeout(15 * 1000);
                 con.setDoInput(true);
@@ -445,41 +374,32 @@ public class Imageloader {
                 Log.d(mck, "uploadurl" + url + con);
                 Log.d(mck, "resp:::" + con.getResponseCode());
                 Log.d(mck, "errstr:::::" + con.getErrorStream());
-                bis = new BufferedInputStream(con.getInputStream());
+                File imageFile = new File(getImagePath(imageUrl));
+                try (
+                        BufferedInputStream bis = new BufferedInputStream(con.getInputStream());
+                        FileOutputStream fos = new FileOutputStream(imageFile);
+                        BufferedOutputStream bos = new BufferedOutputStream(fos)
+                ){
 
-                imageFile = new File(getImagePath(imageUrl));
-                fos = new FileOutputStream(imageFile);
-                bos = new BufferedOutputStream(fos);
-                byte[] b = new byte[1024];
-                int length;
-                while ((length = bis.read(b)) != -1) {
-                    bos.write(b, 0, length);
-                    bos.flush();
+                    byte[] b = new byte[1024];
+                    int length;
+                    while ((length = bis.read(b)) != -1) {
+                        bos.write(b, 0, length);
+                        bos.flush();
+                    }
+                }
+
+                if (imageFile != null) {
+                    Bitmap bitmap = Imageloader.decodeSampledBitmapFromResource(
+                            imageFile.getPath(), layoutImageview.getColumnWidth());
+                    if (bitmap != null) {
+                        addBitmapToMemoryCache(imageUrl, bitmap);
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-            } finally {
-                try {
-                    if (bis != null) {
-                        bis.close();
-                    }
-                    if (bos != null) {
-                        bos.close();
-                    }
-                    if (con != null) {
-                        con.disconnect();
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
             }
-            if (imageFile != null) {
-                Bitmap bitmap = Imageloader.decodeSampledBitmapFromResource(
-                        imageFile.getPath(), layoutImageview.getColumnWidth());
-                if (bitmap != null) {
-                    addBitmapToMemoryCache(imageUrl, bitmap);
-                }
-            }
+
         }
 
         /**
