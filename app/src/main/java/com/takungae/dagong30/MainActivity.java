@@ -440,7 +440,10 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
 
         if(null==lUri){
             _drn.prepareDefaultArts();
-        }else _drn.clearart();
+        }else {
+            _drn.clearart();
+            lUri=null;// // TODO: 6/22/16 不知道是否能解决二次进入的bug, 还是带来更严重的bug. 
+        }
 
         /**
          * 自动执行mckscrollview
