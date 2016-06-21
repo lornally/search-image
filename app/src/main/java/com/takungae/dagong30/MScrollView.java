@@ -210,12 +210,13 @@ public class MScrollView extends ScrollView implements LayoutImageV {
         toasttime = 0;
         //lastScrollY = -1;
         for (int i = 0; i < column; i++) {
-            columnheight.set(i, 0);//=0;
+            columnheight.add(i, 0);//=0;
+            columnid.add(i, View.NO_ID);
         }
 //        firstColumnHeight = 0;
 //        secondColumnHeight = 0;
         // id=100;
-        Log.d(mck, "   init ok:   : ");
+        Log.d(mck, "onAttachedToWindow init ok:   : ");
 
 
         /**
@@ -298,11 +299,9 @@ public class MScrollView extends ScrollView implements LayoutImageV {
             return;
         }
 
-
         int startIndex = page * PAGE_SIZE;
         int endIndex = (page * PAGE_SIZE + PAGE_SIZE) > MainActivity._drn.sArtist.size() ? MainActivity._drn.sArtist.size() : (page * PAGE_SIZE + PAGE_SIZE);
         Log.d(mck, "loadmoreimages   1 star: " + startIndex + "   end: " + endIndex + "    size: " + MainActivity._drn.sArtist.size());
-
 
         /**
          * 因为在runable里面已经判断了, 因此永远不会执行到这里.
@@ -325,7 +324,7 @@ public class MScrollView extends ScrollView implements LayoutImageV {
                  * todo, 设置id应该就在这里弄.
                  */
                 final ImageView imageView = new ImageView(getContext());
-                final ImageviewNurl inu = new ImageviewNurl(imageView, MainActivity._drn.sArtist.get(i).getPicture_url(), this);
+                final ImageviewNurl inu = new ImageviewNurl(imageView, MainActivity._drn.sArtist.get(i).getPicture_url());
                 inu.iv.setScaleType(ImageView.ScaleType.FIT_XY);
                 inu.iv.setPadding(5, 5, 5, 5);
 //				imageView.setLayoutParams(layoutParams);
@@ -351,7 +350,7 @@ public class MScrollView extends ScrollView implements LayoutImageV {
 
             final ImageviewNurl iv = imageViewList.get(i);
 
-//            Log.d(mck, "                     checkvisibility 2: " + i + "   tag: " + iv.getTag(R.string.isshowok) + "      border-top:" + iv.getTag(R.string.border_top));
+//            Log.d(mck, "                     checkvisibility 2: " + i + "   tag: " + iv.get Tag(R.string.isshowok) + "      border-top:" + iv.get Tag(R.string.border_top));
 
             /**
              * borber_bottom==0, 意味着, 从来没有addposition过,
@@ -362,10 +361,10 @@ public class MScrollView extends ScrollView implements LayoutImageV {
             if (iv.border_bottom==0) return;
 
 
-//            int borderTop = (Integer) iv.getTag(R.string.border_top);////  5/31/16 崩溃在这里.因为没有settag, 直接读就崩溃了.
+//            int borderTop = (Integer) iv.get Tag(R.string.border_top);////  5/31/16 崩溃在这里.因为没有set tag, 直接读就崩溃了.
 //            //6.14, 为啥. 又崩溃.
 //            int borderBottom = (Integer) iv
-//                    .getTag(R.string.border_bottom);
+//                    .get Tag(R.string.border_bottom);
 
             /**
              * 关键代码还是在这里, 反复判断是否在屏幕范围内, 然后决定加载图片, 还是把图片替换掉.
@@ -373,25 +372,25 @@ public class MScrollView extends ScrollView implements LayoutImageV {
              */
             if (iv.border_bottom > (getScrollY() - MainActivity._drn.screenHeight * 4)
                     && iv.border_top < getScrollY() + MainActivity._drn.screenHeight * 5) {
-                //  Log.d(mck, "                     checkvisibility 3: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
+                //  Log.d(mck, "                     checkvisibility 3: "+i+"   tag: "+imageView.get Tag(R.string.isshowok));
 
 
                 if (iv.isshowok) continue;
-                //final ImageviewNurl inu = new ImageviewNurl(iv, "" + iv.getTag(R.string.image_url), this);
-                //    Log.d(mck, "                     checkvisibility 4: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
+                //final ImageviewNurl inu = new ImageviewNurl(iv, "" + iv.get Tag(R.string.image_url), this);
+                //    Log.d(mck, "                     checkvisibility 4: "+i+"   tag: "+imageView.get Tag(R.string.isshowok));
                 Imageloader.getInstance().imageviewshowurlpicture(iv, this);
 
-                //   Log.d(mck, "                     checkvisibility 7: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
+                //   Log.d(mck, "                     checkvisibility 7: "+i+"   tag: "+imageView.get Tag(R.string.isshowok));
 //不该在这里, 应该在设置图片的地方.
 //                iv.isshowok=true;
-                //    Log.d(mck, "                     checkvisibility 8: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
+                //    Log.d(mck, "                     checkvisibility 8: "+i+"   tag: "+imageView.ge tTag(R.string.isshowok));
 
             } else {
-                //    Log.d(mck, "                     checkvisibility 9: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
+                //    Log.d(mck, "                     checkvisibility 9: "+i+"   tag: "+imageView.ge tTag(R.string.isshowok));
 
                 iv.iv.setImageResource(R.drawable.empty_photo);
                 iv.isshowok= false;
-                //    Log.d(mck, "                     checkvisibility 10: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
+                //    Log.d(mck, "                     checkvisibility 10: "+i+"   tag: "+imageView.get Tag(R.string.isshowok));
 
                 //// : 6/1/16 图片和空间回收利用机制, 再考虑.  ruhelru缓存.
             }
@@ -422,22 +421,6 @@ public class MScrollView extends ScrollView implements LayoutImageV {
 
     public List<Integer> columnheight = new ArrayList<>();//List<>();
     public List<Integer> columnid = new ArrayList<>();
-    /**
-     * 当前第一列的高度
-     */
-    //public  int firstColumnHeight = 0;
-    /**
-     * 当前第二列的高度
-     */
-    //public  int secondColumnHeight = 0;
-    /**
-     * 每一列的宽度
-     * 这个没有用, 只在调用的时候有用
-     */
-    //private int columnWidth;
-
-    // public  int firstcolumn;//第一列的最后一个id.
-    //public  int secondcolumn;//的二列的最后一个id.
 
     /**
      * 这个地方必须要调整了. 不能这么弄了, 并且不能基于id的增长, 应该搞一个list存储各自的id.
@@ -447,11 +430,13 @@ public class MScrollView extends ScrollView implements LayoutImageV {
 
     @Override
     public void addimageatposition(ImageviewNurl v) {
+        Log.d(mck, "begin addposition");
 
         Bitmap bitmap = ((BitmapDrawable) v.iv.getDrawable()).getBitmap();  //v.iv.getDrawingCache();
         double ratio = bitmap.getWidth() / (getColumnWidth() * 1.0);
         Log.d(mck, "dopost: ratio: " + ratio);
         int scaledHeight = (int) (bitmap.getHeight() / ratio);
+
 
         RelativeLayout.LayoutParams rl =
                 new RelativeLayout.LayoutParams(getColumnWidth(), scaledHeight);
@@ -504,13 +489,9 @@ public class MScrollView extends ScrollView implements LayoutImageV {
         /**  就是这个地方搞得 需要macscrollview
          * 所以, 我把这个函数接口化之后, 移回了mscrollview
          * */
-//         Log.d(mck, "addimageatposition r: " + rlscroll.getId() + "   v: " + v.getTag(R.string.image_url) + "   rl: " + rl);
-        v.isshowok=true;
+//         Log.d(mck, "addimageatposition r: " + rlscroll.getId() + "   v: " + v.get Tag(R.string.image_url) + "   rl: " + rl);
+       // v.isshowok=true;
         rlscroll.addView(v.iv, rl);
-
-        //*/
-        //这个报错, 崩溃. // : 6/3/16
-
     }
 
 

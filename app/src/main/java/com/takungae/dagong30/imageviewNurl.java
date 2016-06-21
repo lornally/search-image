@@ -19,16 +19,16 @@ public class ImageviewNurl {
     public final ImageView iv;
     public final String url;
     final static String mck = "--iv..N..rl--";
-    final private LayoutImageV layoutImageview;
+   // final private LayoutImageV layoutImageview;
     public int border_bottom=0;
     public int border_top;
     public boolean isshowok=false;
+    //final private ImageviewNurl inu=this;
 
-
-    public ImageviewNurl(ImageView iv, String url, LayoutImageV layoutImageview) {
+    public ImageviewNurl(ImageView iv, String url) {
         this.iv = iv;
         this.url = url;
-        this.layoutImageview = layoutImageview;
+      //  this.layoutImageview = layoutImageview;
         this.iv.setOnClickListener(new imageviewonclicklistener());
         /**
          * 如果iv没有id, 那么我们应该初始化一个.
@@ -49,7 +49,11 @@ public class ImageviewNurl {
         public void onClick(View v) {
 //                ImageView iv = (ImageView) v;
 
-            final String iurl = "" + v.getTag(R.string.image_url);
+            /**
+             * 问题在这里, get tag咋办?
+             * 删除了所有的get tag.
+             */
+
             /**
              * 如果artbigshow没有搞过, 那么就搞一下.
              */
@@ -58,19 +62,21 @@ public class ImageviewNurl {
                         LayoutInflater.from(MainActivity.cma).inflate(R.layout.art_bigshow, null);
             }
             final ImageView i = (ImageView) MainActivity._drn.layoutartbigshow.findViewById(R.id.imageview_art_detail);
-            final ImageviewNurl inu = new ImageviewNurl(i, iurl, layoutImageview);
+            final ImageviewNurl inu = new ImageviewNurl(i, url);
             // i.setImageBitmap(); //  6/12/16  应该加载各种关于art的东西, 不需要, url, 可以带走.
             // i.setTag(R.string.image_url, iurl);
 //                i.setTag(R.string.Art, a);
-            Imageloader.getInstance().imageviewshowurlpicture(inu, layoutImageview);
+            Imageloader.getInstance().imageviewshowurlpicture(inu,  (MainActivity)MainActivity.cma);
             Log.i(mck, "layoutwaterfall after: " + MainActivity._drn.layoutartbigshow);
             /**
              * 加载界面, 把简介写进去.
              * 把id, 也写进去.
              */
-            final Art a = MainActivity._drn.stringartHashMap.get(iurl);
+            final Art a = MainActivity._drn.stringartHashMap.get(url);
 
             final TextView textView = (TextView) MainActivity._drn.layoutartbigshow.findViewById(R.id.detail_text);
+            Log.d(mck, "   a:"+a+ "    hashmap: "+MainActivity._drn.stringartHashMap.size());
+            Log.d(mck, "    a.illu: "+a.getIllustrate());
             textView.setText(a.getIllustrate());
             ((MainActivity) MainActivity.cma).a = a;
             /*

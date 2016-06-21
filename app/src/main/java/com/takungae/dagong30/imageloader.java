@@ -141,19 +141,28 @@ public class Imageloader {
     public  void imageviewshowurlpicture(ImageviewNurl inu, LayoutImageV liv){
         Bitmap bitmap = getBitmapFromMemoryCache(inu.url);
         if (bitmap != null) {
-            inu.iv.setImageBitmap(bitmap);
+            //inu.iv.setImageBitmap(bitmap);
+            layoutimage(inu, liv, bitmap);
             Log.d(mck, "    isp:::"+inu.iv.getId());
         } else {
             /***
              * 这里的加载不仅仅包括从网络加载, 还包括从磁盘加载.
              */
-            //   Log.d(mck, "                     checkvisibility 5: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
 
             LoadImageTask task = new LoadImageTask(inu, liv);
             task.execute();
-            //      Log.d(mck, "                     checkvisibility 6: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
 
         }
+    }
+    public void layoutimage(ImageviewNurl inu,LayoutImageV liv, Bitmap bitmap){
+        inu.iv.setImageBitmap(bitmap);
+        liv.addimageatposition(inu);
+
+        /**
+         * 标记这个imageview是可以操作的, 比如checkvisibility.
+         */
+        inu.isshowok=true;
+
     }
     /**
      * 异步下载图片的任务。
@@ -226,7 +235,7 @@ public class Imageloader {
             if (bitmap == null) return;
 
 
-            inu.iv.setImageBitmap(bitmap);
+
 
             //addImage(bitmap, columnWidth, scaledHeight);
             //这个报错, 崩溃. // : 6/3/16
@@ -238,7 +247,7 @@ public class Imageloader {
              *
              * 下面这两段没用的, 这个tag可以不设置, 以后都基于inu.url也可以的. todo.
              */
-            //if (null!=inu.iv.getTag(R.string.image_url))return;
+            //if (null!=inu.iv.getT ag(R.string.image_url))return;
 
             //inu.iv.setImageBitmap(bitmap);
 //            inu.iv.setScaleType(ImageView.ScaleType.FIT_XY);
@@ -257,18 +266,13 @@ public class Imageloader {
 
 //            RelativeLayout.LayoutParams layoutParams =
 //                    new RelativeLayout.LayoutParams(layoutImageview.getColumnWidth(), scaledHeight);
-
-            layoutImageview.addimageatposition(inu);
-
-            /**
-             * 标记这个imageview是可以操作的, 比如checkvisibility.
-             */
-            inu.iv.setTag(R.string.isshowok, true);
+            layoutimage(inu, layoutImageview, bitmap);
 
             //这个报错, 崩溃. // : 6/3/16
 
             taskCollection.remove(this);
         }
+
 
         /**
          * 根据传入的URL，对图片进行加载。如果这张图片已经存在于SD卡中，则直接从SD卡里读取，否则就从网络上下载。

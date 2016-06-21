@@ -98,8 +98,8 @@ public class Dgruning {
      * thumb_url
      */
     public boolean prepareArts(String result) {
-        sArtist = null;
-        stringartHashMap=null;
+        //sArtist = null;
+        //stringartHashMap=null;
         ArrayList<Art> lArts = new ArrayList<>();
         LinkedHashMap<String, Art> lhmarts = new LinkedHashMap<>();
         try {
@@ -120,9 +120,7 @@ public class Dgruning {
                 Log.d(mck, ":::::picture_url:::" + a.getPicture_url());
                 a.setPicture_id(j.optString("picture_id"));
                 Log.d(mck, ":::::picture_id:::" + a.getPicture_id());
-
                 a.setCollection_id(j.optInt("collection_id"));
-
                 a.setThumb_url(j.optString("thumb_url"));
                 Log.d(mck, ":::::thumb_url:::" + a.getThumb_url());
                 //和picture的内容是一样的, 因此为了避免混淆, 我注释掉了.
@@ -131,6 +129,7 @@ public class Dgruning {
             }
             //mArts=lArts;
             stringartHashMap = lhmarts;
+
             sArtist = lArts;
             //isprepare=true;
 //            layoutwaterfall.hasnotresult=false;

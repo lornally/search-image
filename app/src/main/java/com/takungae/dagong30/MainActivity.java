@@ -138,6 +138,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
         for (int i=3; i<as; i++) {
             Log.d(mck, "    begin i:"+i);
             final ImageView imageView = new ImageView(getApplicationContext());
+            imageView.setId(View.generateViewId());
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             RelativeLayout.LayoutParams rl= new RelativeLayout.LayoutParams(iv2.getLayoutParams().width,iv2.getLayoutParams().height);
 //				imageView.setLayoutParams(layoutParams);
@@ -150,28 +151,15 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
         for (int i=0; i<as;i++){
             Log.d(mck, "     i:::::"+i);
             final ImageView imageView =imageViewList.get(i);
-
-
-            final ImageviewNurl inu=new ImageviewNurl(imageView, _drn.sArtist.get(i).getPicture_url(), this);
-
-
+            final ImageviewNurl inu=new ImageviewNurl(imageView, _drn.sArtist.get(i).getPicture_url());
             /*if (null == _drn.layoutwaterfall)
                 _drn.layoutwaterfall =  (MScrollView) getLayoutInflater().inflate(R.layout.waterfall, null);*/
-
             Imageloader.getInstance().imageviewshowurlpicture(inu, this);
 //            LoadImageTask task = new LoadImageTask(inu, this);//// .
 //            LoadImageTask.taskCollection.add(task);
 //            task.execute();
         }
-
-
-
     }
-
-
-
-
-
 
 
 
@@ -638,7 +626,6 @@ class nosearchresult implements Runnable{
      */
     public void ondetailclick(View v){
         Log.d(mck, "\\\\\\\\show detail, =======/////////");
-//        a=(Art) v.getTag();
 
 
         TextView lTextView=(TextView)findViewById(R.id.detail_text);
