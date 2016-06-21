@@ -96,18 +96,21 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
         Log.i("i", "hello world!");
         Log.w("w", "hello world!");
         Log.e("e", "hello world!");
+        layoutimage();
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
 //        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
-    @Override
-    protected void onResume() {
+
+    protected void layoutimage() {
         super.onResume();
-        Log.d(mck, " resume:1" );
+        Log.d(mck, " layoutimage:1" );
         cma= this;
         _drn =new Dgruning();//crash. // TODO: 6/20/16
         reLyou=(RelativeLayout)findViewById(R.id.amrelayout);
+        //reLyou.removeAllViews();
+
         /**
          * 检查界面上的images的可见情况. 不可见就加载.
          * 是否能拿到所有的imageview?
@@ -115,10 +118,10 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
         /**
          * 这个地方直接new一个macscrollview?
          */
-        //// TODO: 6/20/16  这个代码丑死了, 傻死了, 咋办呢?
+        ////
         _drn.makeNshow( "正在加载...", Toast.LENGTH_SHORT);
         _drn.prepareDefaultArts();
-        Log.d(mck, " resume:2" );
+        Log.d(mck, " resume:2: "+_drn.sArtist.get(0).getArt_name());
 
         ImageView iv=(ImageView)findViewById(R.id.image0);
         imageViewList.add(iv);
@@ -131,7 +134,6 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
         ImageView iv2=(ImageView)findViewById(R.id.image2);
         imageViewList.add(iv2);
         Log.d(mck, "     resume:5: "+iv2.getId()+ "       image0: "+R.id.image2);
-
 
 
         final int as=_drn.sArtist.size();
@@ -173,6 +175,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
 //        super.onBackPressed();
         Log.i(mck, "back press end");
         setContentView(layoutmain);
+        layoutimage();
     }
 
 
