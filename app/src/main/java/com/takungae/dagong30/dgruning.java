@@ -39,31 +39,31 @@ import java.util.UUID;
  * todo 依赖注入貌似是解决方案.
  * 然后才可以使用这个类.
  */
-public class dgruning {
+public class Dgruning {
     //这货和dgrunning的artlist完全等价, 因此, 应该注入进来. 目前是在dgruning的prepare声明了.
-    public ArrayList<art> sArtist = null;
-    public HashMap<String, art> stringartHashMap = null;
+    public ArrayList<Art> sArtist = null;
+    public HashMap<String, Art> stringartHashMap = null;
     /**
      * 这个是瀑布流.
      *
      * @param v
      */
-    mckScrollView layoutwaterfall=null;
+    MScrollView layoutwaterfall=null;
 
     /**
      * 艺术品详情.
      */
     FrameLayout layoutartbigshow = null;
 
-    private final String mck = "--dgruning--";
+    private final String mck = "--Dgruning--";
 
     public static final String uploadurl = "http://app.takungae.com/Api/Index/upload";
 
-    public static String _token = "nothing";// 改回位nothing之后, 需要调试.
-    public static String _device_id = "";
-    public static Context sContext=null;
-    public static String _weixinurl="";
-    public static String _artstring="nothing";
+    public   String _token ;// 改回位nothing之后, 需要调试.
+    public final String _device_id ;
+    public final Context sContext ;
+    public  String _weixinurl="";
+    public  String _artstring="nothing";
     public final int screenHeight;
     public final  int screenWidth;
 
@@ -100,14 +100,14 @@ public class dgruning {
     public boolean prepareArts(String result) {
         sArtist = null;
         stringartHashMap=null;
-        ArrayList<art> lArts = new ArrayList<>();
-        LinkedHashMap<String, art> lhmarts = new LinkedHashMap<>();
+        ArrayList<Art> lArts = new ArrayList<>();
+        LinkedHashMap<String, Art> lhmarts = new LinkedHashMap<>();
         try {
             JSONObject jb = new JSONObject(result);
             JSONArray ja = jb.getJSONArray("data");
             for (int i = 0; i < ja.length(); i++) {
                 JSONObject j = ja.getJSONObject(i);
-                art a = new art();
+                Art a = new Art();
                 a.setArt_name(j.optString("art_name"));
                 Log.d(mck, ":::::artname::::" + a.getArt_name());
                 a.setAuthor(j.optString("author"));
@@ -162,10 +162,10 @@ public class dgruning {
 
     }
 
-    public static void makeNshow(final Context context, final String text, final int duration) {
+    public void makeNshow( final String text, final int duration) {
         if (toast == null) {
             //如果還沒有用過makeText方法，才使用
-            toast = android.widget.Toast.makeText(context, text, duration);
+            toast = android.widget.Toast.makeText(sContext, text, duration);
         } else {
             toast.setText(text);
             toast.setDuration(duration);
@@ -290,7 +290,7 @@ public class dgruning {
                 /*****
                  * 解析服务器返回的json
                  */
-                //                ArrayList<art> arts = new ArrayList<>();
+                //                ArrayList<Art> arts = new ArrayList<>();
                 //            return artlist.getInstance();//// :  这里返回artlist.
             }
 
@@ -307,8 +307,10 @@ public class dgruning {
 
     /****
      * 单例
+     * 貌似只能放弃单例.
+     * 让activity持有一个final public的dgruning的变量了.
      */
-    private final static dgruning ourInstance = new dgruning();
+   // private  static Dgruning ourInstance;// = new Dgruning(sContext);
 
     /**
      * 思考,怎样保证用户在使用r函数之前一定会使用init或者getinstance呢?  最好是借助编译器的力量
@@ -316,23 +318,53 @@ public class dgruning {
      * 如果没有init, 则抛出异常, 也是不错的解决方案.
      * @return
      */
-    public static dgruning r() {
+    /*public static Dgruning r() {
         //这就是一个单例, singleton
 
         return ourInstance;
     }
+*/
 
-
-    private dgruning() {
+    public Dgruning() {
+        this.sContext = MainActivity.cma;
 
         /**
          * 这两个应该在构造函数搞定, 这样就只需要搞一次了.
          */
 //        Log.d(mck, " onAttachedToWindow   2: height: " + screenHeight + "    width: " + columnWidth + "   rls:" + rlscroll);
-        DisplayMetrics dm =sContext.getResources().getDisplayMetrics(); //就是崩溃在这里.
+        DisplayMetrics dm = this.sContext.getResources().getDisplayMetrics(); //就是崩溃在这里.
         screenHeight = dm.heightPixels;
         screenWidth = dm.widthPixels;
+
+
+
+        String temp_device_id =    PreferenceManager.getDefaultSharedPreferences(sContext).getString("device_id", "nothing");
+        _token =        PreferenceManager.getDefaultSharedPreferences(sContext).getString("token", "nothing");
+        _artstring=     PreferenceManager.getDefaultSharedPreferences(sContext).getString("artstring","nothing");
+
+        if(_artstring.equals("nothing")){
+            _artstring=sContext.getString(R.string.prepareartlist);
+            PreferenceManager.getDefaultSharedPreferences(sContext).edit().putString("artstring", _artstring).apply();
+
+        }
+        //这段是拿到token:
+        Log.d(mck, "ltoken before return::::" + _token);
+        if (!(_token.equals("nothing"))){
+            _device_id=temp_device_id;
+            return;//保证拿token这件事只执行一次. 第二次就不会被执行了.
+        }
+        if (temp_device_id.equals("nothing")) {
+            temp_device_id = "" + UUID.randomUUID();
+            PreferenceManager.getDefaultSharedPreferences(sContext).edit().putString("device_id", temp_device_id).apply();
+        }
+        _device_id=temp_device_id;
+
+        Log.d(mck, "+++++++++++should not get here, if not first run++++++++++");
+        tokentask lTokentask = new tokentask();
+        lTokentask.execute(_device_id + "", "http://app.takungae.com/Api/Device/getToken");
     }
+
+
 
 
     /******
@@ -344,7 +376,7 @@ public class dgruning {
      * //
      */
 
-    public void init(Context c){//}, int w, int h) {
+   /* public void init(Context c){//}, int w, int h) {
 //        width=w;
 //        height=h;
 
@@ -352,13 +384,13 @@ public class dgruning {
 
 
     }
-
+*/
     /**
      * 会被直接调用的init函数, 系统相机使用的时候, 就需要直接调用这个初始化函数.
      *
      * @param c
      */
-    public void init_token_deviceid(Context c) {
+    /*public void init_token_deviceid(Context c) {
         sContext = c.getApplicationContext();
 
         //拿到application的context最靠谱了.
@@ -385,7 +417,7 @@ public class dgruning {
         lTokentask.execute(_device_id + "", "http://app.takungae.com/Api/Device/getToken");
         //三个参数, uploadurl, mac地址, deviceid.
         //        改为使用uuid代替
-    }
+    }*/
 
 
     /*****
@@ -415,24 +447,6 @@ public class dgruning {
                 Log.d(mck, "token fail" + e);
                 return "token失败";
             }
-        }
-    }
-
-    public static class urlpara {
-        private final String name;
-        private final String value;
-
-        public urlpara(String pName, String pValue) {
-            name = pName;
-            value = pValue;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getValue() {
-            return value;
         }
     }
 

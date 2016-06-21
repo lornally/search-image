@@ -1,6 +1,5 @@
 package com.takungae.dagong30;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -10,7 +9,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.annotation.UiThread;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
@@ -42,8 +40,8 @@ import java.util.UUID;
  * @author m
  */
 
-public class MainActivity extends AppCompatActivity {
-    private String mck = ":::::::::main activity:::::::::";
+public class MainActivity extends AppCompatActivity implements LayoutImageview {
+    private String mck = "::::main activity::::";
     private Uri lUri=null;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -52,7 +50,26 @@ public class MainActivity extends AppCompatActivity {
 //    private GoogleApiClient client;
     private   View layoutmain;
     private final Context c=this;
+    public static Context cma;//外部类使用.
     private List<ImageView> imageViewList = new ArrayList<>();
+    public static Dgruning _drn;
+
+    private  RelativeLayout reLyou;
+    @Override
+    public int getColumnWidth() {
+        return _drn.screenWidth/2;
+    }
+
+    /**
+     * 这个页面很简单, 本身是固定高度的. 因此不需要任何布局代码.
+     * @param v
+     * @param rl
+     */
+    @Override
+    public void addimageatposition(ImageView v, RelativeLayout.LayoutParams rl) {
+
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +87,6 @@ public class MainActivity extends AppCompatActivity {
          layoutmain = inflater.inflate(R.layout.activity_main, null);
         setContentView(layoutmain);
 
-        dgruning.r().init(this);//crash. // TODO: 6/20/16  
 
 
 
@@ -88,6 +104,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d(mck, " resume:1" );
+        cma= this;
+        _drn =new Dgruning();//crash. // TODO: 6/20/16
+        reLyou=(RelativeLayout)findViewById(R.id.amrelayout);
         /**
          * 检查界面上的images的可见情况. 不可见就加载.
          * 是否能拿到所有的imageview?
@@ -96,38 +116,52 @@ public class MainActivity extends AppCompatActivity {
          * 这个地方直接new一个macscrollview?
          */
         //// TODO: 6/20/16  这个代码丑死了, 傻死了, 咋办呢?
-        dgruning.makeNshow(c, "正在加载...", Toast.LENGTH_SHORT);
-
+        _drn.makeNshow( "正在加载...", Toast.LENGTH_SHORT);
+        _drn.prepareDefaultArts();
+        Log.d(mck, " resume:2" );
 
         ImageView iv=(ImageView)findViewById(R.id.image0);
         imageViewList.add(iv);
+        Log.d(mck, "     resume:3: "+iv.getId()+ "       image0: "+R.id.image0);
+
         ImageView iv1=(ImageView)findViewById(R.id.image1);
+        Log.d(mck, "     resume:4: "+iv1.getId()+ "       image0: "+R.id.image1);
+
         imageViewList.add(iv1);
         ImageView iv2=(ImageView)findViewById(R.id.image2);
         imageViewList.add(iv2);
-
-        for (int i=3; i<15; i++) {
-            ImageView iv3 = (ImageView) findViewById(R.id.image2);
-            imageViewList.add(iv3);
+        Log.d(mck, "     resume:5: "+iv2.getId()+ "       image0: "+R.id.image2);
 
 
+
+        final int as=_drn.sArtist.size();
+        for (int i=3; i<as; i++) {
+            Log.d(mck, "    begin i:"+i);
             final ImageView imageView = new ImageView(c);
+            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            RelativeLayout.LayoutParams rl= new RelativeLayout.LayoutParams(iv2.getLayoutParams().width,iv2.getLayoutParams().height);
 //				imageView.setLayoutParams(layoutParams);
             imageViewList.add(imageView);
+            Log.d(mck, "     i:::::"+imageViewList.get(i-1).getId()+"    width:"+iv2.getLayoutParams().width+"    height:"+iv2.getLayoutParams().height);
+            rl.addRule(RelativeLayout.BELOW, imageViewList.get(i-1).getId());
+            reLyou.addView(imageView,rl);
         }
-        for (int i=0; i<15;i++){
+        Log.d(mck, "     as:::::"+as+"    width:"+iv2.getLayoutParams().width+"    height:"+iv2.getLayoutParams().height);
+        for (int i=0; i<as;i++){
+            Log.d(mck, "     i:::::"+i);
             final ImageView imageView =imageViewList.get(i);
 
 
-            final imageviewNurl inu=new imageviewNurl(imageView, dgruning.r().sArtist.get(i).getPicture_url());
+            final ImageviewNurl inu=new ImageviewNurl(imageView, _drn.sArtist.get(i).getPicture_url());
 
 
-            if (null == dgruning.r().layoutwaterfall)
-                dgruning.r().layoutwaterfall =  (mckScrollView) getLayoutInflater().inflate(R.layout.waterfall, null);
+            /*if (null == _drn.layoutwaterfall)
+                _drn.layoutwaterfall =  (MScrollView) getLayoutInflater().inflate(R.layout.waterfall, null);*/
 
-            LoadImageTask task = new LoadImageTask(dgruning.r().layoutwaterfall, inu, dgruning.r().screenWidth);//// TODO: 6/20/16 这个地方一列.
-            LoadImageTask.taskCollection.add(task);
-            task.execute();
+            Imageloader.imageviewshowurlpicture(inu, this);
+//            LoadImageTask task = new LoadImageTask(inu, this);//// .
+//            LoadImageTask.taskCollection.add(task);
+//            task.execute();
         }
 
 
@@ -237,22 +271,22 @@ public class MainActivity extends AppCompatActivity {
          *
          */
         if (requestCode == 4) {
-            dgruning.makeNshow(getApplicationContext(), "上传..1.", Toast.LENGTH_SHORT);
+            _drn.makeNshow("上传..1.", Toast.LENGTH_SHORT);
             /**
              * 目前还有加载好结果数据, 也没有parse为json结果. isprepare要在那个独立的线程里面设置为true.
              */
-            //dgruning.usedefaultunprepare = false;
-            //dgruning.isprepare =false;
+            //_drn.usedefaultunprepare = false;
+            //_drn.isprepare =false;
 
 
             Thread thread = new Thread(new search());
             thread.start();
             View v = findViewById(R.id.button_searchresult);
 
-            dgruning.makeNshow(getApplicationContext(), "上传..2.", Toast.LENGTH_SHORT);
+            _drn.makeNshow( "上传..2.", Toast.LENGTH_SHORT);
 
             v.performClick();
-            dgruning.makeNshow(getApplicationContext(), "上传..3.", Toast.LENGTH_SHORT);
+            _drn.makeNshow( "上传..3.", Toast.LENGTH_SHORT);
 
         }
     }
@@ -261,12 +295,12 @@ public class MainActivity extends AppCompatActivity {
         public void run() {
             try {
 
-                String uploadUrl = dgruning.uploadurl;
-                dgruning.urlpara p = new dgruning.urlpara("token",dgruning._token); //dgruning._token);
-                dgruning.urlpara p2 = new dgruning.urlpara("type","0");
-                Log.d(mck, "    uploadUrl:::::: " + uploadUrl+"    luri: "+lUri+"    p:"+dgruning._token+" :@p2@: "+p2);
+                String uploadUrl = Dgruning.uploadurl;
+                urlpara p = new urlpara("token", _drn._token); //Dgruning._token);
+                urlpara p2 = new urlpara("type","0");
+                Log.d(mck, "    uploadUrl:::::: " + uploadUrl+"    luri: "+lUri+"    p:"+ _drn._token+" :@p2@: "+p2);
 
-                    String result=dgruning.r().posturlstring(lUri, uploadUrl, p, p2);
+                    String result= _drn.posturlstring(lUri, uploadUrl, p, p2);
                     // 报错在这里, 没有返回结果.
                 Log.d(mck, "result:::::::::"+result);
 
@@ -277,19 +311,19 @@ public class MainActivity extends AppCompatActivity {
                  *
                  */
                 Log.d(mck, "before preparearts");
-                final boolean bl=dgruning.r().prepareArts(result);
+                final boolean bl= _drn.prepareArts(result);
                 Log.d(mck, "search bl:"+bl);
                 if(!bl)runOnUiThread(new nosearchresult());
                 /**
                  * 呼唤主线程, 显示一个toast.
                  */
-                //dgruning.makeNshow(c, "全部结果已展示", Toast.LENGTH_SHORT);
+                //Dgruning.makeNshow(c, "全部结果已展示", Toast.LENGTH_SHORT);
 
 /*
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        dgruning.makeNshow(c, "全部结果已展示", Toast.LENGTH_SHORT);
+                        Dgruning.makeNshow(c, "全部结果已展示", Toast.LENGTH_SHORT);
 
                     }
                 });*/
@@ -298,7 +332,7 @@ public class MainActivity extends AppCompatActivity {
                 /**
                  * 确定加载了正确的艺术品搜索结果数据.
                  */
-            //dgruning.isprepare =true;
+            //Dgruning.isprepare =true;
 
                 ////建立更多的线程, 下载这些图片. 并且把图片保存在本机. 用之前的uuid建立一个目录. 这些图片都顺序放在目录里面.
                 ///然后使用缓存机制. 建立对象, 然后, 显示对象.
@@ -391,16 +425,16 @@ public class MainActivity extends AppCompatActivity {
 
         //替换布局为waterfall.
 
-        Log.i(mck, "onbuttongallery layoutwaterfall before: " + dgruning.r().layoutwaterfall);
+        Log.i(mck, "onbuttongallery layoutwaterfall before: " + _drn.layoutwaterfall);
 
         /**
          * 如果waterfall没有搞过, 那么就搞一下.
          */
 
-        if (null == dgruning.r().layoutwaterfall)
-            dgruning.r().layoutwaterfall =  (mckScrollView) getLayoutInflater().inflate(R.layout.waterfall, null);
+        if (null == _drn.layoutwaterfall)
+            _drn.layoutwaterfall =  (MScrollView) getLayoutInflater().inflate(R.layout.waterfall, null);
 
-        Log.i(mck, "onbuttongallery layoutwaterfall after: " + dgruning.r().layoutwaterfall);
+        Log.i(mck, "onbuttongallery layoutwaterfall after: " + _drn.layoutwaterfall);
 
         /**
          * 如果还没有准备好, 那么就来准备好默认的显示素材.
@@ -410,19 +444,19 @@ public class MainActivity extends AppCompatActivity {
          * 搜索结果最复杂, 要上传图片. 因此最后写.
          * 这个地方要判断是否要自己搞.
          */
-        //dgruning.r().initlist();
+        //_drn.initlist();
         Log.d(mck, "onbuttongallery luri: "+lUri);
 
         if(null==lUri){
-            dgruning.r().prepareDefaultArts();
-        }else dgruning.r().clearart();
+            _drn.prepareDefaultArts();
+        }else _drn.clearart();
 
         /**
          * 自动执行mckscrollview
          * 这个地方要判断一下, 如何正确的姿势setcontentview.
          * 解决办法, 在ondestroy里面setcontent一个空的xml.
          */
-        setContentView(dgruning.r().layoutwaterfall);
+        setContentView(_drn.layoutwaterfall);
 
 
     }
@@ -446,23 +480,23 @@ public class MainActivity extends AppCompatActivity {
          * 和点击相册几乎一模一样. 考虑如何合并为一个.
          * 就是把结果刷掉, 就对了.
          */
-        dgruning.r().clearart();
+        _drn.clearart();
 
 
 
         //替换布局为waterfall.
 
-        Log.i(mck, "layoutwaterfall before: " + dgruning.r().layoutwaterfall);
+        Log.i(mck, "layoutwaterfall before: " + _drn.layoutwaterfall);
 
         /**
          * 如果waterfall没有搞过, 那么就搞一下.
          */
 
-        if (null == dgruning.r().layoutwaterfall)
-            dgruning.r().layoutwaterfall = (mckScrollView)getLayoutInflater().inflate(R.layout.waterfall, null);
+        if (null == _drn.layoutwaterfall)
+            _drn.layoutwaterfall = (MScrollView)getLayoutInflater().inflate(R.layout.waterfall, null);
 
-        Log.i(mck, "layoutwaterfall after: " + dgruning.r().layoutwaterfall);
-//        dgruning.r().initlist();
+        Log.i(mck, "layoutwaterfall after: " + _drn.layoutwaterfall);
+//        _drn.initlist();
 
         Thread thread = new Thread(new bookmarklist());
         thread.start();
@@ -475,7 +509,7 @@ public class MainActivity extends AppCompatActivity {
          * 自动执行mckscrollview
          */
 
-        setContentView(dgruning.r().layoutwaterfall);
+        setContentView(_drn.layoutwaterfall);
 
 
     }
@@ -485,10 +519,10 @@ public class MainActivity extends AppCompatActivity {
             try {
 
                 String uploadUrl = "http://app.takungae.com:80/Api/Collection/my_collection";
-                dgruning.urlpara p = new dgruning.urlpara("token",dgruning._token); //dgruning._token);
-//                Log.d(mck, "    uploadUrl:::::: " + uploadUrl+"    luri: "+lUri+"    p:"+dgruning._token+" :@p2@: "+p2);
+                urlpara p = new urlpara("token", _drn._token); //Dgruning._token);
+//                Log.d(mck, "    uploadUrl:::::: " + uploadUrl+"    luri: "+lUri+"    p:"+Dgruning._token+" :@p2@: "+p2);
 
-                String result=dgruning.r().posturlstring(lUri, uploadUrl, p);
+                String result= _drn.posturlstring(lUri, uploadUrl, p);
                 // 报错在这里, 没有返回结果.
                 Log.d(mck, "result:::::::::"+result);
 
@@ -500,7 +534,7 @@ public class MainActivity extends AppCompatActivity {
                  * 如果返回是false, 那么就应该显示button, [没有搜索结果, 返回]
                  *
                  */
-            final boolean bl=dgruning.r().prepareArts(result);
+            final boolean bl= _drn.prepareArts(result);
                 Log.d(mck, "bookmarklist bl1:"+bl);
                 if(!bl)runOnUiThread(new nosearchresult());
                 Log.d(mck, "bookmarklist bl2:"+bl);
@@ -510,7 +544,7 @@ public class MainActivity extends AppCompatActivity {
                  * 呼唤主线程, 显示一个toast.
                  * 这个toast不能这么现实, 会报一个exception. 线程错误的exception.
                  */
-                //dgruning.makeNshow(c, "全部结果已展示", Toast.LENGTH_SHORT);
+                //Dgruning.makeNshow(c, "全部结果已展示", Toast.LENGTH_SHORT);
 
 
 
@@ -534,7 +568,7 @@ class nosearchresult implements Runnable{
         /**
          * 下面这句话虽然没有错, 但是, 实际上也没有用.
          */
-        //dgruning.r().layoutwaterfall.rlscroll.removeAllViews();
+        //_drn.layoutwaterfall.rlscroll.removeAllViews();
         Log.d(mck, "nosearchresult 2: ");
 
         RelativeLayout.LayoutParams rl=
@@ -549,7 +583,7 @@ class nosearchresult implements Runnable{
         rl.addRule(RelativeLayout.CENTER_IN_PARENT);
         Log.d(mck, "nosearchresult 5: ");
 
-        dgruning.r().layoutwaterfall.rlscroll.addView(v, rl);
+        _drn.layoutwaterfall.rlscroll.addView(v, rl);
         Log.d(mck, "nosearchresult 6: ");
 
     }
@@ -585,7 +619,7 @@ class nosearchresult implements Runnable{
      * @param v
      */
 
-    public art a;
+    public Art a;
     private  IWXAPI wxapi;
     public  void reg2wx(){
         final String APP_ID = "wx434f0a989ac6a564";
@@ -598,13 +632,13 @@ class nosearchresult implements Runnable{
 
     /**
      * 不应该在这里错误的初始化, 初始化, 还是应该去另一个地方.
-     * todo         lTextView.setText(dgruning.sArt4detailactivity.getIllustrate());
+     * todo         lTextView.setText(Dgruning.sArt4detailactivity.getIllustrate());
 
      *
      */
     public void ondetailclick(View v){
         Log.d(mck, "\\\\\\\\show detail, =======/////////");
-//        a=(art) v.getTag();
+//        a=(Art) v.getTag();
 
 
         TextView lTextView=(TextView)findViewById(R.id.detail_text);
@@ -658,14 +692,14 @@ class nosearchresult implements Runnable{
         protected String doInBackground(String... params) {
             String pictureid = params[0];
             String uploadUrl = params[1];
-            dgruning.urlpara p = new dgruning.urlpara("picture_id", pictureid);
-            dgruning.urlpara tp = new dgruning.urlpara("token", dgruning._token);
+            urlpara p = new urlpara("picture_id", pictureid);
+            urlpara tp = new urlpara("token", _drn._token);
 
 
             Log.d(mck, "pic id:::::" + pictureid);
             Log.d(mck, "up nurl::::::" + uploadUrl);
             try {
-                dgruning.r().geturlstring(uploadUrl, tp, p);
+                _drn.geturlstring(uploadUrl, tp, p);
 
                 Log.d(mck, "collecttask success");
                 return "collecttask成功";
@@ -693,17 +727,17 @@ class nosearchresult implements Runnable{
         protected String doInBackground(String... params) {
             String pictureid = params[0];
             String uploadUrl = params[1];
-            dgruning.urlpara p = new dgruning.urlpara("picture_id", pictureid);
-            dgruning.urlpara tp = new dgruning.urlpara("token", dgruning._token);
+            urlpara p = new urlpara("picture_id", pictureid);
+            urlpara tp = new urlpara("token", _drn._token);
 
             Log.d(mck, "weixinurltask::::::" + uploadUrl);
             try {
-                JSONObject lJSONObject = new JSONObject(dgruning.r().geturlstring(uploadUrl, p, tp));
+                JSONObject lJSONObject = new JSONObject(_drn.geturlstring(uploadUrl, p, tp));
                 Log.d(mck, "-jasontostring-" + lJSONObject.toString());
 
-                dgruning._weixinurl = lJSONObject.getJSONObject("data").getString("web_url");
-                Log.d(mck, "weixinurl::::::::" + dgruning._weixinurl);
-                if (null ==  dgruning._weixinurl ||  dgruning._weixinurl.length() == 0)
+                _drn._weixinurl = lJSONObject.getJSONObject("data").getString("web_url");
+                Log.d(mck, "weixinurl::::::::" + _drn._weixinurl);
+                if (null ==  _drn._weixinurl ||  _drn._weixinurl.length() == 0)
                     return "weixinurl 失败";
 
 
@@ -766,7 +800,7 @@ class nosearchresult implements Runnable{
         /**
          * 图片分享, 竟然是only pic, 木有文字.
          */
-        final waterfallimageload imageLoader = waterfallimageload.getInstance();
+        final Imageloader imageLoader = Imageloader.getInstance();
 
         Bitmap imageBitmap = imageLoader
                 .getBitmapFromMemoryCache(a.getPicture_url());
@@ -774,8 +808,8 @@ class nosearchresult implements Runnable{
         if (imageBitmap == null) {
 
             File imageFile = new File(a.getPicture_url());
-            imageBitmap = waterfallimageload.decodeSampledBitmapFromResource(
-                    imageFile.getPath());
+            imageBitmap = Imageloader.decodeSampledBitmapFromResource(
+                    imageFile.getPath(), getColumnWidth());
         }
 
             // BitmapFactory.decodeResource(getResources(), a.getDrawable().);
@@ -789,7 +823,7 @@ class nosearchresult implements Runnable{
          * 网页分享
          */
         WXWebpageObject WebpageObject=new WXWebpageObject();
-        WebpageObject.webpageUrl=dgruning._weixinurl;
+        WebpageObject.webpageUrl= _drn._weixinurl;
 
         Log.d(mck, "sendme re: 4:"+ WebpageObject.webpageUrl);
 

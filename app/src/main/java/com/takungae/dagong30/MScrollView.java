@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.os.Environment;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -23,7 +22,7 @@ import android.widget.Toast;
  *
  * @author machangkun
  */
-public class mckScrollView extends ScrollView {
+public class MScrollView extends ScrollView implements LayoutImageview{
     /**
      * log标签.
      */
@@ -52,7 +51,7 @@ public class mckScrollView extends ScrollView {
     /**
      * 对图片进行管理的工具类
      */
-    private waterfallimageload imageLoader;
+//    private Imageloader imageLoader;
 
 
     /**
@@ -90,14 +89,14 @@ public class mckScrollView extends ScrollView {
      * @param c
      * @param attrs
      */
-    public mckScrollView(Context c, AttributeSet attrs) {
+    public MScrollView(Context c, AttributeSet attrs) {
 
         super(c, attrs);
         Log.d(mck, ":::::::mckstrlllview constractor 2con");
 
 
 
-        imageLoader = waterfallimageload.getInstance();
+        //imageLoader = Imageloader.getInstance();
 
         /**
          * 据说这个方法能解决ondraw重复呼入的问题, 明天测试一下.
@@ -129,34 +128,34 @@ public class mckScrollView extends ScrollView {
         public void run() {
             Log.d(mck, ":::::::runable   0:");
 
-            Log.d(mck, "runable isprepare before  1:  " + dgruning.r().sArtist);
+            Log.d(mck, "runable isprepare before  1:  " + MainActivity._drn.sArtist);
             /**
              * 这个地方判断是否显示了, 无搜索结果之后应该显示的内容. 如果那样, 就返回, 并结束轮询.
              */
-            if (null == dgruning.r().sArtist) {
+            if (null == MainActivity._drn.sArtist) {
 
                 View v=findViewById(R.id.noreasch);
                 Log.d(mck, "runable 1.5: "+v);
                 if (null!=v){
-                    dgruning.makeNshow(getContext(), "没有结果", Toast.LENGTH_SHORT);
+                    MainActivity._drn.makeNshow( "没有结果", Toast.LENGTH_SHORT);
                     return;
                 }
 
-                dgruning.makeNshow(getContext(), "匹配中:" + (++toasttime), Toast.LENGTH_SHORT);
+                MainActivity._drn.makeNshow( "匹配中:" + (++toasttime), Toast.LENGTH_SHORT);
                 postDelayed(scrollrun, 1500);
-                Log.d(mck, "runable isprepare::::  2:  " + dgruning.r().sArtist);
+                Log.d(mck, "runable isprepare::::  2:  " + MainActivity._drn.sArtist);
                 return;
             }
-            Log.d(mck, "runable hasnotallshow:  3:  " + "    tasksize: " + LoadImageTask.taskCollection.size());
-            Log.d(mck, "runable hasnotallshow:  4:  page:" + page*PAGE_SIZE+"    artsize: " + dgruning.r().sArtist.size());
+            //Log.d(mck, "runable hasnotallshow:  3:  " + "    tasksize: " + LoadImageTask.taskCollection.size());
+            Log.d(mck, "runable hasnotallshow:  4:  page:" + page*PAGE_SIZE+"    artsize: " + MainActivity._drn.sArtist.size());
 
-            if(page * PAGE_SIZE >= dgruning.r().sArtist.size()){
-                dgruning.makeNshow(getContext(), "全部结果已展示", Toast.LENGTH_SHORT);
+            if(page * PAGE_SIZE >= MainActivity._drn.sArtist.size()){
+                MainActivity._drn.makeNshow( "全部结果已展示", Toast.LENGTH_SHORT);
 
                 return;
             }
             else if (LoadImageTask.taskCollection.size() < 5) {
-                dgruning.makeNshow(getContext(), "正在加载......", Toast.LENGTH_SHORT);
+                MainActivity._drn.makeNshow( "正在加载......", Toast.LENGTH_SHORT);
 
                 Log.d(mck, "runable load more    5:   ");
                 loadMoreImages();
@@ -213,8 +212,8 @@ public class mckScrollView extends ScrollView {
         page = 0;
         toasttime = 0;
         //lastScrollY = -1;
-        LoadImageTask.firstColumnHeight = 0;
-        LoadImageTask.secondColumnHeight = 0;
+        firstColumnHeight = 0;
+        secondColumnHeight = 0;
        // id=100;
         Log.d(mck, "   init ok:   : ");
 
@@ -229,12 +228,12 @@ public class mckScrollView extends ScrollView {
 
 
 
-        if (null == dgruning.r().sArtist) {
+        if (null == MainActivity._drn.sArtist) {
             Log.d(mck, "onAttachedToWindow 3:");
             postDelayed(scrollrun, 1500);
             return;
         }
-        Log.d(mck, "onAttachedToWindow 4:artlist 4:" + dgruning.r().sArtist.size());
+        Log.d(mck, "onAttachedToWindow 4:artlist 4:" + MainActivity._drn.sArtist.size());
 
         postDelayed(scrollrun, 5);
         Log.d(mck, "onAttachedToWindow 5:  after   handle 5: ");
@@ -262,8 +261,8 @@ public class mckScrollView extends ScrollView {
     protected void onScrollChanged(int l, int t, int oldl, int oldt) {
         super.onScrollChanged(l, t, oldl, oldt);
         Log.d(mck, "::::onScrollChanged   1:");
-        if (null == dgruning.r().sArtist) {
-            //   dgruning.makeNshow(getContext(), "搜索中", Toast.LENGTH_SHORT).imageviewshowurlpicture();
+        if (null == MainActivity._drn.sArtist) {
+            //   MainActivity._drn.makeNshow(getContext(), "搜索中", Toast.LENGTH_SHORT).imageviewshowurlpicture();
             return;
         }
         /**
@@ -275,7 +274,7 @@ public class mckScrollView extends ScrollView {
          * 这个地方要检查, 如果还没有load好图片, 就不清理缓存. 因为清理缓存的方式太粗暴了.
          * 还是去checkvisibility改.
          */
-//        if(page * PAGE_SIZE >= dgruning.r().sArtist.size())
+//        if(page * PAGE_SIZE >= MainActivity._drn.sArtist.size())
             checkVisibility();
 //        Log.d(mck, "::::ontouch   2:");
      //   postDelayed(scrollrun, 5);
@@ -289,7 +288,7 @@ public class mckScrollView extends ScrollView {
      */
     public void loadMoreImages() {
 
-        Log.d(mck, "loadmoreimages   0 size: " + dgruning.r().sArtist.size());
+        Log.d(mck, "loadmoreimages   0 size: " + MainActivity._drn.sArtist.size());
 
         /**
          * 设置点击事件. 传递一个art给后面.
@@ -297,27 +296,27 @@ public class mckScrollView extends ScrollView {
          * 这里其实是下载图片用的, 不是现实图片用的.
          */
         if (!hasSDCard()) {
-            dgruning.makeNshow(getContext(), "未发现SD卡", Toast.LENGTH_SHORT);
+            MainActivity._drn.makeNshow( "未发现SD卡", Toast.LENGTH_SHORT);
             return;
         }
 
 
         int startIndex = page * PAGE_SIZE;
-        int endIndex = (page * PAGE_SIZE + PAGE_SIZE) > dgruning.r().sArtist.size() ? dgruning.r().sArtist.size() : (page * PAGE_SIZE + PAGE_SIZE);
-        Log.d(mck, "loadmoreimages   1 star: " + startIndex + "   end: " + endIndex+ "    size: "+dgruning.r().sArtist.size());
+        int endIndex = (page * PAGE_SIZE + PAGE_SIZE) > MainActivity._drn.sArtist.size() ? MainActivity._drn.sArtist.size() : (page * PAGE_SIZE + PAGE_SIZE);
+        Log.d(mck, "loadmoreimages   1 star: " + startIndex + "   end: " + endIndex+ "    size: "+MainActivity._drn.sArtist.size());
 
 
         /**
          * 因为在runable里面已经判断了, 因此永远不会执行到这里.
          */
-       /* if (startIndex >= dgruning.r().sArtist.size()) {
-            dgruning.makeNshow(getContext(), "全部结果已展示", Toast.LENGTH_SHORT);
+       /* if (startIndex >= MainActivity._drn.sArtist.size()) {
+            MainActivity._drn.makeNshow(getContext(), "全部结果已展示", Toast.LENGTH_SHORT);
             return;
         }*/
 
 
-        if (startIndex < dgruning.r().sArtist.size()) {
-            dgruning.makeNshow(getContext(), "正在加载...", Toast.LENGTH_SHORT);
+        if (startIndex < MainActivity._drn.sArtist.size()) {
+            MainActivity._drn.makeNshow( "正在加载...", Toast.LENGTH_SHORT);
 
             for (int i = startIndex; i < endIndex; i++) {
 
@@ -328,12 +327,11 @@ public class mckScrollView extends ScrollView {
                  *
                  */
                 final ImageView imageView = new ImageView(getContext());
-                final imageviewNurl inu=new imageviewNurl(imageView, dgruning.r().sArtist.get(i).getPicture_url());
+                final ImageviewNurl inu=new ImageviewNurl(imageView, MainActivity._drn.sArtist.get(i).getPicture_url());
 //				imageView.setLayoutParams(layoutParams);
                 imageViewList.add(imageView);
-                LoadImageTask task = new LoadImageTask(this, inu, dgruning.r().screenWidth /2);//// TODO: 6/12/16 这个地方2 是列数.
-                LoadImageTask.taskCollection.add(task);
-                task.execute();
+
+                Imageloader.imageviewshowurlpicture(inu, this);
             }
             page++;
         }
@@ -370,15 +368,15 @@ public class mckScrollView extends ScrollView {
              * 关键代码还是在这里, 反复判断是否在屏幕范围内, 然后决定加载图片, 还是把图片替换掉.
              *  是否能加一个判断, 判断这个imageview是否改动过了.  正在弄.
              */
-            if (borderBottom > (getScrollY() - dgruning.r().screenHeight * 4)
-                    && borderTop < getScrollY() + dgruning.r().screenHeight * 5) {
+            if (borderBottom > (getScrollY() - MainActivity._drn.screenHeight * 4)
+                    && borderTop < getScrollY() + MainActivity._drn.screenHeight * 5) {
                 //  Log.d(mck, "                     checkvisibility 3: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
 
 
                 if ((boolean) iv.getTag(R.string.isshowok)) continue;
-                final  imageviewNurl inu=new imageviewNurl(iv,""+iv.getTag(R.string.image_url) );
+                final ImageviewNurl inu=new ImageviewNurl(iv,""+iv.getTag(R.string.image_url) );
                 //    Log.d(mck, "                     checkvisibility 4: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
-                imageviewshowurlpicture(inu);
+                Imageloader.imageviewshowurlpicture(inu, this);
 
                 //   Log.d(mck, "                     checkvisibility 7: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
 
@@ -397,29 +395,7 @@ public class mckScrollView extends ScrollView {
         }
     }
 
-    /**
-     * 用来在一个imageview显示图片的函数.
-     * @param inu
-     * 此处参数依赖于imageview有一个url, tag,
-     * 严重不合理. 如果有bug, 就恨隐蔽, 应该修改
-     * 已经改为双参数了.
-     */
-    public void imageviewshowurlpicture(imageviewNurl inu){
-        Bitmap bitmap = imageLoader.getBitmapFromMemoryCache(inu.url);
-        if (bitmap != null) {
-            inu.iv.setImageBitmap(bitmap);
-        } else {
-            /***
-             * 这里的加载不仅仅包括从网络加载, 还包括从磁盘加载.
-             */
-            //   Log.d(mck, "                     checkvisibility 5: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
 
-            LoadImageTask task = new LoadImageTask(this, inu, dgruning.r().screenWidth);
-            task.execute();
-            //      Log.d(mck, "                     checkvisibility 6: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
-
-        }
-    }
 
     /**
      * 判断手机是否有SD卡。
@@ -429,6 +405,87 @@ public class mckScrollView extends ScrollView {
     private boolean hasSDCard() {
         return Environment.MEDIA_MOUNTED.equals(Environment
                 .getExternalStorageState());
+    }@Override
+    public int getColumnWidth() {
+        return MainActivity._drn.screenWidth/2;
     }
+
+    /**
+     * 添加图片, todo 丑陋的要命, 这些代码.
+     */
+
+    /**
+     * 当前第一列的高度
+     */
+    public  int firstColumnHeight = 0;
+    /**
+     * 当前第二列的高度
+     */
+    public  int secondColumnHeight = 0;
+    /**
+     * 每一列的宽度
+     * 这个没有用, 只在调用的时候有用
+     */
+    //private int columnWidth;
+
+    public  int firstcolumn;//第一列的最后一个id.
+    public  int secondcolumn;//的二列的最后一个id.
+    @Override
+    public void addimageatposition(ImageView v, RelativeLayout.LayoutParams rl) {
+        Log.d(mck, "addimageatposition");
+
+        rl.setMargins(0, 0, 0, 0);
+        rl.alignWithParent = true;
+        /**
+         * 这地方真心需要指针, 有了指针, 代码就不必如此丑陋.
+         * 或者函数式也行.
+         */
+        Log.d(mck, " addimageatposition fistco 1:"+ firstcolumn+"      h:"+ firstColumnHeight);
+        Log.d(mck, " addimageatposition sectco 1:"+ secondcolumn+"      h:"+ secondColumnHeight);
+        Log.d(mck,"addimageatposition id:"+v.getId());
+        if (firstColumnHeight == 0) {
+            rl.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+            firstcolumn = v.getId();
+            v.setTag(R.string.border_top, firstColumnHeight);
+            firstColumnHeight += rl.height;
+            v.setTag(R.string.border_bottom, firstColumnHeight);
+        } else if (secondColumnHeight == 0) {
+            rl.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+            rl.addRule(RelativeLayout.RIGHT_OF, firstcolumn);
+            secondcolumn = v.getId();
+            v.setTag(R.string.border_top, secondColumnHeight);
+            secondColumnHeight += rl.height;
+            v.setTag(R.string.border_bottom, secondColumnHeight);
+        } else if (firstColumnHeight <= secondColumnHeight) {
+            rl.addRule(RelativeLayout.BELOW, firstcolumn);
+            firstcolumn = v.getId();
+            v.setTag(R.string.border_top, firstColumnHeight);
+            firstColumnHeight += rl.height;
+            v.setTag(R.string.border_bottom, firstColumnHeight);
+        } else {
+            rl.addRule(RelativeLayout.BELOW, secondcolumn);
+            rl.addRule(RelativeLayout.RIGHT_OF, firstcolumn);
+            secondcolumn = v.getId();
+            v.setTag(R.string.border_top, secondColumnHeight);
+            secondColumnHeight += rl.height;
+            v.setTag(R.string.border_bottom, secondColumnHeight);
+        }
+        Log.d(mck, " addimageatposition fistco 2:"+ firstcolumn+"h:"+ firstColumnHeight);
+        Log.d(mck, " addimageatposition sectco 2:"+ secondcolumn+"h:"+ secondColumnHeight);
+
+        //向relativelayout里面添加按钮. 如果移除某个控件: removeview
+
+
+        //这句话应该是无效的, 因为下面一句话加了.
+        //b.setLayoutParams(layoutParams);
+        /** todo 就是这个地方搞得 需要macscrollview*/
+         Log.d(mck, "addimageatposition r: " + rlscroll.getId() + "   v: " + v.getTag(R.string.image_url) + "   rl: " + rl);
+
+         rlscroll.addView(v, rl);
+         //*/
+        //这个报错, 崩溃. // : 6/3/16
+
+    }
+
 
 }

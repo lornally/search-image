@@ -6,7 +6,7 @@
     android:paddingBottom="0dp"
     android:paddingLeft="0dp"
     android:paddingRight="0dp"
-    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingTop="0dp"
     tools:context="com.takungae.dagong30.MainActivity"
     android:background="#fafafa">
 
@@ -67,7 +67,8 @@
         android:id="@+id/adscroll">
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:id="@+id/amrelayout">
 
 
             <ImageView

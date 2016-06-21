@@ -9,7 +9,7 @@ import java.io.Serializable;
  * 本来想用parcelable解决问题, 可是, 那个drawale有无法同时声明为parcelable, 因此, 还是用回serialble
  * 改为单个activity方案, 这个都不需要了.
  */
-public class art implements Serializable {
+public class Art implements Serializable {
 
 
 
@@ -25,17 +25,17 @@ public class art implements Serializable {
         dest.writeString(illustrate);
 
     }
-    public static final Parcelable.Creator<art> CREATOR
-            = new Parcelable.Creator<art>() {
-        public art createFromParcel(Parcel in) {
-            art lArt= new art();
+    public static final Parcelable.Creator<Art> CREATOR
+            = new Parcelable.Creator<Art>() {
+        public Art createFromParcel(Parcel in) {
+            Art lArt= new Art();
             lArt.mDrawable=(Drawable)(in.readParcelable(null));
             lArt.illustrate=in.readString();
             return lArt;
         }
 
-        public art[] newArray(int size) {
-            return new art[size];
+        public Art[] newArray(int size) {
+            return new Art[size];
         }
     };
 */

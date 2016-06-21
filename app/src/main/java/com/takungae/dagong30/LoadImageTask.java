@@ -7,7 +7,6 @@ import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -26,6 +25,7 @@ import java.util.Set;
 
 /**
  * 异步下载图片的任务。
+ * 加载图片应该子imageloader, 永远不应该直接调用loadimagetask.
  *
  * @author guolin
  */
@@ -36,44 +36,31 @@ class LoadImageTask extends AsyncTask<Void, Void, Bitmap> {
      * 记录所有正在下载或等待下载的任务。
      */
     public static final Set<LoadImageTask> taskCollection = new HashSet<>();
-    /**
-     * 当前第一列的高度
-     */
-    public static int firstColumnHeight = 0;
-    /**
-     * 当前第二列的高度
-     */
-    public static int secondColumnHeight = 0;
-    /**
-     * 每一列的宽度
-     * 这个没有用, 只在调用的时候有用
-     */
-    //private int columnWidth;
 
-    public static int firstcolumn;//第一列的最后一个id.
-    public static int secondcolumn;//的二列的最后一个id.
-    private com.takungae.dagong30.mckScrollView mckScrollView;
     /**
      * 可重复使用的ImageView
      */
-    final private imageviewNurl inu;
-    final static waterfallimageload imageLoader = waterfallimageload.getInstance();
+    final private ImageviewNurl inu;
+    final static Imageloader imageLoader = Imageloader.getInstance();
     final static String mck="..l.i.t..";
-    final private int columnWidth;
+//    final private int columnWidth;
     static int id=100;
+    final LayoutImageview layoutImageview;
 
     /**
      * 将可重复使用的ImageView传入
      * 这个task不仅仅是从网络下载, 从内存载入, 从硬盘载入都在这里,
      * 因此, 这里就是初始化imageview的地方.
+     * , 必须考察这个view参数是否必须的, 删除试试看
+     * todo 分几列, 列的宽度, 都不应该在这里考虑.
+     * 应该是一个interface考虑.
      *
      * @param imageView
-     * @param columnWidth
+     * @param cW
      */
-    public LoadImageTask(mckScrollView mckScrollView, imageviewNurl imageView, int columnWidth) {
-        this.mckScrollView = mckScrollView;
+    public LoadImageTask(ImageviewNurl imageView, LayoutImageview cW) {
         inu = imageView;
-        this.columnWidth = columnWidth;
+        layoutImageview = cW;
     }
 
     @Override
@@ -94,13 +81,17 @@ class LoadImageTask extends AsyncTask<Void, Void, Bitmap> {
 
     /**
      * 这个地方的问题在于, 计算了控件的宽度和高度.
+     *
+     * todo 这个函数里面应该调用正确的函数, 我们只是把bitmap传进去就好了.
+     *
      * @param bitmap
      */
     @Override
     protected void onPostExecute(Bitmap bitmap) {
         Log.d(mck, "dopost: "+bitmap);
-        if (bitmap != null) {
-            double ratio = bitmap.getWidth() / (columnWidth * 1.0);
+
+        if (bitmap == null) return;
+            double ratio = bitmap.getWidth() / (layoutImageview.getColumnWidth() * 1.0);
             Log.d(mck, "dopost: ratio: "+ratio);
             int scaledHeight = (int) (bitmap.getHeight() / ratio);
 
@@ -112,7 +103,7 @@ class LoadImageTask extends AsyncTask<Void, Void, Bitmap> {
             Log.d(mck, "dopost sh:"+scaledHeight);
 
             /**
-             * 这一段要移回到task里面. todo, 改正确牛牛的的牛的.哈哈哈, 宽这里高和要改一下, 兼容各种情况.
+             * 这一段要移回到task里面. , 改正确牛牛的的牛的.哈哈哈, 宽这里高和要改一下, 兼容各种情况.
              * 简单 imagerNurl, 里面加上宽度参数, 哈哈哈, niude牛的.
              *
              */
@@ -127,9 +118,9 @@ class LoadImageTask extends AsyncTask<Void, Void, Bitmap> {
             //findColumnToAdd(imageView, imageHeight).addView(imageView);注释掉得代码.
 
             RelativeLayout.LayoutParams layoutParams =
-                    new RelativeLayout.LayoutParams(columnWidth, scaledHeight);
+                    new RelativeLayout.LayoutParams(layoutImageview.getColumnWidth(), scaledHeight);
 
-            addimageatposition(inu.iv, layoutParams);
+        layoutImageview.addimageatposition(inu.iv, layoutParams);
 
             /**
              * 标记这个imageview是可以操作的, 比如checkvisibility.
@@ -140,7 +131,7 @@ class LoadImageTask extends AsyncTask<Void, Void, Bitmap> {
 
 
 
-        }
+
         taskCollection.remove(this);
     }
 
@@ -151,15 +142,15 @@ class LoadImageTask extends AsyncTask<Void, Void, Bitmap> {
      * @return 加载到内存的图片。
      */
     public Bitmap url2bitmap(String imageUrl) {
-        Log.d(mck, "loadimages : "+ columnWidth);
+//        Log.d(mck, "loadimages : "+ columnWidth);
 
         File imageFile = new File(getImagePath(imageUrl));
         if (!imageFile.exists()) {
             downloadImage(imageUrl);
         }
         if (imageUrl != null) {
-            Bitmap bitmap = waterfallimageload.decodeSampledBitmapFromResource(
-                    imageFile.getPath(), columnWidth);
+            Bitmap bitmap = Imageloader.decodeSampledBitmapFromResource(
+                    imageFile.getPath(), layoutImageview.getColumnWidth());
             if (bitmap != null) {
                 imageLoader.addBitmapToMemoryCache(imageUrl, bitmap);
                 return bitmap;
@@ -202,42 +193,42 @@ class LoadImageTask extends AsyncTask<Void, Void, Bitmap> {
             /**
              * 如果artbigshow没有搞过, 那么就搞一下.
              */
-            if (null == dgruning.r().layoutartbigshow){
-                dgruning.r().layoutartbigshow = (FrameLayout)
-                        LayoutInflater.from(mckScrollView.context).inflate(R.layout.art_bigshow, null);
+            if (null == MainActivity._drn.layoutartbigshow){
+                MainActivity._drn.layoutartbigshow = (FrameLayout)
+                        LayoutInflater.from(MainActivity.cma).inflate(R.layout.art_bigshow, null);
             }
-            final ImageView i=(ImageView) dgruning.r().layoutartbigshow.findViewById(R.id.imageview_art_detail);
-            final imageviewNurl inu=new imageviewNurl(i, iurl);
+            final ImageView i=(ImageView) MainActivity._drn.layoutartbigshow.findViewById(R.id.imageview_art_detail);
+            final ImageviewNurl inu=new ImageviewNurl(i, iurl);
            // i.setImageBitmap(); //  6/12/16  应该加载各种关于art的东西, 不需要, url, 可以带走.
            // i.setTag(R.string.image_url, iurl);
-//                i.setTag(R.string.art, a);
-            mckScrollView.imageviewshowurlpicture(inu);
-            Log.i(mck, "layoutwaterfall after: " + dgruning.r().layoutartbigshow);
+//                i.setTag(R.string.Art, a);
+            Imageloader.imageviewshowurlpicture(inu, layoutImageview);
+            Log.i(mck, "layoutwaterfall after: " + MainActivity._drn.layoutartbigshow);
             /**
              * 加载界面, 把简介写进去.
              * 把id, 也写进去.
              */
-            final art a=dgruning.r().stringartHashMap.get(iurl);
+            final Art a=MainActivity._drn.stringartHashMap.get(iurl);
 
-            final TextView textView=(TextView)dgruning.r().layoutartbigshow.findViewById(R.id.detail_text);
+            final TextView textView=(TextView)MainActivity._drn.layoutartbigshow.findViewById(R.id.detail_text);
             textView.setText(a.getIllustrate());
-            ((MainActivity)mckScrollView.context).a=a;
+            ((MainActivity)MainActivity.cma).a=a;
             /*
-            final TextView weixin=(TextView)dgruning.r().layoutartbigshow.findViewById(R.id.share_friend);
-            final TextView friendcircle=(TextView)dgruning.r().layoutartbigshow.findViewById(R.id.share_moment);
+            final TextView weixin=(TextView)MainActivity._drn.layoutartbigshow.findViewById(R.id.share_friend);
+            final TextView friendcircle=(TextView)MainActivity._drn.layoutartbigshow.findViewById(R.id.share_moment);
             weixin.setTag(a);
             friendcircle.setTag(a);*/
             /**
              * 微信api, 需要先注册, 再使用 妹的.
              */
-            ((MainActivity)mckScrollView.context).reg2wx();//reg2wx
+            ((MainActivity)MainActivity.cma).reg2wx();//reg2wx
 
             // hide the window title.
-//            ((Activity) mckScrollView.context).requestWindowFeature(Window.FEATURE_NO_TITLE);
+//            ((Activity) MainActivity.cma).requestWindowFeature(Window.FEATURE_NO_TITLE);
             // hide the status bar and other OS-level chrome
-            ((Activity) mckScrollView.context).getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            ((Activity) MainActivity.cma).getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
             Log.d(mck, "before set content");
-            ((Activity) mckScrollView.context).setContentView(dgruning.r().layoutartbigshow);
+            ((Activity) MainActivity.cma).setContentView(MainActivity._drn.layoutartbigshow);
             Log.d(mck, "after set content");
 
 
@@ -245,61 +236,7 @@ class LoadImageTask extends AsyncTask<Void, Void, Bitmap> {
     }
 
 
-    /**
-     * 添加图片, todo 丑陋的要命, 这些代码.
-     */
-    private void addimageatposition(ImageView v, RelativeLayout.LayoutParams rl) {
-        Log.d(mck, "addimageatposition");
 
-        rl.setMargins(0, 0, 0, 0);
-        rl.alignWithParent = true;
-        /**
-         * 这地方真心需要指针, 有了指针, 代码就不必如此丑陋.
-         * 或者函数式也行.
-         */
-        Log.d(mck, " addimageatposition fistco 1:"+ firstcolumn+"      h:"+ firstColumnHeight);
-        Log.d(mck, " addimageatposition sectco 1:"+ secondcolumn+"      h:"+ secondColumnHeight);
-        Log.d(mck,"addimageatposition id:"+v.getId());
-        if (firstColumnHeight == 0) {
-            rl.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-            firstcolumn = v.getId();
-            v.setTag(R.string.border_top, firstColumnHeight);
-            firstColumnHeight += rl.height;
-            v.setTag(R.string.border_bottom, firstColumnHeight);
-        } else if (secondColumnHeight == 0) {
-            rl.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-            rl.addRule(RelativeLayout.RIGHT_OF, firstcolumn);
-            secondcolumn = v.getId();
-            v.setTag(R.string.border_top, secondColumnHeight);
-            secondColumnHeight += rl.height;
-            v.setTag(R.string.border_bottom, secondColumnHeight);
-        } else if (firstColumnHeight <= secondColumnHeight) {
-            rl.addRule(RelativeLayout.BELOW, firstcolumn);
-            firstcolumn = v.getId();
-            v.setTag(R.string.border_top, firstColumnHeight);
-            firstColumnHeight += rl.height;
-            v.setTag(R.string.border_bottom, firstColumnHeight);
-        } else {
-            rl.addRule(RelativeLayout.BELOW, secondcolumn);
-            rl.addRule(RelativeLayout.RIGHT_OF, firstcolumn);
-            secondcolumn = v.getId();
-            v.setTag(R.string.border_top, secondColumnHeight);
-            secondColumnHeight += rl.height;
-            v.setTag(R.string.border_bottom, secondColumnHeight);
-        }
-        Log.d(mck, " addimageatposition fistco 2:"+ firstcolumn+"h:"+ firstColumnHeight);
-        Log.d(mck, " addimageatposition sectco 2:"+ secondcolumn+"h:"+ secondColumnHeight);
-
-        //向relativelayout里面添加按钮. 如果移除某个控件: removeview
-
-
-        //这句话应该是无效的, 因为下面一句话加了.
-        //b.setLayoutParams(layoutParams);
-        Log.d(mck, "addimageatposition r: " + mckScrollView.rlscroll.getId() + "   v: " + v.getTag(R.string.image_url) + "   rl: " + rl);
-        mckScrollView.rlscroll.addView(v, rl);
-        //这个报错, 崩溃. // : 6/3/16
-
-    }
 
     /**
      * 找到此时应该添加图片的一列。原则就是对三列的高度进行判断，当前高度最小的一列就是应该添加的一列。
@@ -396,8 +333,8 @@ class LoadImageTask extends AsyncTask<Void, Void, Bitmap> {
             }
         }
         if (imageFile != null) {
-            Bitmap bitmap = waterfallimageload.decodeSampledBitmapFromResource(
-                    imageFile.getPath(), columnWidth);
+            Bitmap bitmap = Imageloader.decodeSampledBitmapFromResource(
+                    imageFile.getPath(), layoutImageview.getColumnWidth());
             if (bitmap != null) {
                 imageLoader.addBitmapToMemoryCache(imageUrl, bitmap);
             }
