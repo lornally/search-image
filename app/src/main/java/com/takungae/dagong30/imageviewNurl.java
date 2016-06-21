@@ -18,14 +18,23 @@ import android.widget.TextView;
 public class ImageviewNurl {
     public final ImageView iv;
     public final String url;
-    final static String mck="--iv..N..rl--";
-    final private LayoutImageV layoutImageview ;
+    final static String mck = "--iv..N..rl--";
+    final private LayoutImageV layoutImageview;
+    public int border_bottom=0;
+    public int border_top;
+    public boolean isshowok=false;
+
+
     public ImageviewNurl(ImageView iv, String url, LayoutImageV layoutImageview) {
         this.iv = iv;
         this.url = url;
         this.layoutImageview = layoutImageview;
         this.iv.setOnClickListener(new imageviewonclicklistener());
-
+        /**
+         * 如果iv没有id, 那么我们应该初始化一个.
+         */
+        if (View.NO_ID != this.iv.getId()) return;
+        this.iv.setId(View.generateViewId());
     }
 
 
@@ -34,7 +43,6 @@ public class ImageviewNurl {
      * 每个点击都会进入详情页,
      * 全屏显示点击内容的详细情况.
      * 重新显示的bug, 原来在这里.
-     *
      */
     class imageviewonclicklistener implements View.OnClickListener {
         @Override
@@ -45,12 +53,12 @@ public class ImageviewNurl {
             /**
              * 如果artbigshow没有搞过, 那么就搞一下.
              */
-            if (null == MainActivity._drn.layoutartbigshow){
+            if (null == MainActivity._drn.layoutartbigshow) {
                 MainActivity._drn.layoutartbigshow = (FrameLayout)
                         LayoutInflater.from(MainActivity.cma).inflate(R.layout.art_bigshow, null);
             }
-            final ImageView i=(ImageView) MainActivity._drn.layoutartbigshow.findViewById(R.id.imageview_art_detail);
-            final ImageviewNurl inu=new ImageviewNurl(i, iurl, layoutImageview);
+            final ImageView i = (ImageView) MainActivity._drn.layoutartbigshow.findViewById(R.id.imageview_art_detail);
+            final ImageviewNurl inu = new ImageviewNurl(i, iurl, layoutImageview);
             // i.setImageBitmap(); //  6/12/16  应该加载各种关于art的东西, 不需要, url, 可以带走.
             // i.setTag(R.string.image_url, iurl);
 //                i.setTag(R.string.Art, a);
@@ -60,11 +68,11 @@ public class ImageviewNurl {
              * 加载界面, 把简介写进去.
              * 把id, 也写进去.
              */
-            final Art a=MainActivity._drn.stringartHashMap.get(iurl);
+            final Art a = MainActivity._drn.stringartHashMap.get(iurl);
 
-            final TextView textView=(TextView)MainActivity._drn.layoutartbigshow.findViewById(R.id.detail_text);
+            final TextView textView = (TextView) MainActivity._drn.layoutartbigshow.findViewById(R.id.detail_text);
             textView.setText(a.getIllustrate());
-            ((MainActivity)MainActivity.cma).a=a;
+            ((MainActivity) MainActivity.cma).a = a;
             /*
             final TextView weixin=(TextView)MainActivity._drn.layoutartbigshow.findViewById(R.id.share_friend);
             final TextView friendcircle=(TextView)MainActivity._drn.layoutartbigshow.findViewById(R.id.share_moment);
@@ -73,7 +81,7 @@ public class ImageviewNurl {
             /**
              * 微信api, 需要先注册, 再使用 妹的.
              */
-            ((MainActivity)MainActivity.cma).reg2wx();//reg2wx
+            ((MainActivity) MainActivity.cma).reg2wx();//reg2wx
 
             // hide the window title.
 //            ((Activity) MainActivity.cma).requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -86,8 +94,6 @@ public class ImageviewNurl {
 
         }
     }
-
-
 
 
 }

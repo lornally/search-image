@@ -18,9 +18,8 @@ import android.widget.Toast;
 /**
  * 自定义的ScrollView，在其中动态地对图片进行添加。
  * *目前结构
- #runable根据情况, 调用loadimage.
- #onscrool, 根据情况, 调用checkvisible.
-
+ * #runable根据情况, 调用loadimage.
+ * #onscrool, 根据情况, 调用checkvisible.
  *
  * @author machangkun
  */
@@ -66,7 +65,6 @@ public class MScrollView extends ScrollView implements LayoutImageV {
      */
 
 
-
     /**
      * 记录上垂直方向的滚动距离。
      */
@@ -75,7 +73,7 @@ public class MScrollView extends ScrollView implements LayoutImageV {
     /**
      * 记录所有界面上的图片，用以可以随时控制对图片的释放。
      */
-    private List<ImageView> imageViewList = new ArrayList<>();
+    private List<ImageviewNurl> imageViewList = new ArrayList<>();
 
 
     private static int toasttime = 0; //toast计数器
@@ -97,7 +95,6 @@ public class MScrollView extends ScrollView implements LayoutImageV {
         Log.d(mck, ":::::::mckstrlllview constractor 2con");
 
 
-
         //imageLoader = Imageloader.getInstance();
 
         /**
@@ -107,11 +104,10 @@ public class MScrollView extends ScrollView implements LayoutImageV {
         setWillNotDraw(true);
         context = c;
 
-       // Log.d(mck, " onAttachedToWindow   3: height: " + screenHeight + "    width: " + columnWidth + "   rls:" + rlscroll);
+        // Log.d(mck, " onAttachedToWindow   3: height: " + screenHeight + "    width: " + columnWidth + "   rls:" + rlscroll);
 
 
     }
-
 
 
     /**
@@ -136,28 +132,27 @@ public class MScrollView extends ScrollView implements LayoutImageV {
              */
             if (null == MainActivity._drn.sArtist) {
 
-                View v=findViewById(R.id.noreasch);
-                Log.d(mck, "runable 1.5: "+v);
-                if (null!=v){
-                    MainActivity._drn.makeNshow( "没有结果", Toast.LENGTH_SHORT);
+                View v = findViewById(R.id.noreasch);
+                Log.d(mck, "runable 1.5: " + v);
+                if (null != v) {
+                    MainActivity._drn.makeNshow("没有结果", Toast.LENGTH_SHORT);
                     return;
                 }
 
-                MainActivity._drn.makeNshow( "匹配中:" + (++toasttime), Toast.LENGTH_SHORT);
+                MainActivity._drn.makeNshow("匹配中:" + (++toasttime), Toast.LENGTH_SHORT);
                 postDelayed(scrollrun, 1500);
                 Log.d(mck, "runable isprepare::::  2:  " + MainActivity._drn.sArtist);
                 return;
             }
             //Log.d(mck, "runable hasnotallshow:  3:  " + "    tasksize: " + LoadImageTask.taskCollection.size());
-            Log.d(mck, "runable hasnotallshow:  4:  page:" + page*PAGE_SIZE+"    artsize: " + MainActivity._drn.sArtist.size());
+            Log.d(mck, "runable hasnotallshow:  4:  page:" + page * PAGE_SIZE + "    artsize: " + MainActivity._drn.sArtist.size());
 
-            if(page * PAGE_SIZE >= MainActivity._drn.sArtist.size()){
-                MainActivity._drn.makeNshow( "全部结果已展示", Toast.LENGTH_SHORT);
+            if (page * PAGE_SIZE >= MainActivity._drn.sArtist.size()) {
+                MainActivity._drn.makeNshow("全部结果已展示", Toast.LENGTH_SHORT);
 
                 return;
-            }
-            else if (Imageloader.taskCollection.size() < 5) {
-                MainActivity._drn.makeNshow( "正在加载......", Toast.LENGTH_SHORT);
+            } else if (Imageloader.taskCollection.size() < 5) {
+                MainActivity._drn.makeNshow("正在加载......", Toast.LENGTH_SHORT);
 
                 Log.d(mck, "runable load more    5:   ");
                 loadMoreImages();
@@ -188,7 +183,7 @@ public class MScrollView extends ScrollView implements LayoutImageV {
     @Override
     protected void onWindowVisibilityChanged(int visibility) {
         super.onWindowVisibilityChanged(visibility);
-        Log.d(mck,"onwindowvisibilitychanged");
+        Log.d(mck, "onwindowvisibilitychanged");
     }
 
     /**
@@ -198,8 +193,8 @@ public class MScrollView extends ScrollView implements LayoutImageV {
      * 不能放到单参数的构造器里面, 因为inflate会调用双参数构造器. 神奇了.
      * 只能放到attachwindows里面.
      * 明白了, 不能在这里removeall, 需要到ondraw之后才行.
-     *  貌似没用, 一会儿改回来试试.
-     *  高度和宽度不能在这里搞, 因为还没有onmessure呢, 所以高宽都是零.
+     * 貌似没用, 一会儿改回来试试.
+     * 高度和宽度不能在这里搞, 因为还没有onmessure呢, 所以高宽都是零.
      */
 
 
@@ -214,9 +209,12 @@ public class MScrollView extends ScrollView implements LayoutImageV {
         page = 0;
         toasttime = 0;
         //lastScrollY = -1;
-        firstColumnHeight = 0;
-        secondColumnHeight = 0;
-       // id=100;
+        for (int i = 0; i < column; i++) {
+            columnheight.set(i, 0);//=0;
+        }
+//        firstColumnHeight = 0;
+//        secondColumnHeight = 0;
+        // id=100;
         Log.d(mck, "   init ok:   : ");
 
 
@@ -227,7 +225,6 @@ public class MScrollView extends ScrollView implements LayoutImageV {
         rlscroll = (RelativeLayout) findViewById(R.id.rlwaterfall);
         Log.d(mck, "onattachedtowindow 2:    rlscroll 2:" + rlscroll);
         rlscroll.removeAllViews();
-
 
 
         if (null == MainActivity._drn.sArtist) {
@@ -242,7 +239,6 @@ public class MScrollView extends ScrollView implements LayoutImageV {
 
 
     }
-
 
 
     /**
@@ -277,9 +273,9 @@ public class MScrollView extends ScrollView implements LayoutImageV {
          * 还是去checkvisibility改.
          */
 //        if(page * PAGE_SIZE >= MainActivity._drn.sArtist.size())
-            checkVisibility();
+        checkVisibility();
 //        Log.d(mck, "::::ontouch   2:");
-     //   postDelayed(scrollrun, 5);
+        //   postDelayed(scrollrun, 5);
 
     }
 
@@ -298,14 +294,14 @@ public class MScrollView extends ScrollView implements LayoutImageV {
          * 这里其实是下载图片用的, 不是现实图片用的.
          */
         if (!hasSDCard()) {
-            MainActivity._drn.makeNshow( "未发现SD卡", Toast.LENGTH_SHORT);
+            MainActivity._drn.makeNshow("未发现SD卡", Toast.LENGTH_SHORT);
             return;
         }
 
 
         int startIndex = page * PAGE_SIZE;
         int endIndex = (page * PAGE_SIZE + PAGE_SIZE) > MainActivity._drn.sArtist.size() ? MainActivity._drn.sArtist.size() : (page * PAGE_SIZE + PAGE_SIZE);
-        Log.d(mck, "loadmoreimages   1 star: " + startIndex + "   end: " + endIndex+ "    size: "+MainActivity._drn.sArtist.size());
+        Log.d(mck, "loadmoreimages   1 star: " + startIndex + "   end: " + endIndex + "    size: " + MainActivity._drn.sArtist.size());
 
 
         /**
@@ -318,7 +314,7 @@ public class MScrollView extends ScrollView implements LayoutImageV {
 
 
         if (startIndex < MainActivity._drn.sArtist.size()) {
-            MainActivity._drn.makeNshow( "正在加载...", Toast.LENGTH_SHORT);
+            MainActivity._drn.makeNshow("正在加载...", Toast.LENGTH_SHORT);
 
             for (int i = startIndex; i < endIndex; i++) {
 
@@ -329,11 +325,11 @@ public class MScrollView extends ScrollView implements LayoutImageV {
                  * todo, 设置id应该就在这里弄.
                  */
                 final ImageView imageView = new ImageView(getContext());
-                final ImageviewNurl inu=new ImageviewNurl(imageView, MainActivity._drn.sArtist.get(i).getPicture_url(), this);
+                final ImageviewNurl inu = new ImageviewNurl(imageView, MainActivity._drn.sArtist.get(i).getPicture_url(), this);
                 inu.iv.setScaleType(ImageView.ScaleType.FIT_XY);
                 inu.iv.setPadding(5, 5, 5, 5);
 //				imageView.setLayoutParams(layoutParams);
-                imageViewList.add(imageView);
+                imageViewList.add(inu);
 
                 Imageloader.getInstance().imageviewshowurlpicture(inu, this);
             }
@@ -342,9 +338,6 @@ public class MScrollView extends ScrollView implements LayoutImageV {
     }
 
 
-    
-    
-    
     /**
      * 遍历imageViewList中的每张图片，对图片的可见性进行检查，如果图片已经离开屏幕可见范围，则将图片替换成一张空图。
      * 改为保留3倍屏幕尺寸.
@@ -356,49 +349,54 @@ public class MScrollView extends ScrollView implements LayoutImageV {
 
         for (int i = 0; i < imageViewList.size(); i++) {
 
-            final ImageView iv = imageViewList.get(i);
+            final ImageviewNurl iv = imageViewList.get(i);
 
-              Log.d(mck, "                     checkvisibility 2: "+i+"   tag: "+iv.getTag(R.string.isshowok)+"      border-top:"+iv.getTag(R.string.border_top));
+//            Log.d(mck, "                     checkvisibility 2: " + i + "   tag: " + iv.getTag(R.string.isshowok) + "      border-top:" + iv.getTag(R.string.border_top));
 
-            if(iv.getTag(R.string.isshowok)==null)return;
+            /**
+             * borber_bottom==0, 意味着, 从来没有addposition过,
+             * 这个imageview的图片如果下载好了, 就该布局到layout里面,
+             * 从来没有position过, 证明还没有下载好.
+             * 也就不需要checkvisibility;
+             */
+            if (iv.border_bottom==0) return;
 
 
-            int borderTop = (Integer) iv.getTag(R.string.border_top);////  5/31/16 崩溃在这里.因为没有settag, 直接读就崩溃了.
-            //6.14, 为啥. 又崩溃.
-            int borderBottom = (Integer) iv
-                    .getTag(R.string.border_bottom);
+//            int borderTop = (Integer) iv.getTag(R.string.border_top);////  5/31/16 崩溃在这里.因为没有settag, 直接读就崩溃了.
+//            //6.14, 为啥. 又崩溃.
+//            int borderBottom = (Integer) iv
+//                    .getTag(R.string.border_bottom);
 
             /**
              * 关键代码还是在这里, 反复判断是否在屏幕范围内, 然后决定加载图片, 还是把图片替换掉.
              *  是否能加一个判断, 判断这个imageview是否改动过了.  正在弄.
              */
-            if (borderBottom > (getScrollY() - MainActivity._drn.screenHeight * 4)
-                    && borderTop < getScrollY() + MainActivity._drn.screenHeight * 5) {
+            if (iv.border_bottom > (getScrollY() - MainActivity._drn.screenHeight * 4)
+                    && iv.border_top < getScrollY() + MainActivity._drn.screenHeight * 5) {
                 //  Log.d(mck, "                     checkvisibility 3: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
 
 
-                if ((boolean) iv.getTag(R.string.isshowok)) continue;
-                final ImageviewNurl inu=new ImageviewNurl(iv,""+iv.getTag(R.string.image_url), this);
+                if (iv.isshowok) continue;
+                //final ImageviewNurl inu = new ImageviewNurl(iv, "" + iv.getTag(R.string.image_url), this);
                 //    Log.d(mck, "                     checkvisibility 4: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
-                Imageloader.getInstance().imageviewshowurlpicture(inu, this);
+                Imageloader.getInstance().imageviewshowurlpicture(iv, this);
 
                 //   Log.d(mck, "                     checkvisibility 7: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
-
-                iv.setTag(R.string.isshowok, true);
+//不该在这里, 应该在设置图片的地方.
+//                iv.isshowok=true;
                 //    Log.d(mck, "                     checkvisibility 8: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
 
             } else {
                 //    Log.d(mck, "                     checkvisibility 9: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
 
-                iv.setImageResource(R.drawable.empty_photo);
-                iv.setTag(R.string.isshowok, false);
+                iv.iv.setImageResource(R.drawable.empty_photo);
+                iv.isshowok= false;
                 //    Log.d(mck, "                     checkvisibility 10: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
 
                 //// : 6/1/16 图片和空间回收利用机制, 再考虑.  ruhelru缓存.
             }
         }
     }
-
 
 
     /**
@@ -409,44 +407,50 @@ public class MScrollView extends ScrollView implements LayoutImageV {
     private boolean hasSDCard() {
         return Environment.MEDIA_MOUNTED.equals(Environment
                 .getExternalStorageState());
-    }@Override
+    }
+
+    @Override
     public int getColumnWidth() {
-        Log.d(mck, "        getcolumnwith:"+MainActivity._drn.screenWidth/2);
-        return MainActivity._drn.screenWidth/2;
+        Log.d(mck, "        getcolumnwith:" + MainActivity._drn.screenWidth / column);
+        return MainActivity._drn.screenWidth / column;
     }
 
     /**
-     * 添加图片, todo 丑陋的要命, 这些代码.
+     * 添加图片,  丑陋的要命, 这些代码, 改好了.
      */
+    public int column = 2;
 
+    public List<Integer> columnheight = new ArrayList<>();//List<>();
+    public List<Integer> columnid = new ArrayList<>();
     /**
      * 当前第一列的高度
      */
-    public  int firstColumnHeight = 0;
+    //public  int firstColumnHeight = 0;
     /**
      * 当前第二列的高度
      */
-    public  int secondColumnHeight = 0;
+    //public  int secondColumnHeight = 0;
     /**
      * 每一列的宽度
      * 这个没有用, 只在调用的时候有用
      */
     //private int columnWidth;
 
-    public  int firstcolumn;//第一列的最后一个id.
-    public  int secondcolumn;//的二列的最后一个id.
+    // public  int firstcolumn;//第一列的最后一个id.
+    //public  int secondcolumn;//的二列的最后一个id.
 
     /**
      * 这个地方必须要调整了. 不能这么弄了, 并且不能基于id的增长, 应该搞一个list存储各自的id.
+     *
      * @param v
      */
 
     @Override
     public void addimageatposition(ImageviewNurl v) {
 
-        Bitmap bitmap = ((BitmapDrawable)v.iv.getDrawable()).getBitmap();  //v.iv.getDrawingCache();
+        Bitmap bitmap = ((BitmapDrawable) v.iv.getDrawable()).getBitmap();  //v.iv.getDrawingCache();
         double ratio = bitmap.getWidth() / (getColumnWidth() * 1.0);
-        Log.d(mck, "dopost: ratio: "+ratio);
+        Log.d(mck, "dopost: ratio: " + ratio);
         int scaledHeight = (int) (bitmap.getHeight() / ratio);
 
         RelativeLayout.LayoutParams rl =
@@ -455,53 +459,56 @@ public class MScrollView extends ScrollView implements LayoutImageV {
 
         rl.setMargins(0, 0, 0, 0);
         rl.alignWithParent = true;
+
+
         /**
          * 这地方真心需要指针, 有了指针, 代码就不必如此丑陋.
          * 或者函数式也行.
          */
-        Log.d(mck, " addimageatposition fistco 1:"+ firstcolumn+"      h:"+ firstColumnHeight);
-        Log.d(mck, " addimageatposition sectco 1:"+ secondcolumn+"      h:"+ secondColumnHeight);
-       // Log.d(mck,"addimageatposition id:"+v.getId());
-        if (firstColumnHeight == 0) {
-            rl.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-            firstcolumn = v.getId();
-            v.setTag(R.string.border_top, firstColumnHeight);
-            firstColumnHeight += rl.height;
-            v.setTag(R.string.border_bottom, firstColumnHeight);
-        } else if (secondColumnHeight == 0) {
-            rl.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-            rl.addRule(RelativeLayout.RIGHT_OF, firstcolumn);
-            secondcolumn = v.getId();
-            v.setTag(R.string.border_top, secondColumnHeight);
-            secondColumnHeight += rl.height;
-            v.setTag(R.string.border_bottom, secondColumnHeight);
-        } else if (firstColumnHeight <= secondColumnHeight) {
-            rl.addRule(RelativeLayout.BELOW, firstcolumn);
-            firstcolumn = v.getId();
-            v.setTag(R.string.border_top, firstColumnHeight);
-            firstColumnHeight += rl.height;
-            v.setTag(R.string.border_bottom, firstColumnHeight);
-        } else {
-            rl.addRule(RelativeLayout.BELOW, secondcolumn);
-            rl.addRule(RelativeLayout.RIGHT_OF, firstcolumn);
-            secondcolumn = v.getId();
-            v.setTag(R.string.border_top, secondColumnHeight);
-            secondColumnHeight += rl.height;
-            v.setTag(R.string.border_bottom, secondColumnHeight);
+//
+//        Log.d(mck, " addimageatposition fistco 1:"+ firstcolumn+"      h:"+ firstColumnHeight);
+//        Log.d(mck, " addimageatposition sectco 1:"+ secondcolumn+"      h:"+ secondColumnHeight);
+        // Log.d(mck,"addimageatposition id:"+v.getId());
+        int hlittle = 0;
+        for (int i = 1; i < column; i++) {
+            /**
+             * 找到最短的那一条.
+             */
+            hlittle = columnheight.get(hlittle) <= columnheight.get(i) ? hlittle : i;
         }
-        Log.d(mck, " addimageatposition fistco 2:"+ firstcolumn+"h:"+ firstColumnHeight);
-        Log.d(mck, " addimageatposition sectco 2:"+ secondcolumn+"h:"+ secondColumnHeight);
+
+        if (columnheight.get(hlittle) == 0) {
+            rl.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+        } else {
+            rl.addRule(RelativeLayout.BELOW, columnid.get(hlittle));
+        }
+        v.border_top = columnheight.get(hlittle);
+        v.border_bottom = v.border_top + rl.height;
+        columnheight.set(hlittle, v.border_bottom);
+        if (hlittle > 0) rl.addRule(RelativeLayout.RIGHT_OF, columnid.get(hlittle - 1));
+        /**
+         * 更新id.
+         */
+        columnid.set(hlittle, v.iv.getId());
+
+
+//
+//        Log.d(mck, " addimageatposition fistco 2:"+ firstcolumn+"h:"+ firstColumnHeight);
+//        Log.d(mck, " addimageatposition sectco 2:"+ secondcolumn+"h:"+ secondColumnHeight);
 
         //向relativelayout里面添加按钮. 如果移除某个控件: removeview
 
 
         //这句话应该是无效的, 因为下面一句话加了.
         //b.setLayoutParams(layoutParams);
-        /** todo 就是这个地方搞得 需要macscrollview*/
-         Log.d(mck, "addimageatposition r: " + rlscroll.getId() + "   v: " + v.getTag(R.string.image_url) + "   rl: " + rl);
+        /**  就是这个地方搞得 需要macscrollview
+         * 所以, 我把这个函数接口化之后, 移回了mscrollview
+         * */
+//         Log.d(mck, "addimageatposition r: " + rlscroll.getId() + "   v: " + v.getTag(R.string.image_url) + "   rl: " + rl);
+        v.isshowok=true;
+        rlscroll.addView(v.iv, rl);
 
-         rlscroll.addView(v, rl);
-         //*/
+        //*/
         //这个报错, 崩溃. // : 6/3/16
 
     }
