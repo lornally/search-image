@@ -1,6 +1,7 @@
 package com.takungae.dagong30;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,6 +36,19 @@ public class ImageviewNurl {
          */
         if (View.NO_ID != this.iv.getId()) return;
         this.iv.setId(View.generateViewId());
+    }
+
+    public void layoutimage(LayoutImageV liv, Bitmap bitmap){
+        iv.setImageBitmap(bitmap);
+        /**
+         * 标记这个imageview是可以操作的, 比如checkvisibility.
+         */
+        isshowok=true;
+        if(border_bottom!=0)return;
+        liv.addimageatposition(this);
+
+
+
     }
 
 

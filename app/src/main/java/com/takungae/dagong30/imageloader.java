@@ -142,7 +142,7 @@ public class Imageloader {
         Bitmap bitmap = getBitmapFromMemoryCache(inu.url);
         if (bitmap != null) {
             //inu.iv.setImageBitmap(bitmap);
-            layoutimage(inu, liv, bitmap);
+            inu.layoutimage(liv, bitmap);
             Log.d(mck, "    isp:::"+inu.iv.getId());
         } else {
             /***
@@ -154,16 +154,7 @@ public class Imageloader {
 
         }
     }
-    public void layoutimage(ImageviewNurl inu,LayoutImageV liv, Bitmap bitmap){
-        inu.iv.setImageBitmap(bitmap);
-        liv.addimageatposition(inu);
 
-        /**
-         * 标记这个imageview是可以操作的, 比如checkvisibility.
-         */
-        inu.isshowok=true;
-
-    }
     /**
      * 异步下载图片的任务。
      * 加载图片应该子imageloader, 永远不应该直接调用loadimagetask.
@@ -231,45 +222,8 @@ public class Imageloader {
         @Override
         protected void onPostExecute(Bitmap bitmap) {
             Log.d(mck, "dopost: "+bitmap);
-
             if (bitmap == null) return;
-
-
-
-
-            //addImage(bitmap, columnWidth, scaledHeight);
-            //这个报错, 崩溃. // : 6/3/16
-//            Log.d(mck, "dopost sh:"+scaledHeight+ "    id:"+inu.iv.getId());
-
-            /**
-             * 这一段要移回到task里面. , 改正确牛牛的的牛的.哈哈哈, 宽这里高和要改一下, 兼容各种情况.
-             * 简单 imagerNurl, 里面加上宽度参数, 哈哈哈, niude牛的.
-             *
-             * 下面这两段没用的, 这个tag可以不设置, 以后都基于inu.url也可以的. todo.
-             */
-            //if (null!=inu.iv.getT ag(R.string.image_url))return;
-
-            //inu.iv.setImageBitmap(bitmap);
-//            inu.iv.setScaleType(ImageView.ScaleType.FIT_XY);
-//            inu.iv.setPadding(5, 5, 5, 5);
-           // inu.iv.setTag(R.string.image_url, inu.url);
-
-            //inu.iv.setId(id++);//这句话绝对有问题.todo 解决id问题.
-            //generateViewId
-
-            /**
-             * 每张图片一开始都是不在内存的, 因此在这里初始化onclick时间是合适的. 不会多做也不会少做.
-             * 或许不合适. 因为这里其实没什么内容. 可以挪到inu的初始化地方.
-             */
-//            inu.iv.setOnClickListener(new imageviewonclicklistener());
-            //findColumnToAdd(imageView, imageHeight).addView(imageView);注释掉得代码.
-
-//            RelativeLayout.LayoutParams layoutParams =
-//                    new RelativeLayout.LayoutParams(layoutImageview.getColumnWidth(), scaledHeight);
-            layoutimage(inu, layoutImageview, bitmap);
-
-            //这个报错, 崩溃. // : 6/3/16
-
+            inu.layoutimage( layoutImageview, bitmap);
             taskCollection.remove(this);
         }
 

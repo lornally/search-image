@@ -431,26 +431,20 @@ public class MScrollView extends ScrollView implements LayoutImageV {
     @Override
     public void addimageatposition(ImageviewNurl v) {
         Log.d(mck, "begin addposition");
-
         Bitmap bitmap = ((BitmapDrawable) v.iv.getDrawable()).getBitmap();  //v.iv.getDrawingCache();
         double ratio = bitmap.getWidth() / (getColumnWidth() * 1.0);
         Log.d(mck, "dopost: ratio: " + ratio);
         int scaledHeight = (int) (bitmap.getHeight() / ratio);
-
-
         RelativeLayout.LayoutParams rl =
                 new RelativeLayout.LayoutParams(getColumnWidth(), scaledHeight);
         Log.d(mck, "addimageatposition");
-
         rl.setMargins(0, 0, 0, 0);
         rl.alignWithParent = true;
-
-
         /**
          * 这地方真心需要指针, 有了指针, 代码就不必如此丑陋.
          * 或者函数式也行.
+         * 改了, 已经不那么丑陋了.
          */
-//
 //        Log.d(mck, " addimageatposition fistco 1:"+ firstcolumn+"      h:"+ firstColumnHeight);
 //        Log.d(mck, " addimageatposition sectco 1:"+ secondcolumn+"      h:"+ secondColumnHeight);
         // Log.d(mck,"addimageatposition id:"+v.getId());
@@ -475,24 +469,6 @@ public class MScrollView extends ScrollView implements LayoutImageV {
          * 更新id.
          */
         columnid.set(hlittle, v.iv.getId());
-
-
-//
-//        Log.d(mck, " addimageatposition fistco 2:"+ firstcolumn+"h:"+ firstColumnHeight);
-//        Log.d(mck, " addimageatposition sectco 2:"+ secondcolumn+"h:"+ secondColumnHeight);
-
-        //向relativelayout里面添加按钮. 如果移除某个控件: removeview
-
-
-        //这句话应该是无效的, 因为下面一句话加了.
-        //b.setLayoutParams(layoutParams);
-        /**  就是这个地方搞得 需要macscrollview
-         * 所以, 我把这个函数接口化之后, 移回了mscrollview
-         * */
-//         Log.d(mck, "addimageatposition r: " + rlscroll.getId() + "   v: " + v.get Tag(R.string.image_url) + "   rl: " + rl);
-       // v.isshowok=true;
         rlscroll.addView(v.iv, rl);
     }
-
-
 }
