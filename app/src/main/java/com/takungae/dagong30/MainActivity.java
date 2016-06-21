@@ -158,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageview {
             /*if (null == _drn.layoutwaterfall)
                 _drn.layoutwaterfall =  (MScrollView) getLayoutInflater().inflate(R.layout.waterfall, null);*/
 
-            Imageloader.imageviewshowurlpicture(inu, this);
+            Imageloader.getInstance().imageviewshowurlpicture(inu, this);
 //            LoadImageTask task = new LoadImageTask(inu, this);//// .
 //            LoadImageTask.taskCollection.add(task);
 //            task.execute();

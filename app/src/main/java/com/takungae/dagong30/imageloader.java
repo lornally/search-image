@@ -20,6 +20,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PipedReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashSet;
@@ -146,7 +147,7 @@ public class Imageloader {
      * 需要移动走. 移动到imageloader里面.
      * 这里才是加载图片的入口.
      */
-    public static void imageviewshowurlpicture(ImageviewNurl inu, LayoutImageview liv){
+    public  void imageviewshowurlpicture(ImageviewNurl inu, LayoutImageview liv){
         Bitmap bitmap = getBitmapFromMemoryCache(inu.url);
         if (bitmap != null) {
             inu.iv.setImageBitmap(bitmap);
@@ -186,7 +187,7 @@ public class Imageloader {
         final static String mck="..l.i.t..";
         //    final private int columnWidth;
 
-        final LayoutImageview layoutImageview;
+        final private LayoutImageview layoutImageview;
 
         /**
          * 将可重复使用的ImageView传入
@@ -208,8 +209,7 @@ public class Imageloader {
         protected Bitmap doInBackground(Void... params) {
 
 
-            Bitmap imageBitmap = imageLoader
-                    .getBitmapFromMemoryCache(inu.url);
+            Bitmap imageBitmap = getBitmapFromMemoryCache(inu.url);
             Log.d(mck, "doinback: 1: "+imageBitmap);
             if (imageBitmap == null) {
                 imageBitmap = url2bitmap(inu.url);
@@ -251,8 +251,8 @@ public class Imageloader {
             if (null!=inu.iv.getTag(R.string.image_url))return;
 
             inu.iv.setImageBitmap(bitmap);
-            inu.iv.setScaleType(ImageView.ScaleType.FIT_XY);
-            inu.iv.setPadding(5, 5, 5, 5);
+//            inu.iv.setScaleType(ImageView.ScaleType.FIT_XY);
+//            inu.iv.setPadding(5, 5, 5, 5);
             inu.iv.setTag(R.string.image_url, inu.url);
             inu.iv.setId(id++);
             inu.iv.setOnClickListener(new imageviewonclicklistener());
@@ -293,7 +293,7 @@ public class Imageloader {
                 Bitmap bitmap = Imageloader.decodeSampledBitmapFromResource(
                         imageFile.getPath(), layoutImageview.getColumnWidth());
                 if (bitmap != null) {
-                    imageLoader.addBitmapToMemoryCache(imageUrl, bitmap);
+                    addBitmapToMemoryCache(imageUrl, bitmap);
                     return bitmap;
                 }
             }
@@ -343,7 +343,7 @@ public class Imageloader {
                 // i.setImageBitmap(); //  6/12/16  应该加载各种关于art的东西, 不需要, url, 可以带走.
                 // i.setTag(R.string.image_url, iurl);
 //                i.setTag(R.string.Art, a);
-                Imageloader.imageviewshowurlpicture(inu, layoutImageview);
+                imageviewshowurlpicture(inu, layoutImageview);
                 Log.i(mck, "layoutwaterfall after: " + MainActivity._drn.layoutartbigshow);
                 /**
                  * 加载界面, 把简介写进去.
@@ -477,7 +477,7 @@ public class Imageloader {
                 Bitmap bitmap = Imageloader.decodeSampledBitmapFromResource(
                         imageFile.getPath(), layoutImageview.getColumnWidth());
                 if (bitmap != null) {
-                    imageLoader.addBitmapToMemoryCache(imageUrl, bitmap);
+                    addBitmapToMemoryCache(imageUrl, bitmap);
                 }
             }
         }

@@ -154,7 +154,7 @@ public class MScrollView extends ScrollView implements LayoutImageview{
 
                 return;
             }
-            else if (LoadImageTask.taskCollection.size() < 5) {
+            else if (Imageloader.taskCollection.size() < 5) {
                 MainActivity._drn.makeNshow( "正在加载......", Toast.LENGTH_SHORT);
 
                 Log.d(mck, "runable load more    5:   ");
@@ -328,10 +328,12 @@ public class MScrollView extends ScrollView implements LayoutImageview{
                  */
                 final ImageView imageView = new ImageView(getContext());
                 final ImageviewNurl inu=new ImageviewNurl(imageView, MainActivity._drn.sArtist.get(i).getPicture_url());
+                inu.iv.setScaleType(ImageView.ScaleType.FIT_XY);
+                inu.iv.setPadding(5, 5, 5, 5);
 //				imageView.setLayoutParams(layoutParams);
                 imageViewList.add(imageView);
 
-                Imageloader.imageviewshowurlpicture(inu, this);
+                Imageloader.getInstance().imageviewshowurlpicture(inu, this);
             }
             page++;
         }
@@ -376,7 +378,7 @@ public class MScrollView extends ScrollView implements LayoutImageview{
                 if ((boolean) iv.getTag(R.string.isshowok)) continue;
                 final ImageviewNurl inu=new ImageviewNurl(iv,""+iv.getTag(R.string.image_url) );
                 //    Log.d(mck, "                     checkvisibility 4: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
-                Imageloader.imageviewshowurlpicture(inu, this);
+                Imageloader.getInstance().imageviewshowurlpicture(inu, this);
 
                 //   Log.d(mck, "                     checkvisibility 7: "+i+"   tag: "+imageView.getTag(R.string.isshowok));
 
