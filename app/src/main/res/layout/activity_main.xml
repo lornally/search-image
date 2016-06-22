@@ -11,56 +11,6 @@
     android:background="#fafafa">
 
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="首页"
-        android:id="@+id/button_home"
-        android:width="120dp"
-        android:layout_alignParentBottom="true"
-        android:background="#ffffff"
-        android:textColor="#971818"
-        android:textSize="14sp"
-        android:height="65dp"
-        android:drawableTop="@drawable/house"
-        android:paddingTop="8dp"
-        android:onClick="onbuttonbackhome"
-        />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="相册"
-        android:id="@+id/button_searchresult"
-        android:layout_alignBottom="@+id/button_home"
-        android:layout_toEndOf="@+id/button_home"
-        android:width="120dp"
-        android:background="#ffffff"
-        android:textColor="#999"
-        android:textSize="14sp"
-        android:height="65dp"
-        android:drawableTop="@drawable/camera"
-        android:paddingTop="8dp"
-        android:onClick="onbuttongallery"
-        />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="收藏"
-        android:id="@+id/button_favor"
-        android:layout_alignParentBottom="true"
-        android:layout_toEndOf="@+id/button_searchresult"
-        android:background="#ffffff"
-        android:textColor="#999"
-        android:width="120dp"
-        android:textSize="14sp"
-        android:height="65dp"
-        android:drawableTop="@drawable/heart"
-        android:paddingTop="8dp"
-        android:onClick="onbuttonbookmark"
-        />
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -156,6 +106,56 @@
 
     </ScrollView>
 
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="首页"
+        android:id="@+id/button_home"
+        android:width="120dp"
+        android:layout_alignParentBottom="true"
+        android:background="#ffffff"
+        android:textColor="#971818"
+        android:textSize="14sp"
+        android:height="65dp"
+        android:drawableTop="@drawable/house"
+        android:paddingTop="8dp"
+        android:onClick="onbuttonbackhome"
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="相册"
+        android:id="@+id/button_searchresult"
+        android:layout_alignBottom="@+id/button_home"
+        android:layout_toEndOf="@+id/button_home"
+        android:width="120dp"
+        android:background="#ffffff"
+        android:textColor="#999"
+        android:textSize="14sp"
+        android:height="65dp"
+        android:drawableTop="@drawable/camera"
+        android:paddingTop="8dp"
+        android:onClick="onbuttongallery"
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="收藏"
+        android:id="@+id/button_favor"
+        android:layout_alignParentBottom="true"
+        android:layout_toEndOf="@+id/button_searchresult"
+        android:background="#ffffff"
+        android:textColor="#999"
+        android:width="120dp"
+        android:textSize="14sp"
+        android:height="65dp"
+        android:drawableTop="@drawable/heart"
+        android:paddingTop="8dp"
+        android:onClick="onbuttonbookmark"
+        />
 
 
 </RelativeLayout>
