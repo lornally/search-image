@@ -87,7 +87,7 @@
                 android:text="照片搜索
         艺术品    "
                 android:id="@+id/button_byphoto"
-                android:background="@drawable/lice"
+                android:background="#fff"
                 android:textColor="#000"
                 android:drawableLeft="@drawable/gallery_circle"
                 android:onClick="onbuttonphotosearch"
@@ -135,6 +135,7 @@
 
                 />
             <ImageView
+                android:layout_marginTop="3dp"
                 android:layout_width="match_parent"
                 android:layout_height="180dp"
                 android:src="@drawable/empty_photo"

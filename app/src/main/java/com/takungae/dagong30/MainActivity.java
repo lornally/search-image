@@ -135,21 +135,23 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
         imageViewList.add(iv2);
         Log.d(mck, "     resume:5: "+iv2.getId()+ "       image0: "+R.id.image2);
 
+        final  RelativeLayout.LayoutParams themerl=( RelativeLayout.LayoutParams)iv2.getLayoutParams();
 
         final int as=_drn.sArtist.size();
+
         for (int i=3; i<as; i++) {
             Log.d(mck, "    begin i:"+i);
             final ImageView imageView = new ImageView(getApplicationContext());
             imageView.setId(View.generateViewId());
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            RelativeLayout.LayoutParams rl= new RelativeLayout.LayoutParams(iv2.getLayoutParams().width,iv2.getLayoutParams().height);
-//				imageView.setLayoutParams(layoutParams);
+            RelativeLayout.LayoutParams rl= new RelativeLayout.LayoutParams(themerl.width,themerl.height);
+            rl.setMargins(0,themerl.topMargin,0,0);
             imageViewList.add(imageView);
-            Log.d(mck, "     i:::::"+imageViewList.get(i-1).getId()+"    width:"+iv2.getLayoutParams().width+"    height:"+iv2.getLayoutParams().height);
+            Log.d(mck, "     i:::::"+imageViewList.get(i-1).getId()+"    width:"+themerl.width+"    height:"+themerl.height);
             rl.addRule(RelativeLayout.BELOW, imageViewList.get(i-1).getId());
             reLyou.addView(imageView,rl);
         }
-        Log.d(mck, "     as:::::"+as+"    width:"+iv2.getLayoutParams().width+"    height:"+iv2.getLayoutParams().height);
+        Log.d(mck, "     as:::::"+as+"    width:"+themerl.width+"    height:"+themerl.height);
         for (int i=0; i<as;i++){
             Log.d(mck, "     i:::::"+i);
             final ImageView imageView =imageViewList.get(i);
@@ -442,7 +444,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
             _drn.prepareDefaultArts();
         }else {
             _drn.clearart();
-            lUri=null;// // TODO: 6/22/16 不知道是否能解决二次进入的bug, 还是带来更严重的bug. 
+            lUri=null;// // TODO: 6/22/16 不知道是否能解决二次进入的bug, 还是带来更严重的bug.
         }
 
         /**
