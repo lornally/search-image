@@ -54,7 +54,6 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
     private List<ImageView> imageViewList = new ArrayList<>();
     public static Dgruning _drn;
 
-    private  RelativeLayout reLyou;
     @Override
     public int getColumnWidth() {
         return _drn.screenWidth;
@@ -62,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
 
     /**
      * 这个页面很简单, 本身是固定高度的. 因此不需要任何布局代码.
-     * @param v
+     * @param v 仅仅实现接口, 没办法1.8才有默认实现.
      *
      */
     @Override
@@ -80,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
 
         /**
          * 设置content的另一种方法.
+         * 查阅了文档, 设置content多次不是一个好主意. 貌似. 因为重新计算了整个界面.
          *
          */
         LayoutInflater inflater = getLayoutInflater();
@@ -102,13 +102,17 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
 //        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
+    /**
+     * 某些地方需要申明可以为空, 或者不可以为空. todo
+     */
+
 
     protected void layoutimage() {
         super.onResume();
         Log.d(mck, " layoutimage:1" );
         cma= this;
-        _drn =new Dgruning();//crash. // TODO: 6/20/16
-        reLyou=(RelativeLayout)findViewById(R.id.amrelayout);
+        _drn =new Dgruning();//crash. // : 6/20/16
+        final RelativeLayout reLyou = (RelativeLayout) findViewById(R.id.amrelayout);
         //reLyou.removeAllViews();
 
         /**
@@ -125,44 +129,44 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
 
         ImageView iv=(ImageView)findViewById(R.id.image0);
         imageViewList.add(iv);
-        Log.d(mck, "     resume:3: "+iv.getId()+ "       image0: "+R.id.image0);
+//        Log.d(mck, "     resume:3: "+iv.getId()+ "       image0: "+R.id.image0);
 
         ImageView iv1=(ImageView)findViewById(R.id.image1);
-        Log.d(mck, "     resume:4: "+iv1.getId()+ "       image0: "+R.id.image1);
+//        Log.d(mck, "     resume:4: "+iv1.getId()+ "       image0: "+R.id.image1);
 
         imageViewList.add(iv1);
         ImageView iv2=(ImageView)findViewById(R.id.image2);
         imageViewList.add(iv2);
-        Log.d(mck, "     resume:5: "+iv2.getId()+ "       image0: "+R.id.image2);
+//        Log.d(mck, "     resume:5: "+iv2.getId()+ "       image0: "+R.id.image2);
+            final RelativeLayout.LayoutParams themerl = (RelativeLayout.LayoutParams) iv2.getLayoutParams();
 
-        final  RelativeLayout.LayoutParams themerl=( RelativeLayout.LayoutParams)iv2.getLayoutParams();
+            final int as = _drn.sArtist.size();
 
-        final int as=_drn.sArtist.size();
-
-        for (int i=3; i<as; i++) {
-            Log.d(mck, "    begin i:"+i);
-            final ImageView imageView = new ImageView(getApplicationContext());
-            imageView.setId(View.generateViewId());
-            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            RelativeLayout.LayoutParams rl= new RelativeLayout.LayoutParams(themerl.width,themerl.height);
-            rl.setMargins(0,themerl.topMargin,0,0);
-            imageViewList.add(imageView);
-            Log.d(mck, "     i:::::"+imageViewList.get(i-1).getId()+"    width:"+themerl.width+"    height:"+themerl.height);
-            rl.addRule(RelativeLayout.BELOW, imageViewList.get(i-1).getId());
-            reLyou.addView(imageView,rl);
-        }
-        Log.d(mck, "     as:::::"+as+"    width:"+themerl.width+"    height:"+themerl.height);
-        for (int i=0; i<as;i++){
-            Log.d(mck, "     i:::::"+i);
-            final ImageView imageView =imageViewList.get(i);
-            final ImageviewNurl inu=new ImageviewNurl(imageView, _drn.sArtist.get(i).getPicture_url());
+            for (int i = 3; i < as; i++) {
+                Log.d(mck, "    begin i:" + i);
+                final ImageView imageView = new ImageView(getApplicationContext());
+                imageView.setId(View.generateViewId());
+                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                RelativeLayout.LayoutParams rl = new RelativeLayout.LayoutParams(themerl.width, themerl.height);
+                rl.setMargins(0, themerl.topMargin, 0, 0);
+                imageViewList.add(imageView);
+                Log.d(mck, "     i:::::" + imageViewList.get(i - 1).getId() + "    width:" + themerl.width + "    height:" + themerl.height);
+                rl.addRule(RelativeLayout.BELOW, imageViewList.get(i - 1).getId());
+                reLyou.addView(imageView, rl);
+            }
+            Log.d(mck, "     as:::::" + as + "    width:" + themerl.width + "    height:" + themerl.height);
+            for (int i = 0; i < as; i++) {
+                Log.d(mck, "     i:::::" + i);
+                final ImageView imageView = imageViewList.get(i);
+                final ImageviewNurl inu = new ImageviewNurl(imageView, _drn.sArtist.get(i).getPicture_url());
             /*if (null == _drn.layoutwaterfall)
                 _drn.layoutwaterfall =  (MScrollView) getLayoutInflater().inflate(R.layout.waterfall, null);*/
-            Imageloader.getInstance().imageviewshowurlpicture(inu, this);
+                Imageloader.getInstance().imageviewshowurlpicture(inu, this);
 //            LoadImageTask task = new LoadImageTask(inu, this);//// .
 //            LoadImageTask.taskCollection.add(task);
 //            task.execute();
-        }
+            }
+
     }
 
 
@@ -619,7 +623,7 @@ class nosearchresult implements Runnable{
     private  IWXAPI wxapi;
     public  void reg2wx(){
         final String APP_ID = "wx434f0a989ac6a564";
-        //// TODO: 3/7/16 正式打包的时候, 需要替换这个app_id为正式的app_id.
+        //// TODO: 这个地方有配置管理, 或者编译配置的需求. 3/7/16 正式打包的时候, 需要替换这个app_id为正式的app_id.
 
         wxapi = WXAPIFactory.createWXAPI(this, APP_ID);
         wxapi.registerApp(APP_ID);
@@ -628,7 +632,8 @@ class nosearchresult implements Runnable{
 
     /**
      * 不应该在这里错误的初始化, 初始化, 还是应该去另一个地方.
-     * todo         lTextView.setText(Dgruning.sArt4detailactivity.getIllustrate());
+     *          lTextView.setText(Dgruning.sArt4detailactivity.getIllustrate());
+     *          ok了, 改好了.
 
      *
      */
@@ -710,6 +715,7 @@ class nosearchresult implements Runnable{
     public void onshare_cancel_click(View v){
         Log.d(mck, "\\\\\\\\share/////////");
         View nLViewnv=findViewById(R.id.layout_share);
+//        assert nLViewnv != null;
         nLViewnv.setVisibility(View.INVISIBLE);
 
     }
@@ -752,7 +758,7 @@ class nosearchresult implements Runnable{
      * 1, 拿到分享的url
      * 2, 把这个url给微信.
      *
-     * @param v
+     * @param v 系统
      */
     public void onclick_weixin(View v){
 
@@ -795,9 +801,9 @@ class nosearchresult implements Runnable{
         /**
          * 图片分享, 竟然是only pic, 木有文字.
          */
-        final Imageloader imageLoader = Imageloader.getInstance();
+//        final Imageloader imageLoader = Imageloader.getInstance();
 
-        Bitmap imageBitmap = imageLoader
+        Bitmap imageBitmap = Imageloader
                 .getBitmapFromMemoryCache(a.getPicture_url());
         Log.d(mck, "sendme re: 2.5:: "+imageBitmap);
         if (imageBitmap == null) {
@@ -808,7 +814,7 @@ class nosearchresult implements Runnable{
         }
 
             // BitmapFactory.decodeResource(getResources(), a.getDrawable().);
-            WXImageObject lWXImageObject = new WXImageObject(imageBitmap);
+//            WXImageObject lWXImageObject = new WXImageObject(imageBitmap);
 
             Bitmap thumbmap = Bitmap.createScaledBitmap(imageBitmap, 32, 32, true);
         Log.d(mck, "sendme re: 3:"+thumbmap.getHeight());

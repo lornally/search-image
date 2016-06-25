@@ -11,7 +11,6 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashSet;
@@ -21,7 +20,7 @@ import java.util.Set;
  * Created by m on 5/31/16.
  * 这基本是个静态类. 提供了一系列方法.
  *
- * todo 应该把loadimagetask搬到这里面来, 并且私有化, 不允许从外边直接调用loadimagetask.
+ *  应该把loadimagetask搬到这里面来, 并且私有化, 不允许从外边直接调用loadimagetask, 做了.
  */
 public class Imageloader {
 
@@ -137,8 +136,10 @@ public class Imageloader {
      * 已经改为双参数了.
      * 需要移动走. 移动到imageloader里面.
      * 这里才是加载图片的入口.
+     * todo 此处貌似没有范型的必要.
+     *
      */
-    public  void imageviewshowurlpicture(ImageviewNurl inu, LayoutImageV liv){
+    public  void imageviewshowurlpicture(final ImageviewNurl inu,final LayoutImageV liv){
         Bitmap bitmap = getBitmapFromMemoryCache(inu.url);
         if (bitmap != null) {
             //inu.iv.setImageBitmap(bitmap);
@@ -164,7 +165,7 @@ public class Imageloader {
     /**
      * 记录所有正在下载或等待下载的任务。
      */
-    static int id=100;
+//    static int id=100;
     public static final Set<LoadImageTask> taskCollection = new HashSet<>();
 
     class LoadImageTask extends AsyncTask<Void, Void, Bitmap> {
@@ -186,13 +187,13 @@ public class Imageloader {
          * 这个task不仅仅是从网络下载, 从内存载入, 从硬盘载入都在这里,
          * 因此, 这里就是初始化imageview的地方.
          * , 必须考察这个view参数是否必须的, 删除试试看
-         * todo 分几列, 列的宽度, 都不应该在这里考虑.
+         *  分几列, 列的宽度, 都不应该在这里考虑.
          * 应该是一个interface考虑.
          *
-         * @param iV
-         * @param cW
+         * @param iV 需要下载的inu
+         * @param cW 回调要用的实例, 通常调用方(activity或者view)把自己放进来.
          */
-        public LoadImageTask(ImageviewNurl iV, LayoutImageV cW) {
+        private LoadImageTask(ImageviewNurl iV, LayoutImageV cW) {
             inu = iV;
             layoutImageview = cW;
         }
@@ -215,9 +216,10 @@ public class Imageloader {
         /**
          * 这个地方的问题在于, 计算了控件的宽度和高度.
          *
-         * todo 这个函数里面应该调用正确的函数, 我们只是把bitmap传进去就好了.
+         *  这个函数里面应该调用正确的函数, 我们只是把bitmap传进去就好了.
+         *  这两个问题都改了, 目前已经很简洁了.
          *
-         * @param bitmap
+         * @param bitmap 线程中下载的图片.
          */
         @Override
         protected void onPostExecute(Bitmap bitmap) {
@@ -234,7 +236,7 @@ public class Imageloader {
          * @param imageUrl 图片的URL地址
          * @return 加载到内存的图片。
          */
-        public Bitmap url2bitmap(String imageUrl) {
+        public Bitmap url2bitmap(final String imageUrl) {
 //        Log.d(mck, "loadimages : "+ columnWidth);
 
             File imageFile = new File(getImagePath(imageUrl));
@@ -312,7 +314,7 @@ public class Imageloader {
          * @param imageUrl 图片的URL地址。
          *                 todo 代码太曲折了, 竟然是先存成file, 再从file里面读出来. 妈呀.
          */
-        private void downloadImage(String imageUrl) {
+        private void downloadImage(final String imageUrl) {
             Log.d(mck, "downloadimage");
 
             if (Environment.getExternalStorageState().equals(
@@ -347,13 +349,12 @@ public class Imageloader {
                     }
                 }
 
-                if (imageFile != null) {
                     Bitmap bitmap = Imageloader.decodeSampledBitmapFromResource(
                             imageFile.getPath(), layoutImageview.getColumnWidth());
                     if (bitmap != null) {
                         addBitmapToMemoryCache(imageUrl, bitmap);
                     }
-                }
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -362,21 +363,21 @@ public class Imageloader {
 
         /**
          * 获取图片的本地存储路径。
+         * 这个地方new file是没用的. 不需要.
          *
          * @param imageUrl 图片的URL地址。
          * @return 图片的本地存储路径。
          */
-        private String getImagePath(String imageUrl) {
+        private String getImagePath(final String imageUrl) {
             int lastSlashIndex = imageUrl.lastIndexOf("/");
             String imageName = imageUrl.substring(lastSlashIndex + 1);
             String imageDir = Environment.getExternalStorageDirectory()
                     .getPath() + "/PhotoWallFalls/";
-            File file = new File(imageDir);
-            if (!file.exists()) {
-                file.mkdirs();
-            }
-            String imagePath = imageDir + imageName;
-            return imagePath;
+//            File file = new File(imageDir);
+//            if (!file.exists()) {
+//                file.mkdirs();
+//            }
+            return imageDir + imageName;
         }
     }
 

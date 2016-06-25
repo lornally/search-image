@@ -85,9 +85,9 @@ public class MScrollView extends ScrollView implements LayoutImageV {
      * 不能注释, 明白了, 必须有这个才行.
      * 不需要这里吊起轮询, 因为有onattachwindows呢.
      * 同样原因, 不需要在这里remove all.
-     *
-     * @param c
-     * @param attrs
+     *这个两个参数的构造函数不能直接使用, 是inflate xml时, 自动实用的.
+     * @param c 系统要的.
+     * @param attrs 系统要的.
      */
     public MScrollView(Context c, AttributeSet attrs) {
 
@@ -243,9 +243,9 @@ public class MScrollView extends ScrollView implements LayoutImageV {
 
 
     /**
-     * @param l
-     * @param t
-     * @param oldl
+     * @param l 系统的
+     * @param t 系统的
+     * @param oldl 系统的
      * @param oldt 这个函数checkvisibility就好了, 完全没必要让轮询去判断
      *             这个函数需要log跟踪一下. .
      *             这个函数就没有唤起轮询的必要性.
@@ -320,8 +320,8 @@ public class MScrollView extends ScrollView implements LayoutImageV {
                 /**
                  * 这种情况仅仅发生在, load图片的线程中. 但是, 也挺魔幻的, 貌似不该这样写代码哈.
                  * 其实完全可以把这段挪出去, 所有的下载图片的线程, 都是弄好了图片再下载. 对的, 这样逻辑就通畅了.
-                 * todo, 改成所有的图片下载都是有imageview的. 而且, imageview和url, 不该绑定.
-                 * todo, 设置id应该就在这里弄.
+                 * , 改成所有的图片下载都是有imageview的. 而且, imageview和url, 不该绑定, 改成了imageviewNurl驱动.
+                 * , 设置id应该就在这里弄, 不应该, 去imageviewNurl弄了.
                  */
                 final ImageView imageView = new ImageView(getContext());
                 final ImageviewNurl inu = new ImageviewNurl(imageView, MainActivity._drn.sArtist.get(i).getPicture_url());
@@ -424,8 +424,8 @@ public class MScrollView extends ScrollView implements LayoutImageV {
 
     /**
      * 这个地方必须要调整了. 不能这么弄了, 并且不能基于id的增长, 应该搞一个list存储各自的id.
-     *
-     * @param v
+     *这个就是实现了接口的回调函数, imageloader下载图片成功之后会调用这个函数.
+     * @param v 这个就是穿进来的, 需要position的view, 以及他的bitmap的url.
      */
 
     @Override

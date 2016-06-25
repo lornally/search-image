@@ -2,6 +2,7 @@ package com.takungae.dagong30;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.provider.DocumentsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,8 +58,10 @@ public class ImageviewNurl {
      * 每个点击都会进入详情页,
      * 全屏显示点击内容的详细情况.
      * 重新显示的bug, 原来在这里.
+     * todo 待验证. 这里曾经有一个bug, 当列表内容缩减的时候. 首页的列表比后面页面长, 这个没有问题, 有问题的是, 当我点击后面的页面的时候, 会崩溃, 这个就不对了.
+     *      待改进,    我改变了hashmap的机制, 改为添加机制. 这样老的内容就会还在. 但是, 这样又会内存泄露, 那么, 是否应该改为弱引用建hashmap呢?
      */
-    class imageviewonclicklistener implements View.OnClickListener {
+    private class imageviewonclicklistener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
 //                ImageView iv = (ImageView) v;
@@ -70,6 +73,7 @@ public class ImageviewNurl {
 
             /**
              * 如果artbigshow没有搞过, 那么就搞一下.
+             * 這裏inflate的第二個參宿和不應該是null: http://blog.chengdazhi.com/index.php/110
              */
             if (null == MainActivity._drn.layoutartbigshow) {
                 MainActivity._drn.layoutartbigshow = (FrameLayout)

@@ -36,7 +36,7 @@ import java.util.UUID;
  * 这个类的目标是保存运行期的各种状态, 顺便做token和device_id的持久化.
  * 使用这个类, 必须先做init, 这个方法会拿回持久化的参数.
  * 认真考虑是否把这个initSurfaceView改为构造函数.
- * todo 依赖注入貌似是解决方案.
+ * todo 依赖注入貌似是解决方案. 目前是让mainactivty持有一个全局实例, 不是一个好的解决方案.
  * 然后才可以使用这个类.
  */
 public class Dgruning {
@@ -101,7 +101,7 @@ public class Dgruning {
         //sArtist = null;
         //stringartHashMap=null;
         ArrayList<Art> lArts = new ArrayList<>();
-        LinkedHashMap<String, Art> lhmarts = new LinkedHashMap<>();
+//        LinkedHashMap<String, Art> lhmarts = new LinkedHashMap<>();
         try {
             JSONObject jb = new JSONObject(result);
             JSONArray ja = jb.getJSONArray("data");
@@ -124,11 +124,11 @@ public class Dgruning {
                 a.setThumb_url(j.optString("thumb_url"));
                 Log.d(mck, ":::::thumb_url:::" + a.getThumb_url());
                 //和picture的内容是一样的, 因此为了避免混淆, 我注释掉了.
-                lhmarts.put(a.getPicture_url(), a);
+                stringartHashMap.put(a.getPicture_url(), a);
                 lArts.add(a);
             }
             //mArts=lArts;
-            stringartHashMap = lhmarts;
+            //stringartHashMap = lhmarts;
 
             sArtist = lArts;
             //isprepare=true;
@@ -313,7 +313,7 @@ public class Dgruning {
 
     /**
      * 思考,怎样保证用户在使用r函数之前一定会使用init或者getinstance呢?  最好是借助编译器的力量
-     * todo 依赖注入解决问题.
+     *  依赖注入解决问题.
      * 如果没有init, 则抛出异常, 也是不错的解决方案.
      * @return
      */
