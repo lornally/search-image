@@ -13,7 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
-import android.view.LayoutInflater;
+//import android.view.LayoutInflater;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -21,7 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
-import com.tencent.mm.sdk.modelmsg.WXImageObject;
+//import com.tencent.mm.sdk.modelmsg.WXImageObject;
 import com.tencent.mm.sdk.modelmsg.WXMediaMessage;
 import com.tencent.mm.sdk.modelmsg.WXTextObject;
 import com.tencent.mm.sdk.modelmsg.WXWebpageObject;
@@ -37,19 +37,20 @@ import java.util.UUID;
 
 /**
  * 先手工实现界面切换, 以后会考虑弄一个界面切换的框架.
+ *
  * @author m
  */
 
 public class MainActivity extends AppCompatActivity implements LayoutImageV {
     private String mck = "::::main activity::::";
-    private Uri lUri=null;
+    private Uri lUri = null;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
 //    private GoogleApiClient client;
-    private   View layoutmain;
-//    private final Context c=this;
+    private View layoutmain;
+    //    private final Context c=this;
     public static Context cma;//外部类使用.
     private List<ImageView> imageViewList = new ArrayList<>();
     public static Dgruning _drn;
@@ -61,8 +62,8 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
 
     /**
      * 这个页面很简单, 本身是固定高度的. 因此不需要任何布局代码.
-     * @param v 仅仅实现接口, 没办法1.8才有默认实现.
      *
+     * @param v 仅仅实现接口, 没办法1.8才有默认实现.
      */
     @Override
     public void addimageatposition(ImageviewNurl v) {
@@ -82,12 +83,9 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
          * 查阅了文档, 设置content多次不是一个好主意. 貌似. 因为重新计算了整个界面.
          *
          */
-        LayoutInflater inflater = getLayoutInflater();
-        //LayoutInflater.from(this).inflate().
-         layoutmain = inflater.inflate(R.layout.activity_main, null);
+        layoutmain = View.inflate(this, R.layout.activity_main, null);
+//         layoutmain = getLayoutInflater().inflate(R.layout.activity_main, null);
         setContentView(layoutmain);
-
-
 
 
         Log.i(mck, "----uri---" + lUri);
@@ -109,9 +107,9 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
 
     protected void layoutimage() {
         super.onResume();
-        Log.d(mck, " layoutimage:1" );
-        cma= this;
-        _drn =new Dgruning();//crash. // : 6/20/16
+        Log.d(mck, " layoutimage:1");
+        cma = this;
+        _drn = new Dgruning();//crash. // : 6/20/16
         final RelativeLayout reLyou = (RelativeLayout) findViewById(R.id.amrelayout);
         //reLyou.removeAllViews();
 
@@ -123,52 +121,55 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
          * 这个地方直接new一个macscrollview?
          */
         ////
-        _drn.makeNshow( "正在加载...", Toast.LENGTH_SHORT);
+        _drn.makeNshow("正在加载...", Toast.LENGTH_SHORT);
         _drn.prepareDefaultArts();
-        Log.d(mck, " resume:2: "+_drn.sArtist.get(0).getArt_name());
+//        Log.d(mck, " resume:2: "+_drn.sArtist.get(0).getArt_name());
 
-        ImageView iv=(ImageView)findViewById(R.id.image0);
+        ImageView iv = (ImageView) findViewById(R.id.image0);
         imageViewList.add(iv);
 //        Log.d(mck, "     resume:3: "+iv.getId()+ "       image0: "+R.id.image0);
 
-        ImageView iv1=(ImageView)findViewById(R.id.image1);
+        ImageView iv1 = (ImageView) findViewById(R.id.image1);
 //        Log.d(mck, "     resume:4: "+iv1.getId()+ "       image0: "+R.id.image1);
 
         imageViewList.add(iv1);
-        ImageView iv2=(ImageView)findViewById(R.id.image2);
+        ImageView iv2 = (ImageView) findViewById(R.id.image2);
         imageViewList.add(iv2);
 //        Log.d(mck, "     resume:5: "+iv2.getId()+ "       image0: "+R.id.image2);
-            final RelativeLayout.LayoutParams themerl = (RelativeLayout.LayoutParams) iv2.getLayoutParams();
+        assert iv2 != null;
+        final RelativeLayout.LayoutParams themerl = (RelativeLayout.LayoutParams) iv2.getLayoutParams();
+        Log.d(mck, "  drn:" + _drn);
+        Log.d(mck, "drn.artist" + _drn.sArtist);
+        //sartlist is null // TODO: 6/26/16
+        final int as = _drn.sArtist.size();
 
-            final int as = _drn.sArtist.size();
-
-            for (int i = 3; i < as; i++) {
-                Log.d(mck, "    begin i:" + i);
-                final ImageView imageView = new ImageView(getApplicationContext());
-                imageView.setId(View.generateViewId());
-                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                RelativeLayout.LayoutParams rl = new RelativeLayout.LayoutParams(themerl.width, themerl.height);
-                rl.setMargins(0, themerl.topMargin, 0, 0);
-                imageViewList.add(imageView);
-                Log.d(mck, "     i:::::" + imageViewList.get(i - 1).getId() + "    width:" + themerl.width + "    height:" + themerl.height);
-                rl.addRule(RelativeLayout.BELOW, imageViewList.get(i - 1).getId());
-                reLyou.addView(imageView, rl);
-            }
-            Log.d(mck, "     as:::::" + as + "    width:" + themerl.width + "    height:" + themerl.height);
-            for (int i = 0; i < as; i++) {
-                Log.d(mck, "     i:::::" + i);
-                final ImageView imageView = imageViewList.get(i);
-                final ImageviewNurl inu = new ImageviewNurl(imageView, _drn.sArtist.get(i).getPicture_url());
+        for (int i = 3; i < as; i++) {
+            Log.d(mck, "    begin i:" + i);
+            final ImageView imageView = new ImageView(getApplicationContext());
+            imageView.setId(View.generateViewId());
+            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            RelativeLayout.LayoutParams rl = new RelativeLayout.LayoutParams(themerl.width, themerl.height);
+            rl.setMargins(0, themerl.topMargin, 0, 0);
+            imageViewList.add(imageView);
+            Log.d(mck, "     i:::::" + imageViewList.get(i - 1).getId() + "    width:" + themerl.width + "    height:" + themerl.height);
+            rl.addRule(RelativeLayout.BELOW, imageViewList.get(i - 1).getId());
+            assert reLyou != null;
+            reLyou.addView(imageView, rl);
+        }
+        Log.d(mck, "     as:::::" + as + "    width:" + themerl.width + "    height:" + themerl.height);
+        for (int i = 0; i < as; i++) {
+            Log.d(mck, "     i:::::" + i);
+            final ImageView imageView = imageViewList.get(i);
+            final ImageviewNurl inu = new ImageviewNurl(imageView, _drn.sArtist.get(i).getPicture_url());
             /*if (null == _drn.layoutwaterfall)
                 _drn.layoutwaterfall =  (MScrollView) getLayoutInflater().inflate(R.layout.waterfall, null);*/
-                Imageloader.getInstance().imageviewshowurlpicture(inu, this);
+            Imageloader.getInstance().imageviewshowurlpicture(inu, this);
 //            LoadImageTask task = new LoadImageTask(inu, this);//// .
 //            LoadImageTask.taskCollection.add(task);
 //            task.execute();
-            }
+        }
 
     }
-
 
 
     /**
@@ -188,7 +189,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
     /**
      * 下面是点击区. 第一个: 点击有惊喜
      *
-     * @param v
+     * @param v 点击有惊喜是一个按钮.
      */
 
     public void onbuttonhappy(View v) {
@@ -200,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
     /**
      * 下面是点击区. 第二个: 照片搜索, 返回码: 3
      *
-     * @param v
+     * @param v 按钮
      */
 
     public void onbuttonphotosearch(View v) {
@@ -213,7 +214,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
     /**
      * 下面是点击区. 第三个: 拍照搜索, 返回码: 2
      *
-     * @param v
+     * @param v 按钮
      */
 
     public void onbuttoncamerasearch(View v) {
@@ -230,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
                     getExternalFilesDir(Environment.DIRECTORY_PICTURES)));//// : 5/25/16 是否这样就好了?*/
             cI.putExtra(MediaStore.EXTRA_OUTPUT, lUri);
         } catch (Exception e) {
-            Log.d(mck, "onbuttoncamerasearch: "+e.getMessage());
+            Log.d(mck, "onbuttoncamerasearch: " + e.getMessage());
         }
         startActivityForResult(cI, 2);
     }
@@ -238,9 +239,9 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
     /**
      * 用户从相册3或者相机2返回之后, 继续做下一步. 下一步就是后面的选切函数code:4.
      *
-     * @param requestCode
-     * @param resultCode
-     * @param data
+     * @param requestCode 2, 3, 4, 三中
+     * @param resultCode  一般没用.
+     * @param data        结果数据
      */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -255,7 +256,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
             Log.i(mck, "code3---dataluri:::" + data.getData());
 
 
-            lUri=data.getData();
+            lUri = data.getData();
             startPhotoZoom(lUri);//奔着4去了.
         }
         /**
@@ -280,10 +281,10 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
             thread.start();
             View v = findViewById(R.id.button_searchresult);
 
-            _drn.makeNshow( "上传..2.", Toast.LENGTH_SHORT);
-
+            _drn.makeNshow("上传..2.", Toast.LENGTH_SHORT);
+            assert v != null;
             v.performClick();
-            _drn.makeNshow( "上传..3.", Toast.LENGTH_SHORT);
+            _drn.makeNshow("上传..3.", Toast.LENGTH_SHORT);
 
         }
     }
@@ -294,12 +295,12 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
 
                 String uploadUrl = Dgruning.uploadurl;
                 urlpara p = new urlpara("token", _drn._token); //Dgruning._token);
-                urlpara p2 = new urlpara("type","0");
-                Log.d(mck, "    uploadUrl:::::: " + uploadUrl+"    luri: "+lUri+"    p:"+ _drn._token+" :@p2@: "+p2);
+                urlpara p2 = new urlpara("type", "0");
+                Log.d(mck, "    uploadUrl:::::: " + uploadUrl + "    luri: " + lUri + "    p:" + _drn._token + " :@p2@: " + p2);
 
-                    String result= _drn.posturlstring(lUri, uploadUrl, p, p2);
-                    // 报错在这里, 没有返回结果.
-                Log.d(mck, "result:::::::::"+result);
+                String result = _drn.posturlstring(lUri, uploadUrl, p, p2);
+                // 报错在这里, 没有返回结果.
+                Log.d(mck, "result:::::::::" + result);
 
 //                if(result.is)
                 ////解析result.
@@ -308,9 +309,9 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
                  *
                  */
                 Log.d(mck, "before preparearts");
-                final boolean bl= _drn.prepareArts(result);
-                Log.d(mck, "search bl:"+bl);
-                if(!bl)runOnUiThread(new nosearchresult());
+                final boolean bl = _drn.prepareArts(result);
+                Log.d(mck, "search bl:" + bl);
+                if (!bl) runOnUiThread(new nosearchresult());
                 /**
                  * 呼唤主线程, 显示一个toast.
                  */
@@ -329,7 +330,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
                 /**
                  * 确定加载了正确的艺术品搜索结果数据.
                  */
-            //Dgruning.isprepare =true;
+                //Dgruning.isprepare =true;
 
                 ////建立更多的线程, 下载这些图片. 并且把图片保存在本机. 用之前的uuid建立一个目录. 这些图片都顺序放在目录里面.
                 ///然后使用缓存机制. 建立对象, 然后, 显示对象.
@@ -339,7 +340,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
 //               runOnUiThread(new flash_ui_searchresult());
 
             } catch (Exception e) {
-                Log.d(mck, " search: "+e + "");
+                Log.d(mck, " search: " + e + "");
             }
             //在ui线程, 作动作, 更新瀑布流//// : 5/30/16
 //            runOnUiThread(Runnable);
@@ -347,18 +348,10 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
     }
 
 
-
-
-
-
-
-
-
-
     /**
      * 选切函数, 选好了图再切, 这个图有可能来自于相册, 也可能来自于相机.
      *
-     * @param uri
+     * @param uri 图片地址.
      */
 
     private void startPhotoZoom(Uri uri) {
@@ -391,7 +384,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
 
         //返回一个文件到这个luri里面
         intent.putExtra(MediaStore.EXTRA_OUTPUT, lUri);
-        Log.d(mck, "luri startphotozoom: "+lUri);
+        Log.d(mck, "luri startphotozoom: " + lUri);
 
         //用jpeg格式.
         intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
@@ -410,8 +403,9 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
 
     /**
      * 下面是tab区: 首页, 这个就是backto首页
+     * 其实这个函数整个是没用的.
      *
-     * @param v
+     * @param v 没用
      */
 
     public void onbuttonbackhome(View v) {
@@ -429,7 +423,8 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
          */
 
         if (null == _drn.layoutwaterfall)
-            _drn.layoutwaterfall =  (MScrollView) getLayoutInflater().inflate(R.layout.waterfall, null);
+            _drn.layoutwaterfall = (MScrollView)View.inflate(MainActivity.cma, R.layout.waterfall, null);
+                    //getLayoutInflater().inflate(R.layout.waterfall, null);
 
         Log.i(mck, "onbuttongallery layoutwaterfall after: " + _drn.layoutwaterfall);
 
@@ -442,13 +437,14 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
          * 这个地方要判断是否要自己搞.
          */
         //_drn.initlist();
-        Log.d(mck, "onbuttongallery luri: "+lUri);
+        Log.d(mck, "onbuttongallery luri: " + lUri);
 
-        if(null==lUri){
+        if (null == lUri) {
             _drn.prepareDefaultArts();
-        }else {
-            _drn.clearart();
-            lUri=null;// // TODO: 6/22/16 不知道是否能解决二次进入的bug, 还是带来更严重的bug.
+        } else {
+            //_drn.clearart();
+            _drn.sArtist.clear();
+            lUri = null;// // TODO: 6/22/16 不知道是否能解决二次进入的bug, 还是带来更严重的bug.
         }
 
         /**
@@ -462,15 +458,10 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
     }
 
 
-
-
-
-
-
     /**
      * 下面是tab区:收藏
      *
-     * @param v
+     * @param v 按钮
      */
 
     public void onbuttonbookmark(View v) {
@@ -480,8 +471,8 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
          * 和点击相册几乎一模一样. 考虑如何合并为一个.
          * 就是把结果刷掉, 就对了.
          */
-        _drn.clearart();
-
+//        _drn.clearart();
+        _drn.sArtist.clear();
 
 
         //替换布局为waterfall.
@@ -493,16 +484,14 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
          */
 
         if (null == _drn.layoutwaterfall)
-            _drn.layoutwaterfall = (MScrollView)getLayoutInflater().inflate(R.layout.waterfall, null);
+            _drn.layoutwaterfall = (MScrollView) View.inflate(MainActivity.cma, R.layout.waterfall, null);
+                    //getLayoutInflater().inflate(R.layout.waterfall, null);
 
         Log.i(mck, "layoutwaterfall after: " + _drn.layoutwaterfall);
 //        _drn.initlist();
 
         Thread thread = new Thread(new bookmarklist());
         thread.start();
-
-
-
 
 
         /**
@@ -522,9 +511,9 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
                 urlpara p = new urlpara("token", _drn._token); //Dgruning._token);
 //                Log.d(mck, "    uploadUrl:::::: " + uploadUrl+"    luri: "+lUri+"    p:"+Dgruning._token+" :@p2@: "+p2);
 
-                String result= _drn.posturlstring(lUri, uploadUrl, p);
+                String result = _drn.posturlstring(lUri, uploadUrl, p);
                 // 报错在这里, 没有返回结果.
-                Log.d(mck, "result:::::::::"+result);
+                Log.d(mck, "result:::::::::" + result);
 
 //                if(result.is)
                 ////解析result.
@@ -534,10 +523,10 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
                  * 如果返回是false, 那么就应该显示button, [没有搜索结果, 返回]
                  *
                  */
-            final boolean bl= _drn.prepareArts(result);
-                Log.d(mck, "bookmarklist bl1:"+bl);
-                if(!bl)runOnUiThread(new nosearchresult());
-                Log.d(mck, "bookmarklist bl2:"+bl);
+                final boolean bl = _drn.prepareArts(result);
+                Log.d(mck, "bookmarklist bl1:" + bl);
+                if (!bl) runOnUiThread(new nosearchresult());
+                Log.d(mck, "bookmarklist bl2:" + bl);
 
                 /**
                  *
@@ -547,12 +536,11 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
                 //Dgruning.makeNshow(c, "全部结果已展示", Toast.LENGTH_SHORT);
 
 
-
                 /**
                  * 确定加载了正确的艺术品搜索结果数据.
                  */
             } catch (Exception e) {
-                Log.d(mck,"bookmarklist: "+ e + "");
+                Log.d(mck, "bookmarklist: " + e + "");
             }
             //在ui线程, 作动作, 更新瀑布流//// : 5/30/16
 //            runOnUiThread(Runnable);
@@ -560,36 +548,35 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
 
 
     }
-class nosearchresult implements Runnable{
 
-    @Override
-    public void run() {
-        Log.d(mck, "nosearchresult 1: ");
-        /**
-         * 下面这句话虽然没有错, 但是, 实际上也没有用.
-         */
-        //_drn.layoutwaterfall.rlscroll.removeAllViews();
-        Log.d(mck, "nosearchresult 2: ");
+    class nosearchresult implements Runnable {
 
-        RelativeLayout.LayoutParams rl=
-                new RelativeLayout.LayoutParams(600, 200);
-        Log.d(mck, "nosearchresult 3: ");
+        @Override
+        public void run() {
+            Log.d(mck, "nosearchresult 1: ");
+            /**
+             * 下面这句话虽然没有错, 但是, 实际上也没有用.
+             */
+            //_drn.layoutwaterfall.rlscroll.removeAllViews();
+            Log.d(mck, "nosearchresult 2: ");
 
-        Button v=new Button(getApplicationContext());
-        v.setId(R.id.noreasch);
-        Log.d(mck, "nosearchresult 4: ");
+            RelativeLayout.LayoutParams rl =
+                    new RelativeLayout.LayoutParams(600, 200);
+            Log.d(mck, "nosearchresult 3: ");
 
-        v.setText("没有结果, 请按返回");
-        rl.addRule(RelativeLayout.CENTER_IN_PARENT);
-        Log.d(mck, "nosearchresult 5: ");
+            Button v = new Button(getApplicationContext());
+            v.setId(R.id.noreasch);
+            Log.d(mck, "nosearchresult 4: ");
 
-        _drn.layoutwaterfall.rlscroll.addView(v, rl);
-        Log.d(mck, "nosearchresult 6: ");
+            v.setText("没有结果, 请按返回");
+            rl.addRule(RelativeLayout.CENTER_IN_PARENT);
+            Log.d(mck, "nosearchresult 5: ");
 
+            _drn.layoutwaterfall.rlscroll.addView(v, rl);
+            Log.d(mck, "nosearchresult 6: ");
+
+        }
     }
-}
-
-
 
 
 //==========================================================================================================================
@@ -600,7 +587,6 @@ class nosearchresult implements Runnable{
      */
 
 
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -608,20 +594,17 @@ class nosearchresult implements Runnable{
     }
 
 
-
-
 //==========================================================================================================================
 
     /**
      * 下面是bigshow页面的点击区, 主要就是各种分享啥的.
      *
-     *
-     * @param v
      */
 
     public Art a;
-    private  IWXAPI wxapi;
-    public  void reg2wx(){
+    private IWXAPI wxapi;
+
+    public void reg2wx() {
         final String APP_ID = "wx434f0a989ac6a564";
         //// TODO: 这个地方有配置管理, 或者编译配置的需求. 3/7/16 正式打包的时候, 需要替换这个app_id为正式的app_id.
 
@@ -632,47 +615,62 @@ class nosearchresult implements Runnable{
 
     /**
      * 不应该在这里错误的初始化, 初始化, 还是应该去另一个地方.
-     *          lTextView.setText(Dgruning.sArt4detailactivity.getIllustrate());
-     *          ok了, 改好了.
-
-     *
+     * lTextView.setText(Dgruning.sArt4detailactivity.getIllustrate());
+     * ok了, 改好了.
      */
-    public void ondetailclick(View v){
+    public void ondetailclick(View v) {
         Log.d(mck, "\\\\\\\\show detail, =======/////////");
 
 
-        TextView lTextView=(TextView)findViewById(R.id.detail_text);
+        TextView lTextView = (TextView) findViewById(R.id.detail_text);
+        assert lTextView !=null;
         lTextView.setMovementMethod(ScrollingMovementMethod.getInstance());
 
 
-        View lView=findViewById(R.id.detail_text_layout);
+        View lView = findViewById(R.id.detail_text_layout);
+        assert lView!=null;
         lView.setVisibility(View.VISIBLE);
-        lView=findViewById(R.id.imageview_detail_button);
+        lView = findViewById(R.id.imageview_detail_button);
+        assert lView!=null;
+
         lView.setVisibility(View.INVISIBLE);
-        lView=findViewById(R.id.imageview_share_button);
+        lView = findViewById(R.id.imageview_share_button);
+        assert lView!=null;
+
         lView.setVisibility(View.INVISIBLE);
     }
-    public void ondetail_cancel_click(View v){
+
+    public void ondetail_cancel_click(View v) {
         Log.d(mck, "\\\\\\\\share/////////");
-        View nLViewnv=findViewById(R.id.layout_share);
+        View nLViewnv = findViewById(R.id.layout_share);
+        assert nLViewnv!=null;
+
         nLViewnv.setVisibility(View.INVISIBLE);
-        View lView=findViewById(R.id.detail_text_layout);
+        View lView = findViewById(R.id.detail_text_layout);
+        assert lView!=null;
+
         lView.setVisibility(View.INVISIBLE);
-        lView=findViewById(R.id.imageview_detail_button);
+        lView = findViewById(R.id.imageview_detail_button);
+        assert lView!=null;
+
         lView.setVisibility(View.VISIBLE);
-        lView=findViewById(R.id.imageview_share_button);
+        lView = findViewById(R.id.imageview_share_button);
+        assert lView!=null;
+
         lView.setVisibility(View.VISIBLE);
     }
 
     public void onshareclick(View v) {
         Log.d(mck, "\\\\\\\\share/////////");
         View nLViewnv = findViewById(R.id.layout_share);
+        assert nLViewnv!=null;
+
         nLViewnv.setVisibility(View.VISIBLE);
-        Log.d(mck, "a:"+a);
+        Log.d(mck, "a:" + a);
 
-        Log.d(mck, "a.id:"+a.getArt_name());
+        Log.d(mck, "a.id:" + a.getArt_name());
 
-        if (a.getCollection_id()==1)return;
+        if (a.getCollection_id() == 1) return;
         /**
          * 分享=收藏, 要加入收藏夹.
          * */
@@ -712,13 +710,17 @@ class nosearchresult implements Runnable{
 
         }
     }
-    public void onshare_cancel_click(View v){
+
+    public void onshare_cancel_click(View v) {
         Log.d(mck, "\\\\\\\\share/////////");
-        View nLViewnv=findViewById(R.id.layout_share);
+        View nLViewnv = findViewById(R.id.layout_share);
 //        assert nLViewnv != null;
+        assert nLViewnv!=null;
+
         nLViewnv.setVisibility(View.INVISIBLE);
 
     }
+
     /*****
      * 得到wexinurl
      */
@@ -738,9 +740,8 @@ class nosearchresult implements Runnable{
 
                 _drn._weixinurl = lJSONObject.getJSONObject("data").getString("web_url");
                 Log.d(mck, "weixinurl::::::::" + _drn._weixinurl);
-                if (null ==  _drn._weixinurl ||  _drn._weixinurl.length() == 0)
+                if (null == _drn._weixinurl || _drn._weixinurl.length() == 0)
                     return "weixinurl 失败";
-
 
 
                 Log.d(mck, "weixinurl success");
@@ -754,30 +755,33 @@ class nosearchresult implements Runnable{
 
         }
     }
+
     /**
      * 1, 拿到分享的url
      * 2, 把这个url给微信.
      *
      * @param v 系统
      */
-    public void onclick_weixin(View v){
+    public void onclick_weixin(View v) {
 
-        SendMessageToWX.Req re=prepareweixin();
+        SendMessageToWX.Req re = prepareweixin();
         wxapi.sendReq(re);
 
 
     }
-    public void onclick_friendcircle(View v){
+
+    public void onclick_friendcircle(View v) {
 
 
-        SendMessageToWX.Req re=prepareweixin();
+        SendMessageToWX.Req re = prepareweixin();
 
 
-        re.scene= SendMessageToWX.Req.WXSceneTimeline;
+        re.scene = SendMessageToWX.Req.WXSceneTimeline;
         wxapi.sendReq(re);
 
     }
-    private SendMessageToWX.Req prepareweixin(){
+
+    private SendMessageToWX.Req prepareweixin() {
 
         /**
          * 分享=收藏, 要加入收藏夹.
@@ -788,15 +792,14 @@ class nosearchresult implements Runnable{
         Log.d(mck, "sendme re: 1");
 
 
-
 //        Toast.makeText(ActivityArtDetail.this, "微信", Toast.LENGTH_SHORT).show();
 
         /**
          * text分享, 只有文字.
          */
-        WXTextObject to=new WXTextObject();
-        to.text=a.getArt_name()+"-"+a.getAuthor()+"\r\n"+a.getPicture_url();
-        Log.d(mck, "sendme re: 2:"+to.text);
+        WXTextObject to = new WXTextObject();
+        to.text = a.getArt_name() + "-" + a.getAuthor() + "\r\n" + a.getPicture_url();
+        Log.d(mck, "sendme re: 2:" + to.text);
 
         /**
          * 图片分享, 竟然是only pic, 木有文字.
@@ -805,7 +808,7 @@ class nosearchresult implements Runnable{
 
         Bitmap imageBitmap = Imageloader
                 .getBitmapFromMemoryCache(a.getPicture_url());
-        Log.d(mck, "sendme re: 2.5:: "+imageBitmap);
+        Log.d(mck, "sendme re: 2.5:: " + imageBitmap);
         if (imageBitmap == null) {
 
             File imageFile = new File(a.getPicture_url());
@@ -813,47 +816,44 @@ class nosearchresult implements Runnable{
                     imageFile.getPath(), getColumnWidth());
         }
 
-            // BitmapFactory.decodeResource(getResources(), a.getDrawable().);
+        // BitmapFactory.decodeResource(getResources(), a.getDrawable().);
 //            WXImageObject lWXImageObject = new WXImageObject(imageBitmap);
 
-            Bitmap thumbmap = Bitmap.createScaledBitmap(imageBitmap, 32, 32, true);
-        Log.d(mck, "sendme re: 3:"+thumbmap.getHeight());
+        Bitmap thumbmap = Bitmap.createScaledBitmap(imageBitmap, 32, 32, true);
+        Log.d(mck, "sendme re: 3:" + thumbmap.getHeight());
 
 
         /**
          * 网页分享
          */
-        WXWebpageObject WebpageObject=new WXWebpageObject();
-        WebpageObject.webpageUrl= _drn._weixinurl;
+        WXWebpageObject WebpageObject = new WXWebpageObject();
+        WebpageObject.webpageUrl = _drn._weixinurl;
 
-        Log.d(mck, "sendme re: 4:"+ WebpageObject.webpageUrl);
+        Log.d(mck, "sendme re: 4:" + WebpageObject.webpageUrl);
 
 
-        WXMediaMessage ms=new WXMediaMessage(WebpageObject);
+        WXMediaMessage ms = new WXMediaMessage(WebpageObject);
 //        ms.mediaObject=lWXImageObject;
-        ms.thumbData=Util.bmpToByteArray(thumbmap, true);
+        ms.thumbData = Util.bmpToByteArray(thumbmap, true);
 
 
-        ms.title=to.text;
-        ms.description=a.getArt_name()+a.getAuthor();
-        Log.d(mck, "sendme re: 5:"+ ms.description);
+        ms.title = to.text;
+        ms.description = a.getArt_name() + a.getAuthor();
+        Log.d(mck, "sendme re: 5:" + ms.description);
 
-        SendMessageToWX.Req re=new SendMessageToWX.Req();
-        re.transaction=String.valueOf(System.currentTimeMillis());
-        re.message=ms;
-        Log.d(mck, "sendme re: 6:"+ re.transaction);
+        SendMessageToWX.Req re = new SendMessageToWX.Req();
+        re.transaction = String.valueOf(System.currentTimeMillis());
+        re.message = ms;
+        Log.d(mck, "sendme re: 6:" + re.transaction);
 
         return re;
     }
 
 
-
-    public void onclick_weibo(View v){
+    public void onclick_weibo(View v) {
         //敬请期待
         Toast.makeText(this, "敬请期待", Toast.LENGTH_SHORT).show();
     }
-
-
 
 
 }

@@ -2,9 +2,8 @@ package com.takungae.dagong30;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
-import android.provider.DocumentsContract;
 import android.util.Log;
-import android.view.LayoutInflater;
+//import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -45,11 +44,8 @@ public class ImageviewNurl {
          * 标记这个imageview是可以操作的, 比如checkvisibility.
          */
         isshowok=true;
-        if(border_bottom!=0)return;
+        if(border_bottom!=0)return;//这句话判断这个imageview之前是否被positon过, 如果position过, 那么它一定是有bottom位置的.
         liv.addimageatposition(this);
-
-
-
     }
 
 
@@ -75,9 +71,11 @@ public class ImageviewNurl {
              * 如果artbigshow没有搞过, 那么就搞一下.
              * 這裏inflate的第二個參宿和不應該是null: http://blog.chengdazhi.com/index.php/110
              */
+
             if (null == MainActivity._drn.layoutartbigshow) {
-                MainActivity._drn.layoutartbigshow = (FrameLayout)
-                        LayoutInflater.from(MainActivity.cma).inflate(R.layout.art_bigshow, null);
+                MainActivity._drn.layoutartbigshow = (FrameLayout) View.inflate(MainActivity.cma, R.layout.art_bigshow,null);
+                        //(FrameLayout)
+//                        LayoutInflater.from(MainActivity.cma).inflate(R.layout.art_bigshow, null);
             }
             final ImageView i = (ImageView) MainActivity._drn.layoutartbigshow.findViewById(R.id.imageview_art_detail);
             final ImageviewNurl inu = new ImageviewNurl(i, url);

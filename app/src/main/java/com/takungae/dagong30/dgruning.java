@@ -3,7 +3,6 @@ package com.takungae.dagong30;
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -13,22 +12,14 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Locale;
 import java.util.UUID;
 
 /**
@@ -41,12 +32,11 @@ import java.util.UUID;
  */
 public class Dgruning {
     //这货和dgrunning的artlist完全等价, 因此, 应该注入进来. 目前是在dgruning的prepare声明了.
-    public ArrayList<Art> sArtist = null;
-    public HashMap<String, Art> stringartHashMap = null;
+    public final ArrayList<Art> sArtist = new ArrayList<>();
+    public final HashMap<String, Art> stringartHashMap = new LinkedHashMap<>();
     /**
      * 这个是瀑布流.
      *
-     * @param v
      */
     MScrollView layoutwaterfall=null;
 
@@ -77,10 +67,10 @@ public class Dgruning {
     /**
      *
      */
-    public void clearart(){
-        sArtist = null;
-        stringartHashMap=null;
-    }
+    /*public void clearart(){
+        sArtist.clear();
+        //stringartHashMap=null;
+    }*/
     /******
      * 准备好, 要显示的素材.
      * 这个东西要不要重复利用?
@@ -100,8 +90,9 @@ public class Dgruning {
     public boolean prepareArts(String result) {
         //sArtist = null;
         //stringartHashMap=null;
-        ArrayList<Art> lArts = new ArrayList<>();
+        //ArrayList<Art> lArts = new ArrayList<>();
 //        LinkedHashMap<String, Art> lhmarts = new LinkedHashMap<>();
+        sArtist.clear();
         try {
             JSONObject jb = new JSONObject(result);
             JSONArray ja = jb.getJSONArray("data");
@@ -125,12 +116,12 @@ public class Dgruning {
                 Log.d(mck, ":::::thumb_url:::" + a.getThumb_url());
                 //和picture的内容是一样的, 因此为了避免混淆, 我注释掉了.
                 stringartHashMap.put(a.getPicture_url(), a);
-                lArts.add(a);
+                sArtist.add(a);
             }
             //mArts=lArts;
             //stringartHashMap = lhmarts;
 
-            sArtist = lArts;
+            //sArtist = lArts;
             //isprepare=true;
 //            layoutwaterfall.hasnotresult=false;
 //            sContext.getString(R.string.prepareartlist)=result;
@@ -139,9 +130,9 @@ public class Dgruning {
 
             return true;
         } catch (Exception e) {
-            sArtist = null;
+            //sArtist = null;
             //isprepare=true;
-            stringartHashMap = null;
+            //stringartHashMap = null;
 //            layoutwaterfall.hasnotresult=false;
             Log.d(mck, "--------e------" + e.toString() + "   : " + sArtist);
             return false;
@@ -179,7 +170,7 @@ public class Dgruning {
      * @param fileuri   文件地址.
      * @param pUrlparas 上传需要拼接的参数.
      * @param uploadurl 上传url.
-     * @return
+     * @return string result to string.
      */
     public String posturlstring(Uri fileuri, String uploadurl, urlpara... pUrlparas) {
         return new String(posturlbytes(fileuri, uploadurl, pUrlparas));
@@ -215,7 +206,7 @@ public class Dgruning {
 
             try (
                     DataOutputStream dos = new DataOutputStream(lHttpURLConnection
-                            .getOutputStream());//// : 6/3/16 报错在这里.
+                            .getOutputStream())//// : 6/3/16 报错在这里.
             ) {
 
 
@@ -228,8 +219,10 @@ public class Dgruning {
 
                 if (null != fileuri) {
                     try (InputStream is = sContext.getContentResolver().openInputStream(fileuri)) {
-                        int readby = 0;
+                        int readby ;
                         byte[] bytes = new byte[100];
+                        assert is!=null;
+
                         while ((readby = is.read(bytes)) > 0) {
                             dos.write(bytes, 0, readby);
                         }
@@ -270,7 +263,7 @@ public class Dgruning {
 
                 Log.d(mck, "-----is");//从这里到close要30多秒, 啥情况?
 
-                int readby = 0;
+                int readby ;
                 byte[] buffer = new byte[1024];
 
                 while ((readby = is2.read(buffer)) > 0) {
@@ -315,7 +308,6 @@ public class Dgruning {
      * 思考,怎样保证用户在使用r函数之前一定会使用init或者getinstance呢?  最好是借助编译器的力量
      *  依赖注入解决问题.
      * 如果没有init, 则抛出异常, 也是不错的解决方案.
-     * @return
      */
     /*public static Dgruning r() {
         //这就是一个单例, singleton
@@ -456,9 +448,9 @@ public class Dgruning {
     /**
      * 不能使用post方法, 必须是get方法拿图片.
      *
-     * @param uploadUrl
-     * @param pUrlparas
-     * @return
+     * @param uploadUrl address
+     * @param pUrlparas parameter pair.
+     * @return byte[] 或许改成arraylist更好.
      */
 
     public byte[] geturlbytes(String uploadUrl, urlpara... pUrlparas) {
@@ -468,9 +460,9 @@ public class Dgruning {
             }
 //            Log.d(mck, "final uploadurl::::::" + uploadUrl);
 //            String macid=params[2];
-            String end = "\r\n";
-            String twoHyphens = "--";
-            String boundary = "******";
+//            String end = "\r\n";
+//            String twoHyphens = "--";
+//            String boundary = "******";
 
             URL url = new URL(uploadUrl);
             HttpURLConnection lHttpURLConnection = (HttpURLConnection) url
@@ -485,7 +477,7 @@ public class Dgruning {
             Log.d(mck, "net error:::::::::" + error);
             InputStream in = lHttpURLConnection.getInputStream();
 
-            int i = 0;
+            int i ;
             byte[] buffer = new byte[1024];
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             while ((i = in.read(buffer)) > 0) {
@@ -514,6 +506,7 @@ public class Dgruning {
      * File file = new File(Environment.getExternalStorageDirectory(), String.valueOf(System.currentTimeMillis()));
      * Runtime.getRuntime().exec("logcat -d -v time -f " + file.getAbsolutePath());}catch (IOException e){}
      */
+/*
     public File extractLogToFileAndWeb() {
         //set a file
         Date datum = new Date();
@@ -564,5 +557,6 @@ public class Dgruning {
 
         return file;
     }
+*/
 
 }
