@@ -17,7 +17,7 @@
         android:id="@+id/adscroll">
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:id="@+id/amrelayout">
 
 
@@ -28,6 +28,7 @@
                 android:src="@drawable/empty_photo"
                 android:scaleType="centerCrop"
                 android:id="@+id/image0"
+                android:contentDescription="重点关注"
                 />
 
 

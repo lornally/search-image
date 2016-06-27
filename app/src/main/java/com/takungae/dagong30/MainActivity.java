@@ -88,12 +88,12 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
         setContentView(layoutmain);
 
 
-        Log.i(mck, "----uri---" + lUri);
-        Log.v("v", "hello world!");
-        Log.d("d", "hello world!");
-        Log.i("i", "hello world!");
-        Log.w("w", "hello world!");
-        Log.e("e", "hello world!");
+//        Log.i(mck, "----uri---" + lUri);
+//        Log.v("v", "hello world!";);
+//        Log.d("d", "hello world!");
+//        Log.i("i", "hello world!");
+//        Log.w("w", "hello world!");
+//        Log.e("e", "hello world!");
         layoutimage();
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -194,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
 
     public void onbuttonhappy(View v) {
         Intent browserIntent = new Intent(Intent.ACTION_VIEW,
-                Uri.parse("https://member.takungae.com/zh/register_e_channel.htm"));
+                Uri.parse("http://wap.takungae.com/cn/reg.php"));
         startActivity(browserIntent);
     }
 
