@@ -82,6 +82,7 @@ public class ImageviewNurl {
             // i.setImageBitmap(); //  6/12/16  应该加载各种关于art的东西, 不需要, url, 可以带走.
             // i.setTag(R.string.image_url, iurl);
 //                i.setTag(R.string.Art, a);
+            //此处inu其实不必新建, 直接使用外层类的引用就好了.
             Imageloader.getInstance().imageviewshowurlpicture(inu,  (MainActivity)MainActivity.cma);
             Log.i(mck, "layoutwaterfall after: " + MainActivity._drn.layoutartbigshow);
             /**

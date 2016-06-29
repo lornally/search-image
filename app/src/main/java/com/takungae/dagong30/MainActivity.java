@@ -1,8 +1,10 @@
 package com.takungae.dagong30;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 
 import android.os.AsyncTask;
@@ -63,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
     /**
      * 这个页面很简单, 本身是固定高度的. 因此不需要任何布局代码.
      *
-     * @param v 仅仅实现接口, 没办法1.8才有默认实现.
+     * @param v 仅仅实现接口, 没办法java8才有默认实现. 此时android只支持java7, -- 2016-6-29
      */
     @Override
     public void addimageatposition(ImageviewNurl v) {
@@ -155,6 +157,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
             rl.addRule(RelativeLayout.BELOW, imageViewList.get(i - 1).getId());
             assert reLyou != null;
             reLyou.addView(imageView, rl);
+
         }
         Log.d(mck, "     as:::::" + as + "    width:" + themerl.width + "    height:" + themerl.height);
         for (int i = 0; i < as; i++) {
@@ -167,6 +170,21 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
 //            LoadImageTask task = new LoadImageTask(inu, this);//// .
 //            LoadImageTask.taskCollection.add(task);
 //            task.execute();
+
+
+            /**
+             * 增加作者
+             */
+            TextView tv= new TextView(MainActivity.cma);
+            Art a=MainActivity._drn.stringartHashMap.get(inu.url);
+            tv.setText(a.getArt_name());
+            tv.setTextColor(Color.DKGRAY);
+            tv.setPadding(15,5,0,0);
+            reLyou.addView(tv, imageView.getLayoutParams());
+
+
+
+
         }
 
     }
@@ -238,6 +256,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
 
     /**
      * 用户从相册3或者相机2返回之后, 继续做下一步. 下一步就是后面的选切函数code:4.
+     * 但是, 用户有可能没有带回数据, 比如用户返回来了.
      *
      * @param requestCode 2, 3, 4, 三中
      * @param resultCode  一般没用.
@@ -246,6 +265,14 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.i(mck, "onactivity+request:" + requestCode + "  :::resultcode:::" + resultCode + "  data::" + data);
+
+
+        /**
+         * 但是, 用户有可能没有带回数据, 比如用户返回来了.
+         * 用这个resultcode解决这个问题.
+         */
+        if(resultCode!= Activity.RESULT_OK)return;
+
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 2) {
             Log.w(mck, "code2--luri:::" + lUri);

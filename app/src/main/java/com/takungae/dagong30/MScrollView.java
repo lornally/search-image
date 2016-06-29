@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Environment;
 import android.util.AttributeSet;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -470,5 +472,15 @@ public class MScrollView extends ScrollView implements LayoutImageV {
          */
         columnid.set(hlittle, v.iv.getId());
         rlscroll.addView(v.iv, rl);
+
+        /**
+         * 增加作者
+         */
+        TextView tv= new TextView(MainActivity.cma);
+        Art a=MainActivity._drn.stringartHashMap.get(v.url);
+        tv.setText(a.getArt_name());
+        tv.setTextColor(Color.DKGRAY);
+        tv.setPadding(15,5,0,0);
+        rlscroll.addView(tv, rl);
     }
 }
