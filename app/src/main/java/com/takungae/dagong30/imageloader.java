@@ -22,14 +22,14 @@ import java.util.Set;
  *
  *  应该把loadimagetask搬到这里面来, 并且私有化, 不允许从外边直接调用loadimagetask, 做了.
  */
-public class Imageloader {
+public class ImageLoader {
 
 
     /**
      * 图片缓存技术的核心类，用于缓存所有下载好的图片，在程序内存达到设定值时会将最少最近使用的图片移除掉。
      */
     private final static LruCache<String, Bitmap> mMemoryCache;
-    private final static String mck="Imageloader";
+    private final static String mck="ImageLoader";
 
     static {
         // 获取应用程序最大可用内存
@@ -47,11 +47,11 @@ public class Imageloader {
     /**
      * 纯粹的工具类, 不需要构造函数.
      */
-    private Imageloader() {
+    private ImageLoader() {
     }
-    private final static Imageloader hh=new Imageloader();
+    private final static ImageLoader hh=new ImageLoader();
 
-     static Imageloader getInstance(){
+     static ImageLoader getInstance(){
         return hh;
     }
 
@@ -244,7 +244,7 @@ public class Imageloader {
                 downloadImage(imageUrl);
             }
             if (imageUrl != null) {
-                Bitmap bitmap = Imageloader.decodeSampledBitmapFromResource(
+                Bitmap bitmap = ImageLoader.decodeSampledBitmapFromResource(
                         imageFile.getPath(), layoutImageview.getColumnWidth());
                 if (bitmap != null) {
                     addBitmapToMemoryCache(imageUrl, bitmap);
@@ -349,7 +349,7 @@ public class Imageloader {
                     }
                 }
 
-                    Bitmap bitmap = Imageloader.decodeSampledBitmapFromResource(
+                    Bitmap bitmap = ImageLoader.decodeSampledBitmapFromResource(
                             imageFile.getPath(), layoutImageview.getColumnWidth());
                     if (bitmap != null) {
                         addBitmapToMemoryCache(imageUrl, bitmap);

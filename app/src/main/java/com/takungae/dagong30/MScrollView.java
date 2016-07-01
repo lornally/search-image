@@ -54,7 +54,7 @@ public class MScrollView extends ScrollView implements LayoutImageV {
     /**
      * 对图片进行管理的工具类
      */
-//    private Imageloader imageLoader;
+//    private ImageLoader imageLoader;
 
 
     /**
@@ -97,7 +97,7 @@ public class MScrollView extends ScrollView implements LayoutImageV {
         Log.d(mck, ":::::::mckstrlllview constractor 2con");
 
 
-        //imageLoader = Imageloader.getInstance();
+        //imageLoader = ImageLoader.getInstance();
 
         /**
          * 据说这个方法能解决ondraw重复呼入的问题, 明天测试一下.
@@ -129,21 +129,24 @@ public class MScrollView extends ScrollView implements LayoutImageV {
             Log.d(mck, ":::::::runable   0:");
 
             Log.d(mck, "runable isprepare before  1:  " + MainActivity._drn.sArtist);
+            if (MainActivity._drn.finishprepare==DgRuning.runing){
+                MainActivity._drn.makeNshow("匹配中:" + (++toasttime), Toast.LENGTH_SHORT);
+                postDelayed(scrollrun, 1500);
+                Log.d(mck, "runable isprepare::::  2:  " + MainActivity._drn.sArtist);
+                return;
+            }
+
+
             /**
              * 这个地方判断是否显示了, 无搜索结果之后应该显示的内容. 如果那样, 就返回, 并结束轮询.
              */
-            if (null == MainActivity._drn.sArtist) {
-
+            if (MainActivity._drn.finishprepare<DgRuning.mini) {
                 View v = findViewById(R.id.noreasch);
                 Log.d(mck, "runable 1.5: " + v);
                 if (null != v) {
                     MainActivity._drn.makeNshow("没有结果", Toast.LENGTH_SHORT);
                     return;
                 }
-
-                MainActivity._drn.makeNshow("匹配中:" + (++toasttime), Toast.LENGTH_SHORT);
-                postDelayed(scrollrun, 1500);
-                Log.d(mck, "runable isprepare::::  2:  " + MainActivity._drn.sArtist);
                 return;
             }
             //Log.d(mck, "runable hasnotallshow:  3:  " + "    tasksize: " + LoadImageTask.taskCollection.size());
@@ -151,9 +154,8 @@ public class MScrollView extends ScrollView implements LayoutImageV {
 
             if (page * PAGE_SIZE >= MainActivity._drn.sArtist.size()) {
                 MainActivity._drn.makeNshow("全部结果已展示", Toast.LENGTH_SHORT);
-
                 return;
-            } else if (Imageloader.taskCollection.size() < 5) {
+            } else if (ImageLoader.taskCollection.size() < 5) {
                 MainActivity._drn.makeNshow("正在加载......", Toast.LENGTH_SHORT);
 
                 Log.d(mck, "runable load more    5:   ");
@@ -332,7 +334,7 @@ public class MScrollView extends ScrollView implements LayoutImageV {
 //				imageView.setLayoutParams(layoutParams);
                 imageViewList.add(inu);
 
-                Imageloader.getInstance().imageviewshowurlpicture(inu, this);
+                ImageLoader.getInstance().imageviewshowurlpicture(inu, this);
             }
             page++;
         }
@@ -380,7 +382,7 @@ public class MScrollView extends ScrollView implements LayoutImageV {
                 if (iv.isshowok) continue;
                 //final ImageviewNurl inu = new ImageviewNurl(iv, "" + iv.get Tag(R.string.image_url), this);
                 //    Log.d(mck, "                     checkvisibility 4: "+i+"   tag: "+imageView.get Tag(R.string.isshowok));
-                Imageloader.getInstance().imageviewshowurlpicture(iv, this);
+                ImageLoader.getInstance().imageviewshowurlpicture(iv, this);
 
                 //   Log.d(mck, "                     checkvisibility 7: "+i+"   tag: "+imageView.get Tag(R.string.isshowok));
 //不该在这里, 应该在设置图片的地方.

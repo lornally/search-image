@@ -85,7 +85,7 @@ public class ImageviewNurl {
             //此处inu其实不必新建, 直接使用外层类的引用就好了. // : 6/29/16 改变一下试试.
             //试过了, 不应该这么干, 这个inu是新的, 针对bigshow页面新建的. 之前想错了.
 
-            Imageloader.getInstance().imageviewshowurlpicture(inu,  (MainActivity)MainActivity.cma);
+            ImageLoader.getInstance().imageviewshowurlpicture(inu,  (MainActivity)MainActivity.cma);
             Log.i(mck, "layoutwaterfall after: " + MainActivity._drn.layoutartbigshow);
             /**
              * 加载界面, 把简介写进去.

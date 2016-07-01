@@ -54,8 +54,10 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
     private View layoutmain;
     //    private final Context c=this;
     public static Context cma;//外部类使用.
-    private List<ImageView> imageViewList = new ArrayList<>();
-    public static Dgruning _drn;
+    private final List<ImageView> imageViewList = new ArrayList<>();
+    private final List<TextView> textViewList = new ArrayList<>();
+
+    public static DgRuning _drn;
 
     @Override
     public int getColumnWidth() {
@@ -69,24 +71,17 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
      */
     @Override
     public void addimageatposition(ImageviewNurl v) {
-
-
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
-        //setContentView(R.layout.activity_main);
-
         /**
          * 设置content的另一种方法.
          * 查阅了文档, 设置content多次不是一个好主意. 貌似. 因为重新计算了整个界面.
          *
          */
         layoutmain = View.inflate(this, R.layout.activity_main, null);
-//         layoutmain = getLayoutInflater().inflate(R.layout.activity_main, null);
         setContentView(layoutmain);
 
 
@@ -97,9 +92,6 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
 //        Log.w("w", "hello world!");
 //        Log.e("e", "hello world!");
         layoutimage();
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-//        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     /**
@@ -111,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
         super.onResume();
         Log.d(mck, " layoutimage:1");
         cma = this;
-        _drn = new Dgruning();//crash. // : 6/20/16
+        _drn = new DgRuning();//crash. // : 6/20/16
         final RelativeLayout reLyou = (RelativeLayout) findViewById(R.id.amrelayout);
         //reLyou.removeAllViews();
 
@@ -126,7 +118,6 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
         _drn.makeNshow("正在加载...", Toast.LENGTH_SHORT);
         _drn.prepareDefaultArts();
 //        Log.d(mck, " resume:2: "+_drn.sArtist.get(0).getArt_name());
-
         ImageView iv = (ImageView) findViewById(R.id.image0);
         imageViewList.add(iv);
 //        Log.d(mck, "     resume:3: "+iv.getId()+ "       image0: "+R.id.image0);
@@ -144,7 +135,6 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
         Log.d(mck, "drn.artist" + _drn.sArtist);
         //sartlist is null // TODO: 6/26/16
         final int as = _drn.sArtist.size();
-
         for (int i = 3; i < as; i++) {
             Log.d(mck, "    begin i:" + i);
             final ImageView imageView = new ImageView(getApplicationContext());
@@ -157,34 +147,24 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
             rl.addRule(RelativeLayout.BELOW, imageViewList.get(i - 1).getId());
             assert reLyou != null;
             reLyou.addView(imageView, rl);
-
         }
         Log.d(mck, "     as:::::" + as + "    width:" + themerl.width + "    height:" + themerl.height);
         for (int i = 0; i < as; i++) {
             Log.d(mck, "     i:::::" + i);
             final ImageView imageView = imageViewList.get(i);
             final ImageviewNurl inu = new ImageviewNurl(imageView, _drn.sArtist.get(i).getPicture_url());
-            /*if (null == _drn.layoutwaterfall)
-                _drn.layoutwaterfall =  (MScrollView) getLayoutInflater().inflate(R.layout.waterfall, null);*/
-            Imageloader.getInstance().imageviewshowurlpicture(inu, this);
-//            LoadImageTask task = new LoadImageTask(inu, this);//// .
-//            LoadImageTask.taskCollection.add(task);
-//            task.execute();
-
-
+            ImageLoader.getInstance().imageviewshowurlpicture(inu, this);
             /**
              * 增加作者
              */
-            TextView tv= new TextView(MainActivity.cma);
-            Art a=MainActivity._drn.stringartHashMap.get(inu.url);
+            final TextView tv= new TextView(MainActivity.cma);
+            textViewList.add(tv);
+            final Art a=MainActivity._drn.stringartHashMap.get(inu.url);
             tv.setText(a.getArt_name());
             tv.setTextColor(Color.DKGRAY);
             tv.setPadding(15,5,0,0);
+            assert reLyou != null;
             reLyou.addView(tv, imageView.getLayoutParams());
-
-
-
-
         }
 
     }
@@ -200,6 +180,8 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
 //        super.onBackPressed();
         Log.i(mck, "back press end");
         setContentView(layoutmain);
+        imageViewList.clear();
+        textViewList.clear();
         layoutimage();
     }
 
@@ -302,8 +284,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
              */
             //_drn.usedefaultunprepare = false;
             //_drn.isprepare =false;
-
-
+            _drn.finishprepare=DgRuning.runing;
             Thread thread = new Thread(new search());
             thread.start();
             View v = findViewById(R.id.button_searchresult);
@@ -320,9 +301,9 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
         public void run() {
             try {
 
-                String uploadUrl = Dgruning.uploadurl;
-                urlpara p = new urlpara("token", _drn._token); //Dgruning._token);
-                urlpara p2 = new urlpara("type", "0");
+                String uploadUrl = DgRuning.uploadurl;
+                UrlPara p = new UrlPara("token", _drn._token); //DgRuning._token);
+                UrlPara p2 = new UrlPara("type", "0");
                 Log.d(mck, "    uploadUrl:::::: " + uploadUrl + "    luri: " + lUri + "    p:" + _drn._token + " :@p2@: " + p2);
 
                 String result = _drn.posturlstring(lUri, uploadUrl, p, p2);
@@ -342,35 +323,16 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
                 /**
                  * 呼唤主线程, 显示一个toast.
                  */
-                //Dgruning.makeNshow(c, "全部结果已展示", Toast.LENGTH_SHORT);
 
-/*
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Dgruning.makeNshow(c, "全部结果已展示", Toast.LENGTH_SHORT);
-
-                    }
-                });*/
 
 
                 /**
                  * 确定加载了正确的艺术品搜索结果数据.
                  */
-                //Dgruning.isprepare =true;
-
-                ////建立更多的线程, 下载这些图片. 并且把图片保存在本机. 用之前的uuid建立一个目录. 这些图片都顺序放在目录里面.
-                ///然后使用缓存机制. 建立对象, 然后, 显示对象.
-                ////这个地方还有线程池的问题.
-
-                ////  5/30/16 呼唤主线程, 刷界面, 貌似不该在这里.
-//               runOnUiThread(new flash_ui_searchresult());
-
             } catch (Exception e) {
                 Log.d(mck, " search: " + e + "");
             }
-            //在ui线程, 作动作, 更新瀑布流//// : 5/30/16
-//            runOnUiThread(Runnable);
+
         }
     }
 
@@ -493,7 +455,6 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
 
     public void onbuttonbookmark(View v) {
 
-
         /**
          * 和点击相册几乎一模一样. 考虑如何合并为一个.
          * 就是把结果刷掉, 就对了.
@@ -519,34 +480,24 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
 
         Thread thread = new Thread(new bookmarklist());
         thread.start();
-
-
         /**
          * 自动执行mckscrollview
          */
-
         setContentView(_drn.layoutwaterfall);
-
-
     }
 
+    /**
+     *
+     */
     class bookmarklist implements Runnable {
         public void run() {
             try {
-
                 String uploadUrl = "http://app.takungae.com:80/Api/Collection/my_collection";
-                urlpara p = new urlpara("token", _drn._token); //Dgruning._token);
-//                Log.d(mck, "    uploadUrl:::::: " + uploadUrl+"    luri: "+lUri+"    p:"+Dgruning._token+" :@p2@: "+p2);
-
+                UrlPara p = new UrlPara("token", _drn._token); //DgRuning._token);
                 String result = _drn.posturlstring(lUri, uploadUrl, p);
-                // 报错在这里, 没有返回结果.
                 Log.d(mck, "result:::::::::" + result);
-
-//                if(result.is)
-                ////解析result.
-
-
                 /**
+                 * 解析result.
                  * 如果返回是false, 那么就应该显示button, [没有搜索结果, 返回]
                  *
                  */
@@ -554,13 +505,12 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
                 Log.d(mck, "bookmarklist bl1:" + bl);
                 if (!bl) runOnUiThread(new nosearchresult());
                 Log.d(mck, "bookmarklist bl2:" + bl);
-
                 /**
                  *
                  * 呼唤主线程, 显示一个toast.
                  * 这个toast不能这么现实, 会报一个exception. 线程错误的exception.
                  */
-                //Dgruning.makeNshow(c, "全部结果已展示", Toast.LENGTH_SHORT);
+                //DgRuning.makeNshow(c, "全部结果已展示", Toast.LENGTH_SHORT);
 
 
                 /**
@@ -575,6 +525,10 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
 
 
     }
+
+    /**
+     * 没有搜索结果的时候, 加载这个runble. 主要是显示, 让客人按返回键.
+     */
 
     class nosearchresult implements Runnable {
 
@@ -642,7 +596,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
 
     /**
      * 不应该在这里错误的初始化, 初始化, 还是应该去另一个地方.
-     * lTextView.setText(Dgruning.sArt4detailactivity.getIllustrate());
+     * lTextView.setText(DgRuning.sArt4detailactivity.getIllustrate());
      * ok了, 改好了.
      */
     public void ondetailclick(View v) {
@@ -717,8 +671,8 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
         protected String doInBackground(String... params) {
             String pictureid = params[0];
             String uploadUrl = params[1];
-            urlpara p = new urlpara("picture_id", pictureid);
-            urlpara tp = new urlpara("token", _drn._token);
+            UrlPara p = new UrlPara("picture_id", pictureid);
+            UrlPara tp = new UrlPara("token", _drn._token);
 
 
             Log.d(mck, "pic id:::::" + pictureid);
@@ -757,8 +711,8 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
         protected String doInBackground(String... params) {
             String pictureid = params[0];
             String uploadUrl = params[1];
-            urlpara p = new urlpara("picture_id", pictureid);
-            urlpara tp = new urlpara("token", _drn._token);
+            UrlPara p = new UrlPara("picture_id", pictureid);
+            UrlPara tp = new UrlPara("token", _drn._token);
 
             Log.d(mck, "weixinurltask::::::" + uploadUrl);
             try {
@@ -831,15 +785,15 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
         /**
          * 图片分享, 竟然是only pic, 木有文字.
          */
-//        final Imageloader imageLoader = Imageloader.getInstance();
+//        final ImageLoader imageLoader = ImageLoader.getInstance();
 
-        Bitmap imageBitmap = Imageloader
+        Bitmap imageBitmap = ImageLoader
                 .getBitmapFromMemoryCache(a.getPicture_url());
         Log.d(mck, "sendme re: 2.5:: " + imageBitmap);
         if (imageBitmap == null) {
 
             File imageFile = new File(a.getPicture_url());
-            imageBitmap = Imageloader.decodeSampledBitmapFromResource(
+            imageBitmap = ImageLoader.decodeSampledBitmapFromResource(
                     imageFile.getPath(), getColumnWidth());
         }
 

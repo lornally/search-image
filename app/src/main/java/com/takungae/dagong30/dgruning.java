@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.FocusFinder;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
@@ -30,7 +31,7 @@ import java.util.UUID;
  * todo 依赖注入貌似是解决方案. 目前是让mainactivty持有一个全局实例, 不是一个好的解决方案.
  * 然后才可以使用这个类.
  */
-public class Dgruning {
+public class DgRuning {
     //这货和dgrunning的artlist完全等价, 因此, 应该注入进来. 目前是在dgruning的prepare声明了.
     public final ArrayList<Art> sArtist = new ArrayList<>();
     public final HashMap<String, Art> stringartHashMap = new LinkedHashMap<>();
@@ -45,10 +46,8 @@ public class Dgruning {
      */
     FrameLayout layoutartbigshow = null;
 
-    private final String mck = "--Dgruning--";
-
+    private final String mck = "--DgRuning--";
     public static final String uploadurl = "http://app.takungae.com/Api/Index/upload";
-
     public   String _token ;// 改回位nothing之后, 需要调试.
     public final String _device_id ;
     public final Context sContext ;
@@ -56,6 +55,19 @@ public class Dgruning {
     public  String _artstring="nothing";
     public final int screenHeight;
     public final  int screenWidth;
+
+    /**
+     * 准备结果: >0, 代表结果数, 并且代表结果正常.
+     */
+    public final static int mini=1;
+    public final static int NoEntriesFound=0;
+    public final static int runing=-1;
+    public final static int error=-2;
+
+
+
+
+    public int finishprepare=DgRuning.runing;
 
     /**
      * 全局就用这一个toast, 提升toast的使用效率.
@@ -127,7 +139,7 @@ public class Dgruning {
 //            sContext.getString(R.string.prepareartlist)=result;
             _artstring=result;
             PreferenceManager.getDefaultSharedPreferences(sContext).edit().putString("artstring", _artstring).apply();
-
+            finishprepare=sArtist.size();
             return true;
         } catch (Exception e) {
             //sArtist = null;
@@ -135,6 +147,7 @@ public class Dgruning {
             //stringartHashMap = null;
 //            layoutwaterfall.hasnotresult=false;
             Log.d(mck, "--------e------" + e.toString() + "   : " + sArtist);
+            finishprepare=DgRuning.error;
             return false;
         }
     }
@@ -168,18 +181,18 @@ public class Dgruning {
      * 使用post方法.
      *
      * @param fileuri   文件地址.
-     * @param pUrlparas 上传需要拼接的参数.
+     * @param pUrlParas 上传需要拼接的参数.
      * @param uploadurl 上传url.
      * @return string result to string.
      */
-    public String posturlstring(Uri fileuri, String uploadurl, urlpara... pUrlparas) {
-        return new String(posturlbytes(fileuri, uploadurl, pUrlparas));
+    public String posturlstring(Uri fileuri, String uploadurl, UrlPara... pUrlParas) {
+        return new String(posturlbytes(fileuri, uploadurl, pUrlParas));
     }
 
-    public byte[] posturlbytes(Uri fileuri, String uploadUrl, urlpara... pUrlparas) {
+    public byte[] posturlbytes(Uri fileuri, String uploadUrl, UrlPara... pUrlParas) {
 
         try {//准备参数....
-            for (urlpara p : pUrlparas) {
+            for (UrlPara p : pUrlParas) {
                 uploadUrl = Uri.parse(uploadUrl).buildUpon().appendQueryParameter(p.getName(), p.getValue()).build().toString();
             }
 
@@ -302,21 +315,21 @@ public class Dgruning {
      * 貌似只能放弃单例.
      * 让activity持有一个final public的dgruning的变量了.
      */
-   // private  static Dgruning ourInstance;// = new Dgruning(sContext);
+   // private  static DgRuning ourInstance;// = new DgRuning(sContext);
 
     /**
      * 思考,怎样保证用户在使用r函数之前一定会使用init或者getinstance呢?  最好是借助编译器的力量
      *  依赖注入解决问题.
      * 如果没有init, 则抛出异常, 也是不错的解决方案.
      */
-    /*public static Dgruning r() {
+    /*public static DgRuning r() {
         //这就是一个单例, singleton
 
         return ourInstance;
     }
 */
 
-    public Dgruning() {
+    public DgRuning() {
         this.sContext = MainActivity.cma;
 
         /**
@@ -420,7 +433,7 @@ public class Dgruning {
         protected String doInBackground(String... params) {
             String deviceid = params[0];
             String uploadUrl = params[1];
-            urlpara p = new urlpara("device_id", deviceid);
+            UrlPara p = new UrlPara("device_id", deviceid);
             Log.d(mck, "deviceid:::::" + deviceid + ":::::::tokenurl::::::" + uploadUrl);
             try {
                 JSONObject lJSONObject = new JSONObject(geturlstring(uploadUrl, p));
@@ -441,21 +454,21 @@ public class Dgruning {
         }
     }
 
-    public String geturlstring(String uploadurl, urlpara... pUrlparas) {
-        return new String(geturlbytes(uploadurl, pUrlparas));
+    public String geturlstring(String uploadurl, UrlPara... pUrlParas) {
+        return new String(geturlbytes(uploadurl, pUrlParas));
     }
 
     /**
      * 不能使用post方法, 必须是get方法拿图片.
      *
      * @param uploadUrl address
-     * @param pUrlparas parameter pair.
+     * @param pUrlParas parameter pair.
      * @return byte[] 或许改成arraylist更好.
      */
 
-    public byte[] geturlbytes(String uploadUrl, urlpara... pUrlparas) {
+    public byte[] geturlbytes(String uploadUrl, UrlPara... pUrlParas) {
         try {//准备参数....
-            for (urlpara p : pUrlparas) {
+            for (UrlPara p : pUrlParas) {
                 uploadUrl = Uri.parse(uploadUrl).buildUpon().appendQueryParameter(p.getName(), p.getValue()).build().toString();
             }
 //            Log.d(mck, "final uploadurl::::::" + uploadUrl);
