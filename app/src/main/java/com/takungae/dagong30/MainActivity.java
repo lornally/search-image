@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
     //    private final Context c=this;
     public static Context cma;//外部类使用.
     private final List<ImageView> imageViewList = new ArrayList<>();
-    private final List<TextView> textViewList = new ArrayList<>();
+//    private final List<TextView> textViewList = new ArrayList<>();
 
     public static DgRuning _drn;
 
@@ -91,20 +91,22 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
 //        Log.i("i", "hello world!");
 //        Log.w("w", "hello world!");
 //        Log.e("e", "hello world!");
+        cma = this;
+        _drn = new DgRuning();//crash. // : 6/20/16
+
         layoutimage();
     }
 
     /**
-     * 某些地方需要申明可以为空, 或者不可以为空. todo
+     * 某些地方需要申明可以为空, 或者不可以为空.
      */
 
 
     protected void layoutimage() {
-        super.onResume();
+//        super.onResume();
         Log.d(mck, " layoutimage:1");
-        cma = this;
-        _drn = new DgRuning();//crash. // : 6/20/16
         final RelativeLayout reLyou = (RelativeLayout) findViewById(R.id.amrelayout);
+
         //reLyou.removeAllViews();
 
         /**
@@ -116,6 +118,8 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
          */
         ////
         _drn.makeNshow("正在加载...", Toast.LENGTH_SHORT);
+        _drn._artstring=getString(R.string.prepareartlist);
+
         _drn.prepareDefaultArts();
 //        Log.d(mck, " resume:2: "+_drn.sArtist.get(0).getArt_name());
         ImageView iv = (ImageView) findViewById(R.id.image0);
@@ -133,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
         final RelativeLayout.LayoutParams themerl = (RelativeLayout.LayoutParams) iv2.getLayoutParams();
         Log.d(mck, "  drn:" + _drn);
         Log.d(mck, "drn.artist" + _drn.sArtist);
-        //sartlist is null // TODO: 6/26/16
+        //sartlist is null // : 6/26/16
         final int as = _drn.sArtist.size();
         for (int i = 3; i < as; i++) {
             Log.d(mck, "    begin i:" + i);
@@ -158,7 +162,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
              * 增加作者
              */
             final TextView tv= new TextView(MainActivity.cma);
-            textViewList.add(tv);
+//            textViewList.add(tv);
             final Art a=MainActivity._drn.stringartHashMap.get(inu.url);
             tv.setText(a.getArt_name());
             tv.setTextColor(Color.DKGRAY);
@@ -181,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
         Log.i(mck, "back press end");
         setContentView(layoutmain);
         imageViewList.clear();
-        textViewList.clear();
+//        textViewList.clear();
         layoutimage();
     }
 
@@ -433,7 +437,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
         } else {
             //_drn.clearart();
             _drn.sArtist.clear();
-            lUri = null;// // TODO: 6/22/16 不知道是否能解决二次进入的bug, 还是带来更严重的bug.
+            lUri = null;// // : 6/22/16 不知道是否能解决二次进入的bug, 还是带来更严重的bug.
         }
 
         /**
@@ -483,6 +487,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
         /**
          * 自动执行mckscrollview
          */
+        _drn.finishprepare=DgRuning.runing; // 这个把标志位设置为正确的, 否则, 标志位会保持之前的状态, 这就不对了.
         setContentView(_drn.layoutwaterfall);
     }
 

@@ -126,7 +126,7 @@ public class MScrollView extends ScrollView implements LayoutImageV {
 
         @Override
         public void run() {
-            Log.d(mck, ":::::::runable   0:");
+            Log.d(mck, ":::::::runable   0, _drn.finishprepare: "+MainActivity._drn.finishprepare);
 
             Log.d(mck, "runable isprepare before  1:  " + MainActivity._drn.sArtist);
             if (MainActivity._drn.finishprepare==DgRuning.runing){
