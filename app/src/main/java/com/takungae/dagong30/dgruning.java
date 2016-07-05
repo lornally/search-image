@@ -140,6 +140,7 @@ public class DgRuning {
             _artstring=result;
             PreferenceManager.getDefaultSharedPreferences(sContext).edit().putString("artstring", _artstring).apply();
             finishprepare=sArtist.size();
+            Log.d(mck, " preparearts8  finishp: "+finishprepare);
             return true;
         } catch (Exception e) {
             //sArtist = null;
