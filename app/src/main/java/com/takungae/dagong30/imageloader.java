@@ -334,7 +334,12 @@ public class ImageLoader {
                 Log.d(mck, "uploadurl" + url + con);
                 Log.d(mck, "resp:::" + con.getResponseCode());
                 Log.d(mck, "errstr:::::" + con.getErrorStream());
+
                 File imageFile = new File(getImagePath(imageUrl));
+
+
+                Log.d(mck, "imagf:"+imageFile+"       imgurl: "+imageUrl);
+
                 try (
                         BufferedInputStream bis = new BufferedInputStream(con.getInputStream());
                         FileOutputStream fos = new FileOutputStream(imageFile);
@@ -363,7 +368,7 @@ public class ImageLoader {
 
         /**
          * 获取图片的本地存储路径。
-         * 这个地方new file是没用的. 不需要.
+         * 这个地方new file是没用的. 不需要. 貌似错了, 不在这里处理, 后面就会出错.
          *
          * @param imageUrl 图片的URL地址。
          * @return 图片的本地存储路径。
@@ -373,10 +378,11 @@ public class ImageLoader {
             String imageName = imageUrl.substring(lastSlashIndex + 1);
             String imageDir = Environment.getExternalStorageDirectory()
                     .getPath() + "/PhotoWallFalls/";
-//            File file = new File(imageDir);
-//            if (!file.exists()) {
-//                file.mkdirs();
-//            }
+
+            File file = new File(imageDir);
+            if (!file.exists()) {
+                file.mkdirs();
+            }
             return imageDir + imageName;
         }
     }
