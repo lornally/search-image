@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
          * 这个地方直接new一个macscrollview?
          */
         ////
-        _drn.makeNshow("正在加载...", Toast.LENGTH_SHORT);
+        _drn.makeNshow(this.getString(R.string.Loading), Toast.LENGTH_SHORT);
         _drn._artstring=getString(R.string.prepareartlist);
 
         _drn.prepareDefaultArts();
@@ -282,7 +282,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
          *
          */
         if (requestCode == 4) {
-            _drn.makeNshow("上传..1.", Toast.LENGTH_SHORT);
+            _drn.makeNshow("up..1.", Toast.LENGTH_SHORT);
             /**
              * 目前还有加载好结果数据, 也没有parse为json结果. isprepare要在那个独立的线程里面设置为true.
              */
@@ -293,10 +293,10 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
             thread.start();
             View v = findViewById(R.id.button_searchresult);
 
-            _drn.makeNshow("上传..2.", Toast.LENGTH_SHORT);
+            _drn.makeNshow("up..2.", Toast.LENGTH_SHORT);
             assert v != null;
             v.performClick();
-            _drn.makeNshow("上传..3.", Toast.LENGTH_SHORT);
+            _drn.makeNshow("up..3.", Toast.LENGTH_SHORT);
 
         }
     }
@@ -554,7 +554,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
             v.setId(R.id.noreasch);
             Log.d(mck, "nosearchresult 4: ");
 
-            v.setText("没有结果, 请按返回");
+            v.setText("no result, please back");
             rl.addRule(RelativeLayout.CENTER_IN_PARENT);
             Log.d(mck, "nosearchresult 5: ");
 

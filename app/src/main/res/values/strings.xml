@@ -1,5 +1,33 @@
 <resources>
-    <string name="app_name">dagong3.0</string>
+
+
+     <string name="Photo_SRCH" >Photo SRCH</string>
+    <string name="Album_SRCH" >Album SRCH</string>
+    <string name="Register" >Register</string>
+
+    <string name="Home" >Home</string>
+    <string name="Album" >Album</string>
+    <string name="Favorite" >Favorite</string>
+
+    <string name="Select_Picture" >Select Picture
+</string>
+    <string name="View" >View</string>
+    <string name="Cancel" >Cancel</string>
+    <string name="Share_to" >Share to</string>
+    <string name="WeChat" >WeChat</string>
+    <string name="Friends_Circle" >Friends Circle</string>
+    <string name="Sina_Weibo" >Sina_Weibo</string>
+
+
+
+    <string name="Matching" >Matching</string>
+    <string name="All_results_are_shown" >All results are shown</string>
+    <string name="Loading" >Loading...</string>
+    <string name="No_result" >No result</string>
+
+
+
+    <string name="app_name">TK Search</string>
 
 
 

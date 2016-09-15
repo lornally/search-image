@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">大公图搜</string>
+    <string name="Photo_SRCH" >照片搜索
+        艺术品    </string>
+    <string name="Album_SRCH" >拍照搜索
+        艺术品
+    </string>
+    <string name="Register" >点击有惊喜</string>
+
+
+    <string name="Home" >首页</string>
+    <string name="Album" >相册</string>
+    <string name="Favorite" >收藏</string>
+
+    <string name="Select_Picture" >选择图片</string>
+    <string name="View" >查看</string>
+    <string name="Cancel" >取消</string>
+    <string name="Share_to" >分享到</string>
+    <string name="WeChat" >微信</string>
+    <string name="Friends_Circle" >朋友圈</string>
+    <string name="Sina_Weibo" >新浪微博</string>
+
+
+
+    <string name="Matching" >匹配中</string>
+    <string name="All_results_are_shown" >全部结果已展示</string>
+    <string name="Loading" >正在加载......</string>
+    <string name="No_result" >没有结果</string>
+
+
+
+</resources>

@@ -130,7 +130,7 @@ public class MScrollView extends ScrollView implements LayoutImageV {
 
             Log.d(mck, "runable isprepare before  1:  " + MainActivity._drn.sArtist);
             if (MainActivity._drn.finishprepare==DgRuning.runing){
-                MainActivity._drn.makeNshow("匹配中:" + (++toasttime), Toast.LENGTH_SHORT);
+                MainActivity._drn.makeNshow(context.getString(R.string.Matching) + (++toasttime), Toast.LENGTH_SHORT);
                 postDelayed(scrollrun, 1500);
                 Log.d(mck, "runable isprepare::::  2:  " + MainActivity._drn.sArtist);
                 return;
@@ -144,7 +144,7 @@ public class MScrollView extends ScrollView implements LayoutImageV {
                 View v = findViewById(R.id.noreasch);
                 Log.d(mck, "runable 1.5: " + v);
                 if (null != v) {
-                    MainActivity._drn.makeNshow("没有结果", Toast.LENGTH_SHORT);
+                    MainActivity._drn.makeNshow(context.getString(R.string.No_result), Toast.LENGTH_SHORT);
                     return;
                 }
                 return;
@@ -153,10 +153,10 @@ public class MScrollView extends ScrollView implements LayoutImageV {
             Log.d(mck, "runable hasnotallshow:  4:  page:" + page * PAGE_SIZE + "    artsize: " + MainActivity._drn.sArtist.size());
 
             if (page * PAGE_SIZE >= MainActivity._drn.sArtist.size()) {
-                MainActivity._drn.makeNshow("全部结果已展示", Toast.LENGTH_SHORT);
+                MainActivity._drn.makeNshow(context.getString(R.string.All_results_are_shown), Toast.LENGTH_SHORT);
                 return;
             } else if (ImageLoader.taskCollection.size() < 5) {
-                MainActivity._drn.makeNshow("正在加载......", Toast.LENGTH_SHORT);
+                MainActivity._drn.makeNshow(context.getString(R.string.Loading), Toast.LENGTH_SHORT);
 
                 Log.d(mck, "runable load more    5:   ");
                 loadMoreImages();
@@ -317,7 +317,7 @@ public class MScrollView extends ScrollView implements LayoutImageV {
 
 
         if (startIndex < MainActivity._drn.sArtist.size()) {
-            MainActivity._drn.makeNshow("正在加载...", Toast.LENGTH_SHORT);
+            MainActivity._drn.makeNshow(context.getString(R.string.Loading), Toast.LENGTH_SHORT);
 
             for (int i = startIndex; i < endIndex; i++) {
 

@@ -35,8 +35,7 @@
             <Button
                 android:layout_width="120dp"
                 android:layout_height="70dp"
-                android:text="照片搜索
-        艺术品    "
+                android:text="@string/Album_SRCH"
                 android:id="@+id/button_byphoto"
                 android:background="#fff"
                 android:textColor="#000"
@@ -49,8 +48,7 @@
             <Button
                 android:layout_width="120dp"
                 android:layout_height="70dp"
-                android:text="拍照搜索
-        艺术品    "
+                android:text="@string/Photo_SRCH"
                 android:id="@+id/button_bycamera"
                 android:background="@drawable/lice"
                 android:textColor="#000"
@@ -65,7 +63,7 @@
             <Button
                 android:layout_width="120dp"
                 android:layout_height="70dp"
-                android:text="点击有惊喜"
+                android:text="@string/Register"
                 android:id="@+id/button_happyregister"
                 android:layout_below="@+id/image0"
                 android:background="@drawable/lice"
@@ -111,7 +109,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="首页"
+        android:text="@string/Home"
         android:id="@+id/button_home"
         android:width="120dp"
         android:layout_alignParentBottom="true"
@@ -127,7 +125,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="相册"
+        android:text="@string/Album"
         android:id="@+id/button_searchresult"
         android:layout_alignBottom="@+id/button_home"
         android:layout_toEndOf="@+id/button_home"
@@ -144,7 +142,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="收藏"
+        android:text="@string/Favorite"
         android:id="@+id/button_favor"
         android:layout_alignParentBottom="true"
         android:layout_toEndOf="@+id/button_searchresult"

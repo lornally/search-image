@@ -23,7 +23,7 @@
         android:onClick="ondetailclick"
         android:scaleType="centerCrop"
         android:src="@drawable/detail"
-        android:contentDescription="查看"
+        android:contentDescription="@string/View"
 
         />
 
@@ -35,7 +35,7 @@
         android:onClick="onshareclick"
         android:scaleType="centerCrop"
         android:src="@drawable/share"
-        android:contentDescription="分享"
+        android:contentDescription="@string/Share_to"
 
         />
 
@@ -70,7 +70,7 @@
             android:layout_height="55dp"
             android:background="@drawable/cancel"
             android:onClick="ondetail_cancel_click"
-            android:text="取消"
+            android:text="@string/Cancel"
             android:textColor="#585858"
             android:textSize="18sp"
             android:layout_marginLeft="10dp"

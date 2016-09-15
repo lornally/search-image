@@ -205,8 +205,10 @@ public class ImageLoader {
             Bitmap imageBitmap = getBitmapFromMemoryCache(inu.url);
             Log.d(mck, "doinback: 1: "+imageBitmap);
             if (imageBitmap == null) {
-                imageBitmap = url2bitmap(inu.url);
+                imageBitmap = url2bitmap(inu.url);//去拿图片.
             }
+            Log.d(mck, "doinback: 1.5: "+imageBitmap);
+            //总是崩溃在这里. 奇怪了.
             Log.d(mck, "doinback: 2:h:"+imageBitmap.getHeight()+"      w:"+imageBitmap.getWidth());
 
             return imageBitmap;
@@ -240,9 +242,13 @@ public class ImageLoader {
 //        Log.d(mck, "loadimages : "+ columnWidth);
 
             File imageFile = new File(getImagePath(imageUrl));
+            Log.d(mck, "imageURL 1:"+imageUrl);
+
             if (!imageFile.exists()) {
-                downloadImage(imageUrl);
+                downloadImage(imageUrl); //下载图片.
+                //imageFile = new File(getImagePath(imageUrl));
             }
+            Log.d(mck, "imageURL 2:"+imageUrl);
             if (imageUrl != null) {
                 Bitmap bitmap = ImageLoader.decodeSampledBitmapFromResource(
                         imageFile.getPath(), layoutImageview.getColumnWidth());
@@ -251,6 +257,8 @@ public class ImageLoader {
                     return bitmap;
                 }
             }
+
+            Log.d(mck, "url2bitmap error");
             return null;
         }
 
@@ -315,7 +323,7 @@ public class ImageLoader {
          *                 todo 代码太曲折了, 竟然是先存成file, 再从file里面读出来. 妈呀.
          */
         private void downloadImage(final String imageUrl) {
-            Log.d(mck, "downloadimage");
+            Log.d(mck, "downloadimage:"+ imageUrl);
 
             if (Environment.getExternalStorageState().equals(
                     Environment.MEDIA_MOUNTED)) {
@@ -336,9 +344,10 @@ public class ImageLoader {
                 Log.d(mck, "errstr:::::" + con.getErrorStream());
 
                 File imageFile = new File(getImagePath(imageUrl));
+                imageFile.createNewFile();//既然是没有下载过的, 那么久应该新建文件, 不能信任系统.
 
 
-                Log.d(mck, "imagf:"+imageFile+"       imgurl: "+imageUrl);
+                Log.d(mck, "imagf:"+imageFile.exists()+"       imgurl: "+imageUrl);
 
                 try (
                         BufferedInputStream bis = new BufferedInputStream(con.getInputStream());
@@ -353,12 +362,14 @@ public class ImageLoader {
                         bos.flush();
                     }
                 }
+                Log.d(mck, "imagefile.exist: "+imageFile.exists());
+                Log.d(mck, "imagefile.paht"+imageFile.getPath());
 
                     Bitmap bitmap = ImageLoader.decodeSampledBitmapFromResource(
                             imageFile.getPath(), layoutImageview.getColumnWidth());
                     if (bitmap != null) {
                         addBitmapToMemoryCache(imageUrl, bitmap);
-                    }
+                    }else Log.d(mck, "no image load");
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -383,6 +394,23 @@ public class ImageLoader {
             if (!file.exists()) {
                 file.mkdirs();
             }
+
+            //更准确的方法
+            /*File path = Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_PICTURES);
+            File file = new File(path, filname +".jpg");
+            try {
+                // Make sure the Pictures directory exists.
+                path.mkdirs();
+
+                f.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }*/
+
+
+
+
             return imageDir + imageName;
         }
     }

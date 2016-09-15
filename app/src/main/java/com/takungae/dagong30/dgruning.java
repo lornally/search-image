@@ -119,13 +119,28 @@ public class DgRuning {
 //                Log.d(mck, ":::::author introduce::::" + a.getAuthor_introduce());
                 a.setIllustrate(j.optString("illustrate"));
 //                Log.d(mck, ":::::illustrate:::" + a.getIllustrate());
-                a.setPicture_url(j.optString("picture_url"));
-                Log.d(mck, ":::::picture_url:::" + a.getPicture_url());
-                a.setPicture_id(j.optString("picture_id"));
-                Log.d(mck, ":::::picture_id:::" + a.getPicture_id());
-                a.setCollection_id(j.optInt("collection_id"));
+
+//                a.setPicture_url(j.optString("picture_url"));
+                a.setPicture_url(j.optString("thumb_url"));
+
                 a.setThumb_url(j.optString("thumb_url"));
-                Log.d(mck, ":::::thumb_url:::" + a.getThumb_url());
+                Log.d(mck, ":::::thumb_url:::" + a.getThumb_url()+a.getThumb_url().length());
+                //改用thumb_url, 节省时间
+
+                if(a.getThumb_url().length()==0)a.setPicture_url(j.optString("picture_url"));
+                else a.setPicture_url(a.getThumb_url());
+
+
+                Log.d(mck, ":::::picture_url:::" + a.getPicture_url());
+
+
+
+                a.setCollection_id(j.optInt("collection_id"));
+                Log.d(mck, ":::::picture_id:::" + a.getPicture_id());
+
+
+//                a.setThumb_url(j.optString("thumb_url"));
+//                Log.d(mck, ":::::thumb_url:::" + a.getThumb_url());
                 //和picture的内容是一样的, 因此为了避免混淆, 我注释掉了.
                 stringartHashMap.put(a.getPicture_url(), a);
                 sArtist.add(a);

@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:gravity="center"
-            android:text="分享到"
+            android:text="@string/Share_to"
             android:textColor="@color/black"
             android:textSize="27sp"/>
 
@@ -35,7 +35,7 @@
                 android:layout_weight="1"
                 android:drawableTop="@drawable/weichat_icon"
                 android:gravity="center"
-                android:text="微信"
+                android:text="@string/WeChat"
                 android:textColor="@color/gray"
                 android:onClick="onclick_weixin"
                 />
@@ -47,7 +47,7 @@
                 android:layout_weight="1"
                 android:drawableTop="@drawable/weichat_friend"
                 android:gravity="center"
-                android:text="朋友圈"
+                android:text="@string/Friends_Circle"
                 android:textColor="@color/gray"
                 android:onClick="onclick_friendcircle"/>
 
@@ -58,7 +58,7 @@
                 android:layout_weight="1"
                 android:drawableTop="@drawable/weibo_icon"
                 android:gravity="center"
-                android:text="新浪微博"
+                android:text="@string/Sina_Weibo"
                 android:textColor="@color/gray"
                 android:onClick="onclick_weibo"/>
 
@@ -70,7 +70,7 @@
             android:layout_height="55dp"
             android:layout_margin="10dp"
             android:background="@drawable/cancel"
-            android:text="取消"
+            android:text="@string/Cancel"
             android:textColor="#585858"
             android:textSize="18sp"
             android:onClick="onshare_cancel_click"/>
