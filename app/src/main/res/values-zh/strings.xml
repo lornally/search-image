@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">大公图搜</string>
-    <string name="Photo_SRCH" >照片搜索
+    <string name="Photo_SRCH" >拍照搜索
         艺术品    </string>
-    <string name="Album_SRCH" >拍照搜索
-        艺术品
-    </string>
+    <string name="Album_SRCH" >照片搜索
+        艺术品    </string>
     <string name="Register" >点击有惊喜</string>
 
 

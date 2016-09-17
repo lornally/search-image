@@ -1,12 +1,12 @@
 package com.takungae.dagong30;
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.FocusFinder;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
@@ -60,11 +60,11 @@ public class DgRuning {
      * 准备结果: >0, 代表结果数, 并且代表结果正常.
      */
     public final static int mini=1;
-    public final static int NoEntriesFound=0;
+    //public final static int NoEntriesFound=0;
     public final static int runing=-1;
     public final static int error=-2;
 
-
+    //public Uri lUri ;//= null;
 
 
     public int finishprepare=DgRuning.runing;
@@ -183,14 +183,25 @@ public class DgRuning {
     }
 
     public void makeNshow( final String text, final int duration) {
-        if (toast == null) {
-            //如果還沒有用過makeText方法，才使用
-            toast = android.widget.Toast.makeText(sContext, text, duration);
-        } else {
-            toast.setText(text);
-            toast.setDuration(duration);
-        }
-        toast.show();
+        ((Activity)MainActivity.cma).runOnUiThread(
+                new Runnable() {
+                    public void run() {
+                        if (toast == null) {
+                            //如果還沒有用過makeText方法，才使用
+
+
+                            toast = android.widget.Toast.makeText(sContext, text, duration);
+
+
+                        } else {
+                            toast.setText(text);
+                            toast.setDuration(duration);
+                        }
+                        toast.show();                    }
+                }
+        );
+
+
     }
 
 

@@ -45,12 +45,8 @@ import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity implements LayoutImageV {
     private String mck = "::::main activity::::";
-    private Uri lUri = null;
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-//    private GoogleApiClient client;
+    private Uri lUri ;//= null;
+
     private View layoutmain;
     //    private final Context c=this;
     public static Context cma;//外部类使用.
@@ -81,24 +77,40 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
          * 查阅了文档, 设置content多次不是一个好主意. 貌似. 因为重新计算了整个界面.
          *
          */
+        Log.d("d", "hello world!!!!!!!");
+
         layoutmain = View.inflate(this, R.layout.activity_main, null);
         setContentView(layoutmain);
 
 
 //        Log.i(mck, "----uri---" + lUri);
 //        Log.v("v", "hello world!";);
-//        Log.d("d", "hello world!");
 //        Log.i("i", "hello world!");
 //        Log.w("w", "hello world!");
 //        Log.e("e", "hello world!");
         cma = this;
         _drn = new DgRuning();//crash. // : 6/20/16
 
-        layoutimage();
+        Thread thread = new Thread(new layoutimageT()); //用线程解决问题.
+        thread.start();
+        Log.d("d", "hello world!");
+
+       // layoutimage();  //这个地方有大问题, 这个变成了线程中加载, 导致很可能oncreate加载失败.
+    }
+
+
+    /**
+     * 在这里搞定runable
+     */
+    class layoutimageT implements Runnable {
+        public void run() {
+            ((MainActivity)MainActivity.cma).layoutimage();
+        }
     }
 
     /**
      * 某些地方需要申明可以为空, 或者不可以为空.
+     * 加载首页的图片.
      */
 
 
@@ -224,7 +236,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
     public void onbuttoncamerasearch(View v) {
         Intent cI = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         try {//改为存储到系统相册, Environment.DIRECTORY_DCIM
-            lUri = Uri.parse("file://" + getExternalFilesDir(Environment.DIRECTORY_DCIM
+            this.lUri = Uri.parse("file://" + getExternalFilesDir(Environment.DIRECTORY_DCIM
                     //  Environment.DIRECTORY_PICTURES
             ) + "/" + UUID.randomUUID() + ".jpg");
             Log.d(mck, "sys file:11:" + lUri);
@@ -250,7 +262,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
      */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.i(mck, "onactivity+request:" + requestCode + "  :::resultcode:::" + resultCode + "  data::" + data);
+        Log.i(mck, "onactivity+request:" + requestCode + "  :::resultcode:::" + resultCode + "  data::" + data+"  url:"+this.lUri);
 
 
         /**
@@ -261,7 +273,8 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
 
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 2) {
-            Log.w(mck, "code2--luri:::" + lUri);
+            Log.w(mck, "code2--luri:::" + lUri); //这个luri竟然是空? 不应该, 应该是调用前设置好的.
+            if(lUri==null)return;
             startPhotoZoom(lUri);//奔着4去了.
 
         }

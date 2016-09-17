@@ -225,7 +225,7 @@ public class ImageLoader {
          */
         @Override
         protected void onPostExecute(Bitmap bitmap) {
-            Log.d(mck, "dopost: "+bitmap);
+           // Log.d(mck, "dopost: "+bitmap);
             if (bitmap == null) return;
             inu.layoutimage( layoutImageview, bitmap);
             taskCollection.remove(this);
