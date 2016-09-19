@@ -45,8 +45,10 @@ import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity implements LayoutImageV {
     private String mck = "::::main activity::::";
-    private Uri lUri ;//= null;
-
+    private Uri lUri;/*;=Uri.parse("file://" + getExternalFilesDir(Environment.DIRECTORY_DCIM
+                              //  Environment.DIRECTORY_PICTURES
+    ) + "/" + UUID.randomUUID() + ".jpg"); ;//= null;
+*/
     private View layoutmain;
     //    private final Context c=this;
     public static Context cma;//外部类使用.
