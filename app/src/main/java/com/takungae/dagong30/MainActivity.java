@@ -73,29 +73,26 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(mck, "hello world!!!!!!!   1::::::::");
+
         super.onCreate(savedInstanceState);
         /**
          * 设置content的另一种方法.
          * 查阅了文档, 设置content多次不是一个好主意. 貌似. 因为重新计算了整个界面.
          *
          */
-        Log.d("d", "hello world!!!!!!!");
+        Log.d(mck, "hello world!!!!!!!    2::::::::");
+
 
         layoutmain = View.inflate(this, R.layout.activity_main, null);
         setContentView(layoutmain);
-
-
-//        Log.i(mck, "----uri---" + lUri);
-//        Log.v("v", "hello world!";);
-//        Log.i("i", "hello world!");
-//        Log.w("w", "hello world!");
-//        Log.e("e", "hello world!");
         cma = this;
-        _drn = new DgRuning();//crash. // : 6/20/16
 
-        Thread thread = new Thread(new layoutimageT()); //用线程解决问题.
-        thread.start();
-        Log.d("d", "hello world!");
+        _drn = new DgRuning();//crash. // : 6/20/16 ////
+        layoutimage();////  9/21/16 改回函数直接调用.
+       // Thread thread = new Thread(new layoutimageT()); //用线程解决问题.
+      //  thread.start();
+        Log.d(mck, "hello world!      3:::::::");
 
        // layoutimage();  //这个地方有大问题, 这个变成了线程中加载, 导致很可能oncreate加载失败.
     }
@@ -106,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
      */
     class layoutimageT implements Runnable {
         public void run() {
-            ((MainActivity)MainActivity.cma).layoutimage();
+            ((MainActivity)MainActivity.cma).layoutimage();//// TODO: 16/9/20
         }
     }
 
@@ -193,6 +190,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
      */
     @Override
     public void onBackPressed() {
+
         Log.i(mck, "back press begin");
 
 //        super.onBackPressed();
@@ -200,7 +198,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
         setContentView(layoutmain);
         imageViewList.clear();
 //        textViewList.clear();
-        layoutimage();
+        //layoutimage();
     }
 
 
@@ -278,6 +276,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
             Log.w(mck, "code2--luri:::" + lUri); //这个luri竟然是空? 不应该, 应该是调用前设置好的.
             if(lUri==null)return;
             startPhotoZoom(lUri);//奔着4去了.
+            return;
 
         }
         if (requestCode == 3) {
@@ -286,6 +285,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
 
             lUri = data.getData();
             startPhotoZoom(lUri);//奔着4去了.
+            return;
         }
         /**
          * 此处大量操作性代码.
@@ -312,6 +312,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
             assert v != null;
             v.performClick();
             _drn.makeNshow("up..3.", Toast.LENGTH_SHORT);
+            return;
 
         }
     }
@@ -590,6 +591,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
 
     @Override
     protected void onDestroy() {
+        Log.d(mck, "ondestroy");
         super.onDestroy();
         setContentView(R.layout.none);
     }
@@ -642,7 +644,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
     }
 
     public void ondetail_cancel_click(View v) {
-        Log.d(mck, "\\\\\\\\share/////////");
+        Log.d(mck, "ondetail_cancel_click");
         View nLViewnv = findViewById(R.id.layout_share);
         assert nLViewnv!=null;
 
@@ -662,10 +664,14 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
     }
 
     public void onshareclick(View v) {
-        Log.d(mck, "\\\\\\\\share/////////");
-        View nLViewnv = findViewById(R.id.layout_share);
-        assert nLViewnv!=null;
 
+        Log.d(mck, "onshareclickshare");
+
+
+        View nLViewnv = findViewById(R.id.layout_share);
+
+
+        assert nLViewnv!=null;
         nLViewnv.setVisibility(View.VISIBLE);
         Log.d(mck, "a:" + a);
 
@@ -704,7 +710,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
                 return "collecttask成功";
             } catch (Exception e) {
                 e.printStackTrace();
-                Log.d(mck, "token fail" + e);
+                Log.d(mck, "collecttask fail: " + e);
                 return "collecttask失败";
             }
 
@@ -713,7 +719,7 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
     }
 
     public void onshare_cancel_click(View v) {
-        Log.d(mck, "\\\\\\\\share/////////");
+        Log.d(mck, "onshare_cancel_click");
         View nLViewnv = findViewById(R.id.layout_share);
 //        assert nLViewnv != null;
         assert nLViewnv!=null;
@@ -729,27 +735,29 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
     private class weixinurltask extends AsyncTask<String, Integer, String> {
         @Override
         protected String doInBackground(String... params) {
+            Log.d(mck, "weixinurltask 0:::::1111:" + params);
+
             String pictureid = params[0];
             String uploadUrl = params[1];
             UrlPara p = new UrlPara("picture_id", pictureid);
             UrlPara tp = new UrlPara("token", _drn._token);
 
-            Log.d(mck, "weixinurltask::::::" + uploadUrl);
+            Log.d(mck, "weixinurltask 1::::::" + uploadUrl);
             try {
                 JSONObject lJSONObject = new JSONObject(_drn.geturlstring(uploadUrl, p, tp));
-                Log.d(mck, "-jasontostring-" + lJSONObject.toString());
+                Log.d(mck, "weixinurltask -jasontostring-" + lJSONObject.toString());
 
                 _drn._weixinurl = lJSONObject.getJSONObject("data").getString("web_url");
-                Log.d(mck, "weixinurl::::::::" + _drn._weixinurl);
+                Log.d(mck, "weixinurltask 2::::::::" + _drn._weixinurl);
                 if (null == _drn._weixinurl || _drn._weixinurl.length() == 0)
                     return "weixinurl 失败";
 
 
-                Log.d(mck, "weixinurl success");
+                Log.d(mck, "weixinurltask 3 success");
                 return "weixinurl 成功";
             } catch (Exception e) {
                 e.printStackTrace();
-                Log.d(mck, "token fail" + e);
+                Log.d(mck, "weixinurltask 4 fail" + e);
                 return "token失败";
             }
 
@@ -765,8 +773,15 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
      */
     public void onclick_weixin(View v) {
 
+        Log.d(mck, "onclick_weixin 1:::::");
+
         SendMessageToWX.Req re = prepareweixin();
+        Log.d(mck, "onclick_weixin 2:::::");
+
+
         wxapi.sendReq(re);
+        Log.d(mck, "onclick_weixin 3:::::");
+
 
 
     }
@@ -787,10 +802,11 @@ public class MainActivity extends AppCompatActivity implements LayoutImageV {
         /**
          * 分享=收藏, 要加入收藏夹.
          * */
+        Log.d(mck, "weixinprepare 1 :::: begin task ::::");
         weixinurltask ltask = new weixinurltask();
         ltask.execute(a.getPicture_id() + "", "http://app.takungae.com:80/Api/Index/share_art");
         //
-        Log.d(mck, "sendme re: 1");
+        Log.d(mck, "weixinprepare 2 :::: after task ::::");
 
 
 //        Toast.makeText(ActivityArtDetail.this, "微信", Toast.LENGTH_SHORT).show();
